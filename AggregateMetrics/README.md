@@ -1,0 +1,1 @@
+Application Insights Client-Side Metrics Aggregation

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Microsoft.ApplicationInsights.AggregateMetrics</id>
+    <version>$version$</version>
+    <title>Application Insights Aggregate Metrics Collection</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>http://go.microsoft.com/fwlink/?LinkID=391182</licenseUrl>
+    <projectUrl>http://go.microsoft.com/fwlink/?LinkId=392727</projectUrl>
+    <iconUrl>$image$</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Application Insights client aggregate metrics collection.</description>
+    <copyright>$copyright$</copyright>
+    <releaseNotes />
+    <tags>Analytics AppInsights ApplicationInsights Telemetry Aggregate Metrics Collection</tags>
+    <dependencies>
+      <group targetFramework="net45">
+        <dependency id="Microsoft.Diagnostics.Tracing.EventSource.Redist" version="1.1.16-beta"/>
+        <dependency id="Microsoft.ApplicationInsights" version="0.16.1-build00418" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="$configuration$\AggregateMetrics\AggregateMetrics\Microsoft.ApplicationInsights.AggregateMetrics.dll" target="lib\net45" />
+  </files>
+</package>
