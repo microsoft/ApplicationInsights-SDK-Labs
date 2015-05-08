@@ -25,6 +25,21 @@
         /// </summary>
         public const int PercentileMinimumCount = 100;
 
+        /// <summary>
+        /// The default timer flush interval in seconds.
+        /// </summary>
+        public const int DefaultTimerFlushInterval = 15;
+
+        /// <summary>
+        /// The minimum timer flush interval in seconds.
+        /// </summary>
+        public const int MinimumTimerFlushInterval = 5;
+
+        /// <summary>
+        /// The maxmimum timer flush interval in seconds.
+        /// </summary>
+        public const int MaximumTimerFlushInterval = 60;
+
         internal const string DefaultP1Name = "p1";
 
         internal const string DefaultP2Name = "p2";

@@ -7,13 +7,16 @@
     /// </summary>
     public class AggregateMetricsTelemetryModule : ISupportConfiguration
     {
-        private static int flushIntervalSeconds = 15;
+        private static int _flushIntervalSeconds = 15;
+        private static bool _isTimerFlushEnabledUser = true;
+        private static bool _isTimerFlushEnabledInternal = true;
 
         /// <summary>
         /// Initialize the telemetry module.
         /// </summary>
         public void Initialize(TelemetryConfiguration configuration)
         {
+            FlushIntervalSeconds = Constants.DefaultTimerFlushInterval;
         }
 
         /// <summary>
@@ -21,26 +24,34 @@
         /// </summary>
         public static int FlushIntervalSeconds
         {
-            get { return flushIntervalSeconds; }
+            get { return _flushIntervalSeconds; }
             set
             {
-                if (value < 5)
+                if (value < Constants.MinimumTimerFlushInterval || value > Constants.MaximumTimerFlushInterval)
                 {
-                    throw new ArgumentOutOfRangeException("The minimum flush interval is 5 seconds.");
+                    _isTimerFlushEnabledInternal = false;
+                    AggregateMetricsEventSource.Log.FlushIntervalSecondsOutOfRange(value);
                 }
-
-                if (value > 60)
+                else
                 {
-                    throw new ArgumentOutOfRangeException("The maximum flush interval is 60 seconds.");
+                    _flushIntervalSeconds = value;
                 }
-
-                flushIntervalSeconds = value;
             }
         }
 
         /// <summary>
         /// If automatic timer-based flush enabled.
         /// </summary>
-        public static bool IsTimerFlushEnabled = true;
+        public static bool IsTimerFlushEnabled
+        {
+            get
+            {
+                return _isTimerFlushEnabledUser && _isTimerFlushEnabledInternal;
+            }
+            set
+            {
+                _isTimerFlushEnabledUser = value;
+            }
+        }
     }
 }

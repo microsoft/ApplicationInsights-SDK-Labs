@@ -33,20 +33,22 @@
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                // TODO: Diagnostic message.
+                AggregateMetricsEventSource.Log.RegisterAggregateMetricInvalidMetricName();
                 return;
             }
 
             int registrationKey = AggregationSet.GetKey(telemetryClient, name);
 
-            // TODO: Support update?
-            metricRegistrations.TryAdd(registrationKey, new AggregateMetricProperties()
+            if (!metricRegistrations.TryAdd(registrationKey, new AggregateMetricProperties()
                 {
                     P1Name = p1Name,
                     P2Name = p2Name,
                     P3Name = p3Name,
                     PercentileCalculation = percentileCalculation
-                });
+                }))
+            {
+                AggregateMetricsEventSource.Log.RegisterAggregateMetricDuplicateMetricName(name);
+            }
         }
 
         /// <summary>
@@ -56,7 +58,7 @@
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                // TODO: Diagnostic message.
+                AggregateMetricsEventSource.Log.UnregisterAggregateMetricInvalidMetricName();
                 return;
             }
 
@@ -76,13 +78,13 @@
         {
             if (telemetryClient == null)
             {
-                // TODO: Diagnostic message.
+                AggregateMetricsEventSource.Log.TelemetryClientRequired();
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                // TODO: Diagnostic message.
+                AggregateMetricsEventSource.Log.TrackAggregateMetricInvalidMetricName();
                 return;
             }
 
@@ -96,6 +98,7 @@
             // Truncate any names longer than max supported length.
             if (name.Length > Constants.NameMaxLength)
             {
+                AggregateMetricsEventSource.Log.TrackAggregateMetricMetricNameTooLong(name, name.Length, Constants.NameMaxLength);
                 name = name.Substring(0, Constants.NameMaxLength);
             }
 
@@ -111,6 +114,15 @@
             aggregationSet.AddAggregation(value, property1, property2, property3);
         }
 
+        /// <summary>
+        /// Flush the aggregation buffers and emit MetricTelemetry items.
+        /// </summary>
+        public static void Flush()
+        {
+            AggregateMetricsEventSource.Log.ManualFlushActivated();
+            TimerFlushCallback(null);
+        }
+
         internal static void Clear()
         {
             while (aggregationSets != null && aggregationSets.Count > 0)
@@ -121,14 +133,6 @@
                     aggregationSets.TryRemove(key, out agg);
                 }
             }
-        }
-
-        /// <summary>
-        /// Flush the aggregation buffers and emit MetricTelemetry items.
-        /// </summary>
-        public static void Flush()
-        {
-            TimerFlushCallback(null);
         }
 
         internal static void FlushImpl()
@@ -224,6 +228,8 @@
 
         private static void TimerFlushCallback(object obj)
         {
+            AggregateMetricsEventSource.Log.TimerFlushActivated();
+
             if (disposing || aggregationSets.Count == 0 || !AggregateMetricsTelemetryModule.IsTimerFlushEnabled)
             {
                 return;
@@ -238,6 +244,8 @@
             {
                 if (aggregationSets == null)
                 {
+                    AggregateMetricsEventSource.Log.ModuleInitializationStarted();
+
                     sdkVersion = SdkVersionUtils.VersionPrefix + SdkVersionUtils.GetAssemblyVersion();
 
                     aggregationSets = new ConcurrentDictionary<int, AggregationSet>();
@@ -250,6 +258,8 @@
 
                         aggregationTimer = new System.Threading.Timer(new System.Threading.TimerCallback(TimerFlushCallback), null, aggregationWindow, aggregationWindow);
                     }
+
+                    AggregateMetricsEventSource.Log.ModuleInitializationStopped();
                 }
             }
         }

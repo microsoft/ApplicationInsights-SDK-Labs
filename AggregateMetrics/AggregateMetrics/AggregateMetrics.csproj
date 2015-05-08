@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateMetricProperties.cs" />
+    <Compile Include="AggregateMetricsEventSource.cs" />
     <Compile Include="AggregateMetricsTelemetryModule.cs" />
     <Compile Include="AggregationResult.cs" />
     <Compile Include="AggregationSet.cs" />
