@@ -37,6 +37,8 @@
                 return;
             }
 
+            name = GetAggregateMetricName(name);
+
             int registrationKey = AggregationSet.GetKey(telemetryClient, name);
 
             if (!metricRegistrations.TryAdd(registrationKey, new AggregateMetricProperties()
@@ -61,6 +63,8 @@
                 AggregateMetricsEventSource.Log.UnregisterAggregateMetricInvalidMetricName();
                 return;
             }
+
+            name = GetAggregateMetricName(name);
 
             int key = AggregationSet.GetKey(telemetryClient, name);
 
@@ -95,12 +99,7 @@
 
             Debug.Assert(aggregationSets != null);
 
-            // Truncate any names longer than max supported length.
-            if (name.Length > Constants.NameMaxLength)
-            {
-                AggregateMetricsEventSource.Log.TrackAggregateMetricMetricNameTooLong(name, name.Length, Constants.NameMaxLength);
-                name = name.Substring(0, Constants.NameMaxLength);
-            }
+            name = GetAggregateMetricName(name);
 
             Debug.Assert(name.Length > 0 && name.Length <= Constants.NameMaxLength, "Invalid name.");
 
@@ -262,6 +261,18 @@
                     AggregateMetricsEventSource.Log.ModuleInitializationStopped();
                 }
             }
+        }
+
+        private static string GetAggregateMetricName(string name)
+        {
+            // Truncate any names longer than max supported length.
+            if (name.Length > Constants.NameMaxLength)
+            {
+                AggregateMetricsEventSource.Log.TrackAggregateMetricMetricNameTooLong(name, name.Length, Constants.NameMaxLength);
+                return name.Substring(0, Constants.NameMaxLength);
+            }
+
+            return name;
         }
 
         private static void CurrentDomain_DomainUnload(object sender, EventArgs e)
