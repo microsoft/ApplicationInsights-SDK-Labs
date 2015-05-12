@@ -12,7 +12,7 @@ This project extends the Application Insights SDK API for .NET to support in-pro
 
 ## Installation ##
 
-To install the latest release you can add the [SDK Labs MyGet](https://www.myget.org/RSS/applicationinsights-sdk-labs) package source https://www.myget.org/F/applicationinsights-sdk-labs/api/v2 to NuGet and install the package id Microsoft.ApplicationInsights.AggregateMetrics.
+To install the latest release you can add the [SDK Labs MyGet](https://www.myget.org/gallery/applicationinsights-sdk-labs) package source https://www.myget.org/F/applicationinsights-sdk-labs/api/v2 to NuGet and install the package id Microsoft.ApplicationInsights.AggregateMetrics.
 
 Instructions for getting started with MyGet can be found at http://docs.myget.org/docs/walkthrough/getting-started-with-nuget.
 
