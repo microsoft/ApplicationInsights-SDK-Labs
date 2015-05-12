@@ -21,7 +21,6 @@
         private static string sdkVersion;
 
         private static readonly object clientsSyncRoot = new object();
-        private static readonly object clientsFlushLock = new object();
         private static System.Threading.Timer aggregationTimer;
         private static bool disposing = false;
         #endregion
