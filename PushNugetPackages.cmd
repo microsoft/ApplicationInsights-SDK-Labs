@@ -3,7 +3,7 @@ setlocal
 set BINROOT=%TF_BUILD_BINARIESDIRECTORY%\Release
 if not exist %BINROOT% echo "Error: '%BINROOT%' does not exist."&goto :eof
 
-set NUGET=%TF_BUILD_SOURCESDIRECTORY%\NuGet.exe
+set NUGET=%TF_BUILD_SOURCESDIRECTORY%\.nuget\NuGet.exe
 if not exist %NUGET% echo "Error: '%NUGET%' does not exist."&goto :eof
 
 set NUGET_GALLERY=https://www.myget.org/F/applicationinsights-sdk-labs/api/v2/package
