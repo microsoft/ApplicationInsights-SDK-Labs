@@ -13,7 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AggregateMetrics.NuGet", "N
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{455DAA7D-2EE7-4341-8EFC-20A4CA5DF9A0}"
 	ProjectSection(SolutionItems) = preProject
-		PushNugetPackages.cmd = PushNugetPackages.cmd
 		README.md = README.md
 		Version.props = Version.props
 	EndProjectSection
