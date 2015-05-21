@@ -41,11 +41,11 @@
 
             if (string.IsNullOrEmpty(logDir) || !Directory.Exists(logDir))
             {
-                Console.WriteLine("Error: Invalid log directory '{0}'.", logDir);
+                App.WriteOutput(SeverityLevel.Error, "Invalid log directory '{0}'.", logDir);
                 return;
             }
 
-            Console.WriteLine("Using log directory '{0}'.", logDir);
+            App.WriteOutput("Using log directory '{0}'.", logDir);
 
             IEnumerable<string> logFiles = Directory.EnumerateFiles(logDir, "*.log", SearchOption.AllDirectories);
 
@@ -59,7 +59,7 @@
                 string text = File.ReadAllText(LastProcessedFileName);
                 lastProcessedTime = DateTime.Parse(text, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
                 oldestProcessingTime = lastProcessedTime.ToLocalTime();
-                Console.WriteLine("'{0}' exists. Will process requests later than '{1}'.", LastProcessedFileName, lastProcessedTime);
+                App.WriteOutput("'{0}' exists. Will process requests later than '{1}'.", LastProcessedFileName, lastProcessedTime);
             }
 
             TelemetryClient telemetryClient = new TelemetryClient();
@@ -72,13 +72,16 @@
             
             foreach (string logFile in logFiles)
             {
-                Console.WriteLine("Processing log file '{0}'...", logFile);
+                App.WriteOutput("Processing log file '{0}'...", logFile);
                 DateTime lastWriteTime = File.GetLastWriteTime(logFile);
                 if (lastWriteTime < oldestProcessingTime)
                 {
-                    Console.WriteLine("Log is older '{0}' than '{1}'; skipping.", lastWriteTime, oldestProcessingTime);
+                    App.WriteOutput("Log is older '{0}' than '{1}'; skipping.", lastWriteTime, oldestProcessingTime);
                     continue;
                 }
+
+                int currentLogRequests = 0;
+                int currentLogTrackedRequests = 0;
 
                 try
                 {
@@ -106,7 +109,7 @@
                                 {
                                     if (line.StartsWith(HeaderDate, StringComparison.Ordinal))
                                     {
-                                        Console.WriteLine("Log date: {0}.", line.Substring(HeaderDate.Length));
+                                        App.WriteOutput("Log date: {0}.", line.Substring(HeaderDate.Length));
                                     }
                                     else if (line.StartsWith(HeaderFields, StringComparison.Ordinal))
                                     {
@@ -117,14 +120,17 @@
                                 }
                             }
 
+                            currentLogRequests++;
+
                             RequestTelemetry request = ProcessLogLine(lastProcessedTime, newestProcessingTime, fieldIndicies, line);
                             if (request != null)
                             {
                                 telemetryClient.TrackRequest(request);
                                 processedUntilUtc = request.Timestamp.UtcDateTime;
 
-                                totalRequests++;
                                 currentMinuteRequests++;
+                                currentLogTrackedRequests++;
+                                totalRequests++;
 
                                 TrackSimpleThrottle(currentMinute, currentMinuteRequests);
                             }
@@ -133,14 +139,16 @@
                 }
                 catch (IOException ioex)
                 {
-                    Console.WriteLine("Failed to open '{0}': {1}.", logFile, ioex.Message);
+                    App.WriteOutput(SeverityLevel.Error, "Failed to open '{0}': {1}.", logFile, ioex.Message);
                 }
+
+                App.WriteOutput("Tracked {0} of {1} items.", currentLogTrackedRequests, currentLogRequests);
             }
 
             if (processedUntilUtc != DateTime.MinValue)
             {
                 File.WriteAllText(LastProcessedFileName, newestProcessingTime.ToString());
-                Console.WriteLine("Wrote '{0}' with last processed time of '{1}'", LastProcessedFileName, newestProcessingTime);
+                App.WriteOutput("Wrote '{0}' with last processed time of '{1}'", LastProcessedFileName, newestProcessingTime);
             }
 
             telemetryClient.Flush();
@@ -156,14 +164,14 @@
 
             if (currentMinuteRequests > RateLimitPerMinute)
             {
-                Console.WriteLine("Reached rate limit of {0} items per minute. Waiting until the next minute...", RateLimitPerMinute);
+                App.WriteOutput("Reached rate limit of {0} items per minute. Waiting until the next minute...", RateLimitPerMinute);
 
                 while (currentMinute == DateTime.Now.Minute)
                 {
                     Task.Delay(5000).Wait();
                 }
 
-                Console.WriteLine("Resuming processing.");
+                App.WriteOutput("Resuming processing.");
             }
         }
 
@@ -208,7 +216,6 @@
             };
 
             request.Context.Location.Ip = GetFieldValue(fieldIncidies, fields, "c-ip");
-            request.Context.User.Id = GetFieldValue(fieldIncidies, fields, "cs-username");
             request.Context.User.UserAgent = GetFieldValue(fieldIncidies, fields, "cs(User-Agent)");
             
             string referer = GetFieldValue(fieldIncidies, fields, "cs(Referer)");
