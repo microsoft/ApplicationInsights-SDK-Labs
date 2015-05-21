@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.IO;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -10,7 +11,7 @@
     {
         private readonly Stopwatch stopWatch;
         private readonly TestContext testContext;
-        private readonly bool isTeamBuild = Environment.MachineName.StartsWith("TSBLD", StringComparison.OrdinalIgnoreCase);
+        private readonly string prepDataPath;
 
         private long privateMemorySizeStart = 0;
         private long pagedMemorySizeStart = 0;
@@ -20,6 +21,12 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", MessageId = "System.GC.Collect")]
         internal PerfCollector(TestContext testContext)
         {
+            string prepDataPath = Environment.GetEnvironmentVariable("PREP_DATA_PATH");
+            if (!string.IsNullOrWhiteSpace(prepDataPath) && Directory.Exists(prepDataPath))
+            {
+                this.prepDataPath = prepDataPath;
+            }
+
             this.stopWatch = new Stopwatch();
             this.testContext = testContext;
 
@@ -46,7 +53,7 @@
 #if DEBUG
                 return false;
 #else
-                return isTeamBuild;
+                return this.prepDataPath != null;
 #endif
             }
         }
@@ -123,7 +130,13 @@
                 Value = Convert.ToString(workingSetDelta)
             });
 
-            data.WriteXml();
+            string dropPath = Path.Combine(this.prepDataPath, @"MetricsAggregations", DateTime.Now.ToString("yyyy_MM_dd__HH_mm_ss", CultureInfo.CurrentCulture));
+            if (!Directory.Exists(dropPath))
+            {
+                Directory.CreateDirectory(dropPath);
+            }
+
+            data.WriteXml(dropPath);
         }
     }
 }

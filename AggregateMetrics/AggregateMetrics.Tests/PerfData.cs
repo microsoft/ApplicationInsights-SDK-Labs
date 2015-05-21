@@ -19,14 +19,8 @@
         [XmlIgnore]
         public string Name { get; set; }
 
-        public string WriteXml()
+        public string WriteXml(string dropPath)
         {
-            string dropPath = Path.Combine(@"\\ddfiles\appinsights\PerfData\MetricsAggregations", DateTime.Now.ToString("yyyy_MM_dd__HH_mm_ss", CultureInfo.CurrentCulture));
-            if (!Directory.Exists(dropPath))
-            {
-                Directory.CreateDirectory(dropPath);
-            }
-
             string xmlPath = Path.Combine(dropPath, String.Format(CultureInfo.CurrentCulture, "PerfResults_{0}.perfdata", this.Name));
 
             using (XmlTextWriter xmlTextWriter = new XmlTextWriter(xmlPath, Encoding.UTF8))
