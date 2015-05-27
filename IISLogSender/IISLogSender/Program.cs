@@ -4,8 +4,8 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
 
     class Program
@@ -31,6 +31,8 @@
 
         static void Main(string[] args)
         {
+            App.Telemetry.TrackEvent("Main");
+
             if (args.Length == 0)
             {
                 PrintUsage();
@@ -47,7 +49,12 @@
 
             App.WriteOutput("Using log directory '{0}'.", logDir);
 
-            IEnumerable<string> logFiles = Directory.EnumerateFiles(logDir, "*.log", SearchOption.AllDirectories);
+            App.Telemetry.TrackEvent("CommandLine/ArgsValidated");
+
+            IList<string> logFiles = Directory.EnumerateFiles(logDir, "*.log", SearchOption.AllDirectories).ToList();
+
+            App.Telemetry.TrackMetric("LogFiles", logFiles.Count);
+            App.WriteOutput("Found {0} log files.", logFiles.Count);
 
             var now = DateTimeOffset.Now;
             DateTime oldestProcessingTime = now.UtcDateTime.AddHours(-AgeLimitHours).ToLocalTime();
@@ -56,13 +63,13 @@
 
             if (File.Exists(LastProcessedFileName))
             {
+                App.Telemetry.TrackEvent("LastProcessedFileExists");
+
                 string text = File.ReadAllText(LastProcessedFileName);
                 lastProcessedTime = DateTime.Parse(text, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
                 oldestProcessingTime = lastProcessedTime.ToLocalTime();
                 App.WriteOutput("'{0}' exists. Will process requests later than '{1}'.", LastProcessedFileName, lastProcessedTime);
             }
-
-            TelemetryClient telemetryClient = new TelemetryClient();
 
             DateTime processedUntilUtc = DateTime.MinValue;
 
@@ -125,7 +132,7 @@
                             RequestTelemetry request = ProcessLogLine(lastProcessedTime, newestProcessingTime, fieldIndicies, line);
                             if (request != null)
                             {
-                                telemetryClient.TrackRequest(request);
+                                App.Telemetry.TrackRequest(request);
                                 processedUntilUtc = request.Timestamp.UtcDateTime;
 
                                 currentMinuteRequests++;
@@ -151,7 +158,7 @@
                 App.WriteOutput("Wrote '{0}' with last processed time of '{1}'", LastProcessedFileName, newestProcessingTime);
             }
 
-            telemetryClient.Flush();
+            App.Telemetry.Flush();
         }
 
         private static void TrackSimpleThrottle(int currentMinute, int currentMinuteRequests)
