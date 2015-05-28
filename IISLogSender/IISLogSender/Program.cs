@@ -133,7 +133,10 @@
                             if (request != null)
                             {
                                 App.Telemetry.TrackRequest(request);
-                                processedUntilUtc = request.Timestamp.UtcDateTime;
+                                if (request.Timestamp.UtcDateTime > processedUntilUtc)
+                                {
+                                    processedUntilUtc = request.Timestamp.UtcDateTime;
+                                }
 
                                 currentMinuteRequests++;
                                 currentLogTrackedRequests++;
