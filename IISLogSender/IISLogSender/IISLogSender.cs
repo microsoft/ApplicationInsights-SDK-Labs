@@ -190,7 +190,7 @@
 
             var request = new RequestTelemetry(name, timestamp, duration, responseCode, success)
             {
-                Id = Tuple.Create(lineNumber, line).GetHashCode().ToString(),
+                Id = Tuple.Create(lineNumber, line).GetHashCode().ToString(CultureInfo.InvariantCulture),
                 HttpMethod = method
             };
 
