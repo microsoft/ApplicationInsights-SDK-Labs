@@ -178,13 +178,13 @@
 
                         AggregationResult aggregation = metricsBag.CalculateAggregation(percentileCalculation);
 
-                        var metric = new MetricTelemetry(aggregationSet.Name, aggregation.Average)
+                        var metric = new MetricTelemetry(aggregationSet.Name, aggregation.Sum)
                         {
                             Timestamp = periodStartTime,
                             Count = aggregation.Count,
                             Min = aggregation.Min,
                             Max = aggregation.Max,
-                            StandardDeviation = aggregation.StdDev
+                            StandardDeviation = aggregation.StdDev 
                         };
 
                         metric.Context.GetInternalContext().SdkVersion = sdkVersion;
