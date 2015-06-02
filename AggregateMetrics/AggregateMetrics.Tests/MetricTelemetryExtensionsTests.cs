@@ -73,5 +73,21 @@
                 Assert.AreEqual("prop" + i, prop.Value);
             }
         }
+
+        [TestMethod]
+        public void AddPropertiesDefaultNames()
+        {
+            MetricsBag bag = new MetricsBag("prop1", "prop2", "prop3");
+            MetricTelemetry metric = new MetricTelemetry("metric1", 123);
+
+            metric.AddProperties(bag, null, null, null);
+
+            Assert.AreEqual(3, metric.Properties.Count);
+            for (int i = 1; i <= metric.Properties.Count; i++)
+            {
+                KeyValuePair<string, string> prop = metric.Properties.Skip(i - 1).First();
+                Assert.AreEqual("metric1_p" + i, prop.Key);
+            }
+        }
     }
 }

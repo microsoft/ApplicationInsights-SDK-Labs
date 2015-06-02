@@ -156,9 +156,9 @@
 
                         int registrationKey = aggregationSet.Key;
 
-                        string p1Name = Constants.DefaultP1Name;
-                        string p2Name = Constants.DefaultP2Name;
-                        string p3Name = Constants.DefaultP3Name;
+                        string p1Name = null;
+                        string p2Name = null;
+                        string p3Name = null;
                         var percentileCalculation = PercentileCalculation.DoNotCalculate;
 
                         AggregateMetricProperties metricProperties;
