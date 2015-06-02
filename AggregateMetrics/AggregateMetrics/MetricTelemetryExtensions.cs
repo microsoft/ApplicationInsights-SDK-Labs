@@ -14,7 +14,7 @@
             {
                 if (p1Name == null)
                 {
-                    p1Name = string.Format(PropertyFormat, metricTelemetry.Name, Constants.DefaultP1Name);
+                    p1Name = string.Format(CultureInfo.InvariantCulture, PropertyFormat, metricTelemetry.Name, Constants.DefaultP1Name);
                 }
 
                 metricTelemetry.Properties[p1Name] = metricsBag.Property1;
@@ -24,7 +24,7 @@
             {
                 if (p2Name == null)
                 {
-                    p2Name = string.Format(PropertyFormat, metricTelemetry.Name, Constants.DefaultP2Name);
+                    p2Name = string.Format(CultureInfo.InvariantCulture, PropertyFormat, metricTelemetry.Name, Constants.DefaultP2Name);
                 }
 
                 metricTelemetry.Properties[p2Name] = metricsBag.Property2;
@@ -34,7 +34,7 @@
             {
                 if (p3Name == null)
                 {
-                    p3Name = string.Format(PropertyFormat, metricTelemetry.Name, Constants.DefaultP3Name);
+                    p3Name = string.Format(CultureInfo.InvariantCulture, PropertyFormat, metricTelemetry.Name, Constants.DefaultP3Name);
                 }
 
                 metricTelemetry.Properties[p3Name] = metricsBag.Property3;
