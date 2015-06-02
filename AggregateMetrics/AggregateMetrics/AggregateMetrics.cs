@@ -156,24 +156,30 @@
 
                         int registrationKey = aggregationSet.Key;
 
-                        string p1Name = null;
-                        string p2Name = null;
-                        string p3Name = null;
+                        string p1Name = Constants.DefaultP1Name;
+                        string p2Name = Constants.DefaultP2Name;
+                        string p3Name = Constants.DefaultP3Name;
                         var percentileCalculation = PercentileCalculation.DoNotCalculate;
 
                         AggregateMetricProperties metricProperties;
                         if (metricRegistrations.TryGetValue(registrationKey, out metricProperties))
                         {
-                            p1Name = metricProperties.P1Name;
-                            p2Name = metricProperties.P2Name;
-                            p3Name = metricProperties.P3Name;
+                            if (metricProperties.P1Name != null)
+                            {
+                                p1Name = metricProperties.P1Name;
+                            }
+
+                            if (metricProperties.P2Name != null)
+                            {
+                                p2Name = metricProperties.P2Name;
+                            }
+
+                            if (metricProperties.P3Name != null)
+                            {
+                                p3Name = metricProperties.P3Name;
+                            }
+
                             percentileCalculation = metricProperties.PercentileCalculation;
-                        }
-                        else
-                        {
-                            p1Name = Constants.DefaultP1Name;
-                            p2Name = Constants.DefaultP2Name;
-                            p3Name = Constants.DefaultP3Name;
                         }
 
                         AggregationResult aggregation = metricsBag.CalculateAggregation(percentileCalculation);
