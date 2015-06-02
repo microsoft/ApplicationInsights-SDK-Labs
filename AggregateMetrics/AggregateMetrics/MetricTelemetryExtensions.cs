@@ -15,12 +15,12 @@
 
             if (metricsBag.Property2 != null)
             {
-                metricTelemetry.Properties[p1Name] = metricsBag.Property2;
+                metricTelemetry.Properties[p2Name] = metricsBag.Property2;
             }
 
             if (metricsBag.Property3 != null)
             {
-                metricTelemetry.Properties[p1Name] = metricsBag.Property3;
+                metricTelemetry.Properties[p3Name] = metricsBag.Property3;
             }
         }
 
