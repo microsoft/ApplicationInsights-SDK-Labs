@@ -143,7 +143,7 @@
                             }
                             catch (Exception ex)
                             {
-                                App.WriteOutput(SeverityLevel.Error, "Failed to process request {0} in log.", currentLogRequests);
+                                App.WriteOutput(SeverityLevel.Error, "Failed to process request {0} in log. {1}", currentLogRequests, ex.Message);
                                 var properties = new Dictionary<string, string>();
                                 properties.Add("LogFile", logFile);
                                 properties.Add("LogRequest", currentLogRequests.ToString(CultureInfo.InvariantCulture));
@@ -208,7 +208,8 @@
                 string query = GetFieldValue(fieldIncidies, fields, "cs-uri-query");
                 string url = query != null ? name + query : name;
                 Uri uri = new Uri(url, UriKind.RelativeOrAbsolute);
-                request.Url = uri;
+                // TODO: Awaiting on bugfix from Core SDK to support relative Urls.
+                //request.Url = uri;
             }
             catch (FormatException fex)
             {
