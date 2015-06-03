@@ -196,16 +196,24 @@
             TimeSpan duration = GetTimeSpan(GetFieldValue(fieldIncidies, fields, "time-taken"));
             string responseCode = GetFieldValue(fieldIncidies, fields, "sc-status");
             bool success = responseCode.StartsWith("2", StringComparison.Ordinal);
-            string query = GetFieldValue(fieldIncidies, fields, "cs-uri-query");
-            string url = query != null ? name + query : name;
-            Uri uri = new Uri(url, UriKind.RelativeOrAbsolute);
 
             var request = new RequestTelemetry(name, timestamp, duration, responseCode, success)
             {
                 Id = Tuple.Create(lineNumber, line).GetHashCode().ToString(CultureInfo.InvariantCulture),
-                HttpMethod = method,
-                Url = uri
+                HttpMethod = method
             };
+
+            try
+            {
+                string query = GetFieldValue(fieldIncidies, fields, "cs-uri-query");
+                string url = query != null ? name + query : name;
+                Uri uri = new Uri(url, UriKind.RelativeOrAbsolute);
+                request.Url = uri;
+            }
+            catch (FormatException fex)
+            {
+                App.Telemetry.TrackException(fex);
+            }
 
             request.Context.Location.Ip = GetFieldValue(fieldIncidies, fields, "c-ip");
             request.Context.User.UserAgent = GetFieldValue(fieldIncidies, fields, "cs(User-Agent)");
