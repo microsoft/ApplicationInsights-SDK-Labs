@@ -14,8 +14,12 @@
     /// </summary>
     public class IISLogSender
     {
-        private const int AgeLimitHours = 4800;
-        private const int TrackRateLimit = 10000;
+#if DEBUG
+        private const int AgeLimitHours = 1000;
+#else
+        private const int AgeLimitHours = 48;
+#endif
+        private const int TrackRateLimit = 5000;
 
         private const string HeaderDate = "#Date: ";
         private const string HeaderFields = "#Fields: ";
