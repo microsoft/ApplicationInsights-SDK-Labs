@@ -195,7 +195,7 @@
             string name = GetFieldValue(fieldIncidies, fields, "cs-uri-stem");
             TimeSpan duration = GetTimeSpan(GetFieldValue(fieldIncidies, fields, "time-taken"));
             string responseCode = GetFieldValue(fieldIncidies, fields, "sc-status");
-            bool success = responseCode.StartsWith("2", StringComparison.Ordinal);
+            bool success = responseCode != null && responseCode.StartsWith("2", StringComparison.Ordinal);
 
             var request = new RequestTelemetry(name, timestamp, duration, responseCode, success)
             {
