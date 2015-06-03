@@ -20,28 +20,39 @@
         {
             App.Telemetry.TrackEvent("Main");
 
-            if (args.Length == 0)
+            try
             {
-                PrintUsage();
-                return;
+                if (args.Length == 0)
+                {
+                    PrintUsage();
+                    return;
+                }
+
+                string logDir = args[0];
+
+                if (string.IsNullOrEmpty(logDir) || !Directory.Exists(logDir))
+                {
+                    App.WriteOutput(SeverityLevel.Error, "Invalid log directory '{0}'.", logDir);
+                    return;
+                }
+
+                App.WriteOutput("Using log directory '{0}'.", logDir);
+
+                App.Telemetry.TrackEvent("CommandLine/ArgsValidated");
+
+                var sender = new IISLogSender();
+                sender.ProcessLogs(logDir);
+            }
+            catch (Exception ex)
+            {
+                App.Telemetry.TrackException(ex);
+                throw;
             }
 
-            string logDir = args[0];
-
-            if (string.IsNullOrEmpty(logDir) || !Directory.Exists(logDir))
-            {
-                App.WriteOutput(SeverityLevel.Error, "Invalid log directory '{0}'.", logDir);
-                return;
-            }
-
-            App.WriteOutput("Using log directory '{0}'.", logDir);
-
-            App.Telemetry.TrackEvent("CommandLine/ArgsValidated");
-
-            var sender = new IISLogSender();
-            sender.ProcessLogs(logDir);
-
+            App.WriteOutput("Flushing buffered items...");
             App.Telemetry.Flush();
+
+            App.WriteOutput("Done.");
         }
     }
 }

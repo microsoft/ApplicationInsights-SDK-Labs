@@ -67,8 +67,6 @@
             DateTime processedUntilUtc = DateTime.MinValue;
 
             int totalRequests = 0;
-            int currentMinute = DateTime.Now.Minute;
-            int currentMinuteRequests = 0;
             
             foreach (string logFile in logFiles)
             {
@@ -76,7 +74,7 @@
                 DateTime lastWriteTime = File.GetLastWriteTime(logFile);
                 if (lastWriteTime < oldestProcessingTime)
                 {
-                    App.WriteOutput("Log is older '{0}' than '{1}'; skipping.", lastWriteTime, oldestProcessingTime);
+                    App.WriteOutput("Log '{0}' is older than '{1}'; skipping.", lastWriteTime, oldestProcessingTime);
                     continue;
                 }
 
@@ -128,12 +126,13 @@
                             if (request != null)
                             {
                                 App.Telemetry.TrackRequest(request);
+                                numberOfTrackCalls++;
+
                                 if (request.Timestamp.UtcDateTime > processedUntilUtc)
                                 {
                                     processedUntilUtc = request.Timestamp.UtcDateTime;
                                 }
 
-                                currentMinuteRequests++;
                                 currentLogTrackedRequests++;
                                 totalRequests++;
 
@@ -186,16 +185,15 @@
             TimeSpan duration = GetTimeSpan(GetFieldValue(fieldIncidies, fields, "time-taken"));
             string responseCode = GetFieldValue(fieldIncidies, fields, "sc-status");
             bool success = responseCode.StartsWith("2", StringComparison.Ordinal);
-            //string query = GetFieldValue(fieldIncidies, fields, "cs-uri-query");
-            //string url = query != null ? name + query : name;
-            //string ip = GetFieldValue(fieldIncidies, fields, "s-ip");
-            //Uri baseUri = new Uri("contoso.com");
-            //Uri uri = new Uri(baseUri, url);
+            string query = GetFieldValue(fieldIncidies, fields, "cs-uri-query");
+            string url = query != null ? name + query : name;
+            Uri uri = new Uri(url, UriKind.RelativeOrAbsolute);
 
             var request = new RequestTelemetry(name, timestamp, duration, responseCode, success)
             {
                 Id = Tuple.Create(lineNumber, line).GetHashCode().ToString(CultureInfo.InvariantCulture),
-                HttpMethod = method
+                HttpMethod = method,
+                Url = uri
             };
 
             request.Context.Location.Ip = GetFieldValue(fieldIncidies, fields, "c-ip");
@@ -257,12 +255,12 @@
         {
             if (numberOfTrackCalls > TrackRateLimit)
             {
-                App.WriteOutput("Reached limit of {0} items.", TrackRateLimit);
+                App.WriteOutput(SeverityLevel.Warning, "Reached limit of {0} items.", TrackRateLimit);
 
                 App.Telemetry.Flush();
                 this.ResetThrottling();
 
-                App.WriteOutput("Waiting 30 seconds before resuming processing...");
+                App.WriteOutput(SeverityLevel.Verbose, "Waiting 30 seconds before resuming processing...");
                 Task.Delay(30000).Wait();
 
                 App.WriteOutput("Resuming processing.");
