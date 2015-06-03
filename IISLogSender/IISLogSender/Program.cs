@@ -46,13 +46,19 @@
             catch (Exception ex)
             {
                 App.Telemetry.TrackException(ex);
+                Flush();
                 throw;
             }
 
-            App.WriteOutput("Flushing buffered items...");
-            App.Telemetry.Flush();
+            Flush();
 
             App.WriteOutput("Done.");
+        }
+
+        private static void Flush()
+        {
+            App.WriteOutput("Flushing buffered items...");
+            App.Telemetry.Flush();
         }
     }
 }

@@ -122,21 +122,32 @@
 
                             currentLogRequests++;
 
-                            RequestTelemetry request = ProcessLogLine(lineNumber, lastProcessedTime, newestProcessingTime, fieldIndicies, line);
-                            if (request != null)
+                            try
                             {
-                                App.Telemetry.TrackRequest(request);
-                                numberOfTrackCalls++;
-
-                                if (request.Timestamp.UtcDateTime > processedUntilUtc)
+                                RequestTelemetry request = ProcessLogLine(lineNumber, lastProcessedTime, newestProcessingTime, fieldIndicies, line);
+                                if (request != null)
                                 {
-                                    processedUntilUtc = request.Timestamp.UtcDateTime;
+                                    App.Telemetry.TrackRequest(request);
+                                    numberOfTrackCalls++;
+
+                                    if (request.Timestamp.UtcDateTime > processedUntilUtc)
+                                    {
+                                        processedUntilUtc = request.Timestamp.UtcDateTime;
+                                    }
+
+                                    currentLogTrackedRequests++;
+                                    totalRequests++;
+
+                                    TrackSimpleThrottle();
                                 }
-
-                                currentLogTrackedRequests++;
-                                totalRequests++;
-
-                                TrackSimpleThrottle();
+                            }
+                            catch (Exception ex)
+                            {
+                                App.WriteOutput(SeverityLevel.Error, "Failed to process request {0} in log.", currentLogRequests);
+                                var properties = new Dictionary<string, string>();
+                                properties.Add("LogFile", logFile);
+                                properties.Add("LogRequest", currentLogRequests.ToString(CultureInfo.InvariantCulture));
+                                App.Telemetry.TrackException(ex, properties);
                             }
                         }
                     }
