@@ -70,6 +70,7 @@
     <Compile Include="CounterCollectionLimitsTests.cs" />
     <Compile Include="CounterCollectionTests.cs" />
     <Compile Include="CounterDataTests.cs" />
+    <Compile Include="DataQualityTests.cs" />
     <Compile Include="FlushTests.cs" />
     <Compile Include="MetricTelemetryExtensionsTests.cs" />
     <Compile Include="PerfCollector.cs" />
