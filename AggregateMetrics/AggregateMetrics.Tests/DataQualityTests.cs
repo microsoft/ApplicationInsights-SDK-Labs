@@ -41,7 +41,7 @@
             Task.Delay(10000).ContinueWith((t) =>
             {
                 stopSending = true;
-            }).Wait();
+            });
 
             while (!stopSending)
             {
@@ -68,7 +68,7 @@
             Task.Delay(10000).ContinueWith((t) =>
             {
                 stopSending = true;
-            }).Wait();
+            });
 
             while (!stopSending)
             {
@@ -97,13 +97,13 @@
             Task.Delay(10000).ContinueWith((t) =>
             {
                 stopSending = true;
-            }).Wait();
+            });
 
             while (!stopSending)
             {
                 double val = new Random().NextDouble() * 100;
                 string city = val > 50 ? "Seattle" : "New York";
-                string currency = val % 2 == 0 ? "Dollar" : "Pound";
+                string currency = ((int)val % 2) == 0 ? "Dollar" : "Pound";
 
                 client.TrackMetric("simple", val);
                 client.TrackAggregateMetric("agg", val, city, currency);
@@ -127,17 +127,17 @@
             Task.Delay(10000).ContinueWith((t) =>
             {
                 stopSending = true;
-            }).Wait();
+            });
 
             while (!stopSending)
             {
                 double val = new Random().NextDouble() * 100;
                 string city = val > 50 ? "Seattle" : "New York";
-                string currency = val % 2 == 0 ? "Dollar" : "Pound";
-                string animal = val % 2 == 0 ? "Bear" : "Drop Bear";
+                string currency = ((int)val % 2) == 0 ? "Dollar" : "Pound";
+                string animal = ((int)val % 2) == 0 ? "Bear" : "Drop Bear";
 
                 client.TrackMetric("simple", val);
-                client.TrackAggregateMetric("agg", val, city, currency, currency);
+                client.TrackAggregateMetric("agg", val, city, currency, animal);
 
                 Thread.Sleep((int)val);
             }
@@ -167,7 +167,8 @@
                 double simpleSum = simpleSet.Sum(i => i.Value);
                 double aggSum = aggSet.Sum(i => i.Value);
 
-                Assert.AreEqual(simpleSum, aggSum);
+                // Sum of doubles is inherently imprecise.
+                Assert.AreEqual(simpleSum, aggSum, 0.0000001);
 
                 int simpleCount = simpleSet.Count();
                 int aggCount = aggSet.Sum(i => i.Count.Value);
