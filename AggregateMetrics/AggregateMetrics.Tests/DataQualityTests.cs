@@ -38,7 +38,7 @@
 
             bool stopSending = false;
 
-            Task.Delay(10000).ContinueWith((t) =>
+            var delayTask = Task.Delay(10000).ContinueWith((t) =>
             {
                 stopSending = true;
             });
@@ -52,7 +52,8 @@
                 Thread.Sleep((int)val);
             }
 
-            Task.Delay(6000).Wait();
+            delayTask.Wait();
+            AggregateMetrics.Flush();
 
             channel.AssertSingleAndAggMetricsAreEqual();
         }
@@ -65,7 +66,7 @@
 
             bool stopSending = false;
 
-            Task.Delay(10000).ContinueWith((t) =>
+            var delayTask = Task.Delay(10000).ContinueWith((t) =>
             {
                 stopSending = true;
             });
@@ -81,7 +82,8 @@
                 Thread.Sleep((int)val);
             }
 
-            Task.Delay(6000).Wait();
+            delayTask.Wait();
+            AggregateMetrics.Flush();
 
             channel.AssertSingleAndAggMetricsAreEqual();
         }
@@ -94,7 +96,7 @@
 
             bool stopSending = false;
 
-            Task.Delay(10000).ContinueWith((t) =>
+            var delayTask = Task.Delay(10000).ContinueWith((t) =>
             {
                 stopSending = true;
             });
@@ -111,7 +113,8 @@
                 Thread.Sleep((int)val);
             }
 
-            Task.Delay(6000).Wait();
+            delayTask.Wait();
+            AggregateMetrics.Flush();
 
             channel.AssertSingleAndAggMetricsAreEqual();
         }
@@ -124,7 +127,7 @@
 
             bool stopSending = false;
 
-            Task.Delay(10000).ContinueWith((t) =>
+            var delayTask = Task.Delay(10000).ContinueWith((t) =>
             {
                 stopSending = true;
             });
@@ -142,7 +145,8 @@
                 Thread.Sleep((int)val);
             }
 
-            Task.Delay(6000).Wait();
+            delayTask.Wait();
+            AggregateMetrics.Flush();
 
             channel.AssertSingleAndAggMetricsAreEqual();
         }
