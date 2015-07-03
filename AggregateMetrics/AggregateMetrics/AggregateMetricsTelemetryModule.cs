@@ -5,7 +5,7 @@
     /// <summary>
     /// Aggregate metrics telemetry module.
     /// </summary>
-    public class AggregateMetricsTelemetryModule : ISupportConfiguration
+    public class AggregateMetricsTelemetryModule : ITelemetryModule
     {
         private static int _flushIntervalSeconds = 15;
         private static bool _isTimerFlushEnabledUser = true;

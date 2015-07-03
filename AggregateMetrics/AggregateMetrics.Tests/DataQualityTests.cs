@@ -11,6 +11,7 @@
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics;
+    using Microsoft.ApplicationInsights.Extensibility.Implementation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -153,7 +154,7 @@
 
         protected class StubTelemetryChannel : ITelemetryChannel
         {
-            public bool DeveloperMode { get; set; }
+            public bool? DeveloperMode { get; set; }
             public string EndpointAddress { get; set; }
 
             public IList<MetricTelemetry> MetricsSent { get; set; }
@@ -211,7 +212,7 @@
                 InstrumentationKey = "fake"
             };
 
-            config.TelemetryModules.Add(new AggregateMetricsTelemetryModule());
+            TelemetryModules.Instance.Modules.Add(new AggregateMetricsTelemetryModule());
 
             return new TelemetryClient(config);
         }
