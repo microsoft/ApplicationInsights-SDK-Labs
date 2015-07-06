@@ -53,7 +53,7 @@
             }
 
             delayTask.Wait();
-            AggregateMetrics.Flush();
+            Task.Delay(6000).Wait();
 
             channel.AssertSingleAndAggMetricsAreEqual();
         }
@@ -83,7 +83,7 @@
             }
 
             delayTask.Wait();
-            AggregateMetrics.Flush();
+            Task.Delay(6000).Wait();
 
             channel.AssertSingleAndAggMetricsAreEqual();
         }
@@ -114,7 +114,7 @@
             }
 
             delayTask.Wait();
-            AggregateMetrics.Flush();
+            Task.Delay(6000).Wait();
 
             channel.AssertSingleAndAggMetricsAreEqual();
         }
@@ -146,7 +146,7 @@
             }
 
             delayTask.Wait();
-            AggregateMetrics.Flush();
+            Task.Delay(6000).Wait();
 
             channel.AssertSingleAndAggMetricsAreEqual();
         }
