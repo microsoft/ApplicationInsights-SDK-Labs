@@ -121,6 +121,10 @@
             TimerFlushCallback(null);
         }
 
+        /// <summary>
+        /// Clears all aggregation buffers and associated state. 
+        /// This method is for use in Unit Tests only and not meant to be public.
+        /// </summary>
         internal static void Clear()
         {
             lock (clientsSyncRoot)
