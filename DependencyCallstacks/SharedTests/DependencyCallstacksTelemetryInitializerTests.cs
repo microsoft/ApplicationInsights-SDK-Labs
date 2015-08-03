@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ApplicationInsights.Extensibility
+﻿namespace Microsoft.ApplicationInsights
 {
     using System;
     using System.Globalization;
@@ -7,6 +7,7 @@
     using System.Text.RegularExpressions;
     using Microsoft.ApplicationInsights.Channel;
     using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using OutsideCodeHelper;
 

@@ -9,8 +9,8 @@
     <ProjectGuid>{D16F0AC4-0341-43BE-BACC-9483D0170F9B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.ApplicationInsights.Extensibility.DependencyCallstacks</RootNamespace>
-    <AssemblyName>Microsoft.ApplicationInsights.DependencyCallstacks</AssemblyName>
+    <RootNamespace>Microsoft.ApplicationInsights.DependencyCallstacks</RootNamespace>
+    <AssemblyName>Microsoft.AI.DependencyCallstacks</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>639a6ee5</NuGetPackageImportStamp>

@@ -8,7 +8,7 @@
     <ProjectGuid>{1921E94F-B396-4FC7-931A-D532CC6F8DF0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.ApplicationInsights.Extensibility</RootNamespace>
+    <RootNamespace>Microsoft.ApplicationInsights</RootNamespace>
     <AssemblyName>Net40.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

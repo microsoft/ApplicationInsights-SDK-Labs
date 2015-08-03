@@ -27,13 +27,13 @@
     <!-- For .NET 4.0 projects -->
     <file src="$configuration$\DependencyCallstacks\NuGet\Common\ApplicationInsights.config.install.xdt" target="content\net40" />
     <file src="$configuration$\DependencyCallstacks\NuGet\Common\ApplicationInsights.config.uninstall.xdt" target="content\net40" />    
-    <file src="$configuration$\DependencyCallstacks\Net40\Microsoft.ApplicationInsights.DependencyCallstacks.dll" target="lib\net40" />
-    <file src="$configuration$\DependencyCallstacks\Net40\Microsoft.ApplicationInsights.DependencyCallstacks.pdb" target="lib\net40" />
+    <file src="$configuration$\DependencyCallstacks\Net40\Microsoft.AI.DependencyCallstacks.dll" target="lib\net40" />
+    <file src="$configuration$\DependencyCallstacks\Net40\Microsoft.AI.DependencyCallstacks.pdb" target="lib\net40" />
 
     <!-- For .NET 4.5 projects -->
     <file src="$configuration$\DependencyCallstacks\NuGet\Common\ApplicationInsights.config.install.xdt" target="content\net45" />
     <file src="$configuration$\DependencyCallstacks\NuGet\Common\ApplicationInsights.config.uninstall.xdt" target="content\net45" />
-    <file src="$configuration$\DependencyCallstacks\Net45\Microsoft.ApplicationInsights.DependencyCallstacks.dll" target="lib\net45" />
-    <file src="$configuration$\DependencyCallstacks\Net45\Microsoft.ApplicationInsights.DependencyCallstacks.pdb" target="lib\net45" />
+    <file src="$configuration$\DependencyCallstacks\Net45\Microsoft.AI.DependencyCallstacks.dll" target="lib\net45" />
+    <file src="$configuration$\DependencyCallstacks\Net45\Microsoft.AI.DependencyCallstacks.pdb" target="lib\net45" />
   </files>
 </package>

@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ApplicationInsights.Extensibility
+﻿namespace Microsoft.ApplicationInsights
 {
     using System;
     using System.Diagnostics;
@@ -7,6 +7,7 @@
     using System.Reflection;
     using Microsoft.ApplicationInsights.Channel;
     using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Extensibility;
 
     /// <summary>
     /// Telemetry initializer that extends the Application Insights .NET SDK to collect call stack information for every dependency.

@@ -8,11 +8,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2E53F953-5F4B-4A1F-B3B0-781D49E2902B}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Microsoft.ApplicationInsights.Extensibility.DependencyCallstacks</RootNamespace>
-    <AssemblyName>Microsoft.ApplicationInsights.DependencyCallstacks.NuGet</AssemblyName>
+    <RootNamespace>Microsoft.ApplicationInsights.DependencyCallstacks</RootNamespace>
+    <AssemblyName>Microsoft.AI.DependencyCallstacks.NuGet</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <PackageSpecFile>$(MSBuildProjectDirectory)\Package.nuspec</PackageSpecFile>
-    <PackageVersionFile>$(BinRoot)\$(Configuration)\DependencyCallstacks\NET40\Microsoft.ApplicationInsights.DependencyCallstacks.dll</PackageVersionFile>
+    <PackageVersionFile>$(BinRoot)\$(Configuration)\DependencyCallstacks\NET40\Microsoft.AI.DependencyCallstacks.dll</PackageVersionFile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
