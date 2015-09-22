@@ -12,7 +12,6 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Application Insights client aggregate metrics collection.</description>
     <copyright>$copyright$</copyright>
-    <releaseNotes />
     <tags>Analytics AppInsights ApplicationInsights Telemetry Aggregate Metrics Collection</tags>
     <releaseNotes>
       Version 1.2.0 - Increase name max length to 20 characters.
