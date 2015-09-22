@@ -21,7 +21,7 @@
 
             AggregationSet aggregationSet;
             AggregateMetrics.aggregationSets.TryGetValue(AggregateMetrics.aggregationSets.Keys.First(), out aggregationSet);
-            Assert.AreEqual("This name is lon", aggregationSet.Name);
+            Assert.AreEqual("This name is longer ", aggregationSet.Name);
         }
 
         [TestMethod]
@@ -37,9 +37,9 @@
 
             MetricsBag counterData = aggregationSet.RemoveAggregations().First().Value;
 
-            Assert.AreEqual("1. This is a lon", counterData.Property1);
-            Assert.AreEqual("2. This is a lon", counterData.Property2);
-            Assert.AreEqual("3. This is a lon", counterData.Property3);
+            Assert.AreEqual("1. This is a long pr", counterData.Property1);
+            Assert.AreEqual("2. This is a long pr", counterData.Property2);
+            Assert.AreEqual("3. This is a long pr", counterData.Property3);
         }
     }
 }
