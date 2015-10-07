@@ -1,0 +1,35 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Microsoft.ApplicationInsights.ExceptionTracking</id>
+    <version>$version$</version>
+    <title>Application Insights Call Stacks for Dependency Telemetry</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>http://go.microsoft.com/fwlink/?LinkID=510709</licenseUrl>
+    <projectUrl>http://go.microsoft.com/fwlink/?LinkID=510710</projectUrl>
+    <iconUrl>$image$</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Extends the Application Insights .NET SDK to collect call stacks for all dependencies.</description>
+    <copyright>$copyright$</copyright>
+    <releaseNotes></releaseNotes>
+    <tags>Analytics ApplicationInsights Telemetry AppInsights</tags>
+    <dependencies>
+      <dependency id="Microsoft.ApplicationInsights" version="1.2.0" />
+      <dependency id="Microsoft.ApplicationInsights.Agent.Intercept" version="1.2.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- For .NET 4.0 projects -->
+    <file src="$configuration$\ExceptionTracking\NuGet\Common\ApplicationInsights.config.install.xdt" target="content\net40" />
+    <file src="$configuration$\ExceptionTracking\NuGet\Common\ApplicationInsights.config.uninstall.xdt" target="content\net40" />    
+    <file src="$configuration$\ExceptionTracking\Net40\Microsoft.AI.ExceptionTracking.dll" target="lib\net40" />
+    <file src="$configuration$\ExceptionTracking\Net40\Microsoft.AI.ExceptionTracking.pdb" target="lib\net40" />
+
+    <!-- For .NET 4.5 projects -->
+    <file src="$configuration$\ExceptionTracking\NuGet\Common\ApplicationInsights.config.install.xdt" target="content\net45" />
+    <file src="$configuration$\ExceptionTracking\NuGet\Common\ApplicationInsights.config.uninstall.xdt" target="content\net45" />
+    <file src="$configuration$\ExceptionTracking\Net45\Microsoft.AI.ExceptionTracking.dll" target="lib\net45" />
+    <file src="$configuration$\ExceptionTracking\Net45\Microsoft.AI.ExceptionTracking.pdb" target="lib\net45" />
+  </files>
+</package>
