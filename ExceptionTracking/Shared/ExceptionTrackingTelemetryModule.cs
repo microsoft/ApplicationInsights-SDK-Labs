@@ -31,6 +31,13 @@ namespace Microsoft.ApplicationInsights.ExceptionTracking
         {
             this.telemetryClient = new TelemetryClient(configuration);
 
+            var extesionBaseDirectory = string.IsNullOrWhiteSpace(AppDomain.CurrentDomain.RelativeSearchPath)
+                ? AppDomain.CurrentDomain.BaseDirectory
+                : AppDomain.CurrentDomain.RelativeSearchPath;
+
+            Decorator.InitializeExtension(extesionBaseDirectory);
+
+
             foreach (var func in this.ExceptionTracking)
             {
                 Decorator.Decorate(
@@ -38,24 +45,27 @@ namespace Microsoft.ApplicationInsights.ExceptionTracking
                     func.ModuleName, 
                     func.Name, 
                     func.ArgumentsCount, 
-                    OnBeginForGetResponse, 
-                    OnEndForGetResponse, 
-                    OnExceptionForGetResponse);
+                    OnBeginEmpty, 
+                    OnEndEmpty, 
+                    OnExceptionTrackException);
             }
         }
 
-        public object OnBeginForGetResponse(object thisObj)
+        public object OnBeginEmpty(object thisObj)
         {
+            Console.Out.WriteLine("OnBeginEmpty");
             return null;
         }
 
-        public object OnEndForGetResponse(object context, object returnValue, object thisObj)
+        public object OnEndEmpty(object context, object returnValue, object thisObj)
         {
+            Console.Out.WriteLine("OnEndEmpty");
             return returnValue;
         }
 
-        public void OnExceptionForGetResponse(object context, object exception, object thisObj)
+        public void OnExceptionTrackException(object context, object exception, object thisObj)
         {
+            Console.Out.WriteLine("OnExceptionTrackException");
             var excTelemetry = new ExceptionTelemetry((Exception)exception);
             excTelemetry.Properties["this"] = thisObj.ToString();
             this.telemetryClient.TrackException(excTelemetry);

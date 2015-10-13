@@ -6,6 +6,10 @@ namespace Microsoft.ApplicationInsights.ExceptionTracking
 {
     public class Function
     {
+        public Function()
+        {
+        }
+
         public string Name { get; set; }
 
         public uint ArgumentsCount { get; set; }
