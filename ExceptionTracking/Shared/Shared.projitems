@@ -12,4 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionTrackingTelemetryModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Function.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)DefaultConfig.config" />
+  </ItemGroup>
 </Project>

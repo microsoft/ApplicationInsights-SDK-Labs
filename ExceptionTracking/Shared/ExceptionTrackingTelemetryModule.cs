@@ -7,6 +7,7 @@ namespace Microsoft.ApplicationInsights.ExceptionTracking
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Diagnostics.Instrumentation.Extensions.Intercept;
+    using System.Diagnostics;
 
     public class ExceptionTrackingTelemetryModule : ITelemetryModule
     {
@@ -29,43 +30,95 @@ namespace Microsoft.ApplicationInsights.ExceptionTracking
 
         public void Initialize(TelemetryConfiguration configuration)
         {
-            this.telemetryClient = new TelemetryClient(configuration);
-
-            var extesionBaseDirectory = string.IsNullOrWhiteSpace(AppDomain.CurrentDomain.RelativeSearchPath)
-                ? AppDomain.CurrentDomain.BaseDirectory
-                : AppDomain.CurrentDomain.RelativeSearchPath;
-
-            Decorator.InitializeExtension(extesionBaseDirectory);
-
-
-            foreach (var func in this.ExceptionTracking)
+            try
             {
-                Decorator.Decorate(
-                    func.AssemblyName, 
-                    func.ModuleName, 
-                    func.Name, 
-                    func.ArgumentsCount, 
-                    OnBeginEmpty, 
-                    OnEndEmpty, 
-                    OnExceptionTrackException);
+                this.telemetryClient = new TelemetryClient(configuration);
+
+                var extesionBaseDirectory = string.IsNullOrWhiteSpace(AppDomain.CurrentDomain.RelativeSearchPath)
+                    ? AppDomain.CurrentDomain.BaseDirectory
+                    : AppDomain.CurrentDomain.RelativeSearchPath;
+
+                Decorator.InitializeExtension(extesionBaseDirectory);
+
+
+                foreach (var func in this.ExceptionTracking)
+                {
+                    if (func.ArgumentsCount == 0)
+                    {
+                        Decorator.Decorate(
+                            func.AssemblyName,
+                            func.ModuleName,
+                            func.Name,
+                            func.ArgumentsCount,
+                            null,
+                            null,
+                            OnExceptionTrackException);
+                    }
+                    else if (func.ArgumentsCount == 1)
+                    {
+                        Decorator.Decorate(
+                            func.AssemblyName,
+                            func.ModuleName,
+                            func.Name,
+                            func.ArgumentsCount,
+                            null,
+                            null,
+                            OnExceptionEmpty2);
+                    }
+                    else if (func.ArgumentsCount == 2)
+                    {
+                        Decorator.Decorate(
+                            func.AssemblyName,
+                            func.ModuleName,
+                            func.Name,
+                            func.ArgumentsCount,
+                            null,
+                            null,
+                            OnExceptionEmpty3);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                TelemetryClient client = new TelemetryClient();
+                client.TrackException(exception);
             }
         }
 
         public object OnBeginEmpty(object thisObj)
         {
-            Console.Out.WriteLine("OnBeginEmpty");
             return null;
         }
 
         public object OnEndEmpty(object context, object returnValue, object thisObj)
         {
-            Console.Out.WriteLine("OnEndEmpty");
             return returnValue;
         }
 
         public void OnExceptionTrackException(object context, object exception, object thisObj)
         {
-            Console.Out.WriteLine("OnExceptionTrackException");
+            Debug.WriteLine("OnExceptionTrackException");
+            var excTelemetry = new ExceptionTelemetry((Exception)exception);
+            excTelemetry.Properties["this"] = thisObj.ToString();
+            this.telemetryClient.TrackException(excTelemetry);
+        }
+
+        public object OnBeginEmpty2(object thisObj, object argument)
+        {
+            return null;
+        }
+
+        public void OnExceptionEmpty2(object context, object exception, object thisObj, object argument)
+        {
+            Debug.WriteLine("OnExceptionTrackException2");
+            var excTelemetry = new ExceptionTelemetry((Exception)exception);
+            excTelemetry.Properties["this"] = thisObj.ToString();
+            this.telemetryClient.TrackException(excTelemetry);
+        }
+
+        public void OnExceptionEmpty3(object context, object exception, object thisObj, object argument1, object argument2)
+        {
+            Debug.WriteLine("OnExceptionTrackException3");
             var excTelemetry = new ExceptionTelemetry((Exception)exception);
             excTelemetry.Properties["this"] = thisObj.ToString();
             this.telemetryClient.TrackException(excTelemetry);
