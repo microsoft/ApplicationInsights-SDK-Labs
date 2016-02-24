@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.ApplicationInsights.DataContracts;
+using System;
 using System.ServiceModel;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
@@ -7,8 +8,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
     {
         private OperationContext context;
 
-        public String OperationId { get; private set; }
+        public String OperationId
+        {
+            get { return Request.Id; }
+        }
         public String OperationName { get; private set; }
+        public RequestTelemetry Request { get; private set; }
+
         public String ContractName
         {
             get { return context.EndpointDispatcher.ContractName; }
@@ -35,8 +41,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         private WcfOperationContext(OperationContext operationContext)
         {
             context = operationContext;
-            OperationId = Guid.NewGuid().ToString();
             OperationName = DiscoverOperationName(operationContext);
+            Request = new RequestTelemetry();
+            Request.GenerateOperationId();
         }
 
         public bool HasIncomingMessageProperty(string propertyName)

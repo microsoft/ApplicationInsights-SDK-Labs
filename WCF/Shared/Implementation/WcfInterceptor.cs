@@ -37,17 +37,15 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                     WcfEventSource.Log.OperationIgnored(context.ContractName, context.ContractNamespace, context.OperationName);
                     return null;
                 }
-                IRequestHolder svcreq = new RequestHolder();
                 foreach ( var mod in GetModules() )
                 {
                     Executor.ExceptionSafe(
                         mod.GetType().Name,
                         "OnBeginRequest",
                         mod.OnBeginRequest,
-                        context, svcreq
+                        context
                     );
                 }
-                return svcreq;
             } else
             {
                 WcfEventSource.Log.NoOperationContextFound();
@@ -57,10 +55,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void BeforeSendReply(ref Message reply, object correlationState)
         {
-            var svcreq = (IRequestHolder)correlationState;
-            if ( svcreq == null )
-                return;
-
             var context = WcfOperationContext.Current;
             if ( context != null )
             {
@@ -70,7 +64,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                         mod.GetType().Name,
                         "OnEndRequest",
                         mod.OnEndRequest,
-                        context, svcreq, reply
+                        context, reply
                     );
                 }
             } else

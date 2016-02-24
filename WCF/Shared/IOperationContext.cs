@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.ApplicationInsights.DataContracts;
+using System;
 using System.ServiceModel;
 
 namespace Microsoft.ApplicationInsights.Wcf
@@ -18,6 +19,10 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// The URI of the service endpoint
         /// </summary>
         Uri EndpointUri { get; }
+        /// <summary>
+        /// The RequestTelemetry event
+        /// </summary>
+        RequestTelemetry Request { get; }
         /// <summary>
         /// Name of the service contract being invoked
         /// </summary>

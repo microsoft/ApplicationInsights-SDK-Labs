@@ -13,15 +13,13 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// Fired when the request message arrives
         /// </summary>
         /// <param name="operation">The operation context</param>
-        /// <param name="request">The service request</param>
-        void OnBeginRequest(IOperationContext operation, IRequestHolder request);
+        void OnBeginRequest(IOperationContext operation);
         /// <summary>
         /// Fired before the response message is sent
         /// </summary>
         /// <param name="operation">The operation context</param>
-        /// <param name="request">The service request</param>
         /// <param name="reply">The response message</param>
-        void OnEndRequest(IOperationContext operation, IRequestHolder request, Message reply);
+        void OnEndRequest(IOperationContext operation, Message reply);
         /// <summary>
         /// Fired when an exception occurs
         /// </summary>

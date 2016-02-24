@@ -26,19 +26,16 @@ namespace Microsoft.ApplicationInsights.Wcf
             this.telemetryClient = new TelemetryClient(configuration);
         }
 
-        void IWcfTelemetryModule.OnBeginRequest(IOperationContext operation, IRequestHolder svcreq)
+        void IWcfTelemetryModule.OnBeginRequest(IOperationContext operation)
         {
             if ( operation == null )
                 throw new ArgumentNullException("operation");
-            if ( svcreq == null )
-                throw new ArgumentNullException("svcreq");
             if ( telemetryClient == null )
                 return;
 
-            svcreq.Start();
+            RequestTelemetry telemetry = operation.Request;
+            telemetry.Start();
 
-            RequestTelemetry telemetry = svcreq.Request;
-            telemetry.StartTime = svcreq.StartedAt;
             telemetry.Url = operation.EndpointUri;
             telemetry.Name = operation.OperationName;
 
@@ -49,17 +46,15 @@ namespace Microsoft.ApplicationInsights.Wcf
             }
         }
 
-        void IWcfTelemetryModule.OnEndRequest(IOperationContext operation, IRequestHolder svcreq, Message reply)
+        void IWcfTelemetryModule.OnEndRequest(IOperationContext operation, Message reply)
         {
             if ( operation == null )
                 throw new ArgumentNullException("operation");
-            if ( svcreq == null )
-                throw new ArgumentNullException("svcreq");
             if ( telemetryClient == null )
                 return;
 
-            RequestTelemetry telemetry = svcreq.Request;
-            telemetry.Duration = svcreq.Stop();
+            RequestTelemetry telemetry = operation.Request;
+            telemetry.Stop();
 
             // make some assumptions
             bool isFault = false;

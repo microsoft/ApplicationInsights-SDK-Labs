@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.ApplicationInsights.DataContracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -11,7 +12,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
     {
         public IDictionary<String, object> IncomingProperties { get; private set; }
         public IDictionary<String, object> OutgoingProperties { get; private set; }
-        public String OperationId { get; set; }
+        public String OperationId { get { return Request.Id; } }
+        public RequestTelemetry Request { get; private set; }
         public Uri EndpointUri { get; set; }
         public String OperationName { get; set; }
         public String ContractName { get; set; }
@@ -22,9 +24,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             this.IncomingProperties = new Dictionary<String, object>();
             this.OutgoingProperties = new Dictionary<String, object>();
-            this.OperationId = Guid.NewGuid().ToString();
             this.ContractName = "IFakeService";
             this.ContractNamespace = "urn:fake";
+            this.Request = new RequestTelemetry();
+            this.Request.GenerateOperationId();
         }
 
         public bool HasIncomingMessageProperty(string propertyName)

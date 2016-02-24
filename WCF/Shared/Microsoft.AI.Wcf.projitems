@@ -12,12 +12,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ContractFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\Executor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\OperationFilter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Implementation\RequestHolder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfOperationContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfEventSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfInterceptor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IRequestHolder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OperationCorrelationTelemetryInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationTelemetryAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceTelemetryAttribute.cs" />

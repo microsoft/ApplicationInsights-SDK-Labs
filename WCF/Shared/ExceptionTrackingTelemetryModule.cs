@@ -25,11 +25,11 @@ namespace Microsoft.ApplicationInsights.Wcf
             this.telemetryClient = new TelemetryClient(configuration);
         }
 
-        void IWcfTelemetryModule.OnBeginRequest(IOperationContext operation, IRequestHolder svcreq)
+        void IWcfTelemetryModule.OnBeginRequest(IOperationContext operation)
         {
         }
 
-        void IWcfTelemetryModule.OnEndRequest(IOperationContext operation, IRequestHolder svcReq, Message reply)
+        void IWcfTelemetryModule.OnEndRequest(IOperationContext operation, Message reply)
         {
         }
 
