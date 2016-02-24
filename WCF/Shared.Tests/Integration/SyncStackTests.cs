@@ -4,6 +4,9 @@ using Microsoft.ApplicationInsights.Wcf.Tests.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
+using System.Xml;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 {
@@ -221,6 +224,46 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             Assert.AreEqual(0, TestTelemetryChannel.CollectedData().Count);
         }
 
+
+        [TestMethod]
+        [TestCategory("Integration"), TestCategory("OperationTelemetry")]
+        public void CallCanFlowRootOperationId()
+        {
+            TestTelemetryChannel.Clear();
+            var host = new HostingContext<SelectiveTelemetryService, ISelectiveTelemetryService>();
+            using ( host )
+            {
+                host.Open();
+
+                ISelectiveTelemetryService client = host.GetChannel();
+                using ( var scope = new OperationContextScope((IContextChannel)client) )
+                {
+                    var rootId = new RootIdMessageHeader();
+                    rootId.RootId = "rootId";
+                    OperationContext.Current.OutgoingMessageHeaders.Add(rootId);
+                    client.OperationWithTelemetry();
+                }
+            }
+            Assert.AreEqual("rootId", TestTelemetryChannel.CollectedData().First().Context.Operation.Id);
+        }
+
+        public class RootIdMessageHeader : MessageHeader
+        {
+            public override string Name {
+                get { return "requestRootId"; }
+            }
+
+            public override string Namespace {
+                get { return "http://schemas.microsoft.com/application-insights"; }
+            }
+
+            public String RootId { get; set; }
+
+            protected override void OnWriteHeaderContents(XmlDictionaryWriter writer, MessageVersion messageVersion)
+            {
+                writer.WriteString(RootId);
+            }
+        }
 
     }
 }

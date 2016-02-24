@@ -66,6 +66,16 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             return context.OutgoingMessageProperties[propertyName];
         }
 
+        public T GetIncomingMessageHeader<T>(String name, String ns)
+        {
+            int index = context.IncomingMessageHeaders.FindHeader(name, ns);
+            if ( index >= 0 )
+            {
+                return context.IncomingMessageHeaders.GetHeader<T>(index);
+            }
+            return default(T);
+        }
+
         private static IOperationContext GetContext()
         {
             var owner = OperationContext.Current;

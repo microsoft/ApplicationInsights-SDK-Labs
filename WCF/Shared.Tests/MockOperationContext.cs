@@ -13,6 +13,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
     {
         public IDictionary<String, object> IncomingProperties { get; private set; }
         public IDictionary<String, object> OutgoingProperties { get; private set; }
+        public IDictionary<String, object> IncomingHeaders { get; private set; }
         public String OperationId { get { return Request.Id; } }
         public RequestTelemetry Request { get; private set; }
         public Uri EndpointUri { get; set; }
@@ -24,6 +25,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public MockOperationContext()
         {
             this.IncomingProperties = new Dictionary<String, object>();
+            this.IncomingHeaders = new Dictionary<String, object>();
             this.OutgoingProperties = new Dictionary<String, object>();
             this.ContractName = "IFakeService";
             this.ContractNamespace = "urn:fake";
@@ -48,6 +50,20 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public object GetOutgoingMessageProperty(String propertyName)
         {
             return OutgoingProperties[propertyName];
+        }
+        public T GetIncomingMessageHeader<T>(String name, String ns)
+        {
+            object value;
+            if ( IncomingHeaders.TryGetValue(ns + "#" + name, out value) )
+            {
+                return (T)value;
+            }
+            return default(T);
+        }
+
+        public void AddIncomingMessageHeader<T>(String name, String ns, T value)
+        {
+            IncomingHeaders.Add(ns + "#" + name, value);
         }
 
         public void SetHttpHeaders(HttpRequestMessageProperty httpHeaders)

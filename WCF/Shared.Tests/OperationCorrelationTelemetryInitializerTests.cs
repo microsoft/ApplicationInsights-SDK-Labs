@@ -96,6 +96,25 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        public void InitializeReadsRootIdFromCustomSoapHeader()
+        {
+            var context = new MockOperationContext();
+            context.AddIncomingMessageHeader("headerName", "somenamespace", "RootId");
+
+            var initializer = new OperationCorrelationTelemetryInitializer();
+            initializer.SoapRootOperationIdHeaderName = "headerName";
+            initializer.SoapHeaderNamespace = "somenamespace";
+
+            var requestTelemetry = context.Request;
+
+            var customerTelemetry = new TraceTelemetry();
+
+            initializer.Initialize(customerTelemetry, context);
+            Assert.AreEqual("RootId", customerTelemetry.Context.Operation.Id);
+            Assert.AreEqual("RootId", requestTelemetry.Context.Operation.Id);
+        }
+
+        [TestMethod]
         public void InitializeDoNotMakeRequestAParentOfItself()
         {
             var context = new MockOperationContext();

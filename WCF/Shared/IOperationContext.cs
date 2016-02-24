@@ -63,5 +63,12 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// <param name="propertyName">The name of the property</param>
         /// <returns>The property value</returns>
         object GetOutgoingMessageProperty(String propertyName);
+        /// <summary>
+        /// Returns the specified SOAP header on the request message
+        /// </summary>
+        /// <param name="name">The header name</param>
+        /// <param name="ns">The header XML namespace</param>
+        /// <returns>The header, or null if it is not present</returns>
+        T GetIncomingMessageHeader<T>(String name, String ns);
     }
 }

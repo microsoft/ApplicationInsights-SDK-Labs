@@ -9,26 +9,43 @@ namespace Microsoft.ApplicationInsights.Wcf
     /// </summary>
     public sealed class OperationCorrelationTelemetryInitializer : WcfTelemetryInitializer
     {
-        private const string StandardParentIdHeader = "x-ms-request-id";
-        private const string StandardRootIdHeader = "x-ms-request-root-id";        /// <summary>
+        private const String HttpStandardParentIdHeader = "x-ms-request-id";
+        private const String HttpStandardRootIdHeader = "x-ms-request-root-id";
+        private const String SoapStandardParentIdHeader = "requestId";
+        private const String SoapStandardRootIdHeader = "requestRootId";
+        private const String SoapStandardNamespace = "http://schemas.microsoft.com/application-insights";
 
         /// <summary>
-        /// Gets or sets the name of the header to get root operation Id from.
+        /// Gets or sets the name of the HTTP header to get root operation Id from.
         /// </summary>
         public string RootOperationIdHeaderName { get; set; }
         /// <summary>
-        /// Gets or sets the name of the header to get parent operation Id from.
+        /// Gets or sets the name of the HTTP header to get parent operation Id from.
         /// </summary>
         public string ParentOperationIdHeaderName { get; set; }
-
+        /// <summary>
+        /// Gets or sets the name of the SOAP header to get root operation Id from.
+        /// </summary>
+        public string SoapRootOperationIdHeaderName { get; set; }
+        /// <summary>
+        /// Gets or sets the name of the SOAP header to get parent operation Id from.
+        /// </summary>
+        public string SoapParentOperationIdHeaderName { get; set; }
+        /// <summary>
+        /// Gets or sets the XML Namespace for the root/parent operation ID SOAP headers.
+        /// </summary>
+        public string SoapHeaderNamespace { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationCorrelationTelemetryInitializer"/> class.
         /// </summary>
         public OperationCorrelationTelemetryInitializer()
         {
-            this.RootOperationIdHeaderName = StandardRootIdHeader;
-            this.ParentOperationIdHeaderName = StandardParentIdHeader;
+            this.RootOperationIdHeaderName = HttpStandardRootIdHeader;
+            this.ParentOperationIdHeaderName = HttpStandardParentIdHeader;
+            this.SoapHeaderNamespace = SoapStandardNamespace;
+            this.SoapParentOperationIdHeaderName = SoapStandardParentIdHeader;
+            this.SoapRootOperationIdHeaderName = SoapStandardRootIdHeader;
         }
 
         /// <summary>
@@ -38,8 +55,6 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// <param name="operation">WCF operation context</param>
         protected override void OnInitialize(ITelemetry telemetry, IOperationContext operation)
         {
-            // TODO: Enable passing value through
-            // non -HTTP headers (such as message header)
             var parentContext = operation.Request.Context.Operation;
 
             // if the parent operation ID is specified in the header
@@ -48,7 +63,7 @@ namespace Microsoft.ApplicationInsights.Wcf
             {
                 if ( !String.IsNullOrEmpty(ParentOperationIdHeaderName) )
                 {
-                    var parentId = GetHeader(operation, ParentOperationIdHeaderName); 
+                    var parentId = GetHeader(operation, ParentOperationIdHeaderName, SoapParentOperationIdHeaderName); 
                     if ( !String.IsNullOrEmpty(parentId) )
                     {
                         parentContext.ParentId = parentId;
@@ -61,7 +76,7 @@ namespace Microsoft.ApplicationInsights.Wcf
             {
                 if ( !String.IsNullOrWhiteSpace(RootOperationIdHeaderName) )
                 {
-                    var rootId = GetHeader(operation, RootOperationIdHeaderName); 
+                    var rootId = GetHeader(operation, RootOperationIdHeaderName, SoapRootOperationIdHeaderName); 
                     if ( !String.IsNullOrEmpty(rootId) )
                     {
                         parentContext.Id = rootId;
@@ -87,14 +102,16 @@ namespace Microsoft.ApplicationInsights.Wcf
             }
         }
 
-        private String GetHeader(IOperationContext context, String name)
+        private String GetHeader(IOperationContext context, String httpHeader, String soapHeader)
         {
             var httpHeaders = context.GetHttpRequestHeaders();
             if ( httpHeaders != null )
             {
-                return httpHeaders.Headers[name];
+                return httpHeaders.Headers[httpHeader];
+            } else
+            {
+                return context.GetIncomingMessageHeader<String>(soapHeader, SoapHeaderNamespace);
             }
-            return null;
         }
     }
 }
