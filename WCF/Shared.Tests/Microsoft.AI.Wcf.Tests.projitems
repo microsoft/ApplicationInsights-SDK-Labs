@@ -15,7 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Integration\OneWayTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MockOperationContext.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)OperationIdTelemetryInitializerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OperationCorrelationTelemetryInitializerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationNameTelemetryInitializerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\IOneWayService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\ISelectiveTelemetryService.cs" />

@@ -7,7 +7,7 @@
 
   <TelemetryInitializers xdt:Transform="InsertIfMissing">
     <Add xdt:Transform="InsertIfMissing" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.OperationNameTelemetryInitializer, Microsoft.AI.Wcf" />
-    <Add xdt:Transform="InsertIfMissing" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.OperationIdTelemetryInitializer, Microsoft.AI.Wcf" />
+    <Add xdt:Transform="InsertIfMissing" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.OperationCorrelationTelemetryInitializer, Microsoft.AI.Wcf" />
     <Add xdt:Transform="InsertIfMissing" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.UserTelemetryInitializer, Microsoft.AI.Wcf" />
     <Add xdt:Transform="InsertIfMissing" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.UserAgentTelemetryInitializer, Microsoft.AI.Wcf" />
   </TelemetryInitializers>

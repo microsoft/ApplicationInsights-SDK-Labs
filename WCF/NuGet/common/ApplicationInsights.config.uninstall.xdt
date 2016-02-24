@@ -8,7 +8,7 @@
 
   <TelemetryInitializers>
     <Add xdt:Transform="Remove" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.OperationNameTelemetryInitializer, Microsoft.AI.Wcf" />
-    <Add xdt:Transform="Remove" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.OperationIdTelemetryInitializer, Microsoft.AI.Wcf" />
+    <Add xdt:Transform="Remove" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.OperationCorrelationTelemetryInitializer, Microsoft.AI.Wcf" />
     <Add xdt:Transform="Remove" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.UserTelemetryInitializer, Microsoft.AI.Wcf" />
     <Add xdt:Transform="Remove" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.UserAgentTelemetryInitializer, Microsoft.AI.Wcf" />
   </TelemetryInitializers>

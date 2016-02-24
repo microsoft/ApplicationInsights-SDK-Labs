@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -47,6 +48,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public object GetOutgoingMessageProperty(String propertyName)
         {
             return OutgoingProperties[propertyName];
+        }
+
+        public void SetHttpHeaders(HttpRequestMessageProperty httpHeaders)
+        {
+            IncomingProperties[HttpRequestMessageProperty.Name] = httpHeaders;
         }
     }
 }
