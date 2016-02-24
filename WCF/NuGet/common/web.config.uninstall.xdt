@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+    <system.serviceModel>
+        <extensions>
+            <behaviorExtensions>
+                <!-- remove our extension -->
+                <add xdt:Transform="Remove" xdt:Locator="Match(name)" name="serviceTelemetry" type="Microsoft.ApplicationInsights.Wcf.ServiceTelemetryExtensionElement, Microsoft.AI.Wcf" />
+            </behaviorExtensions>
+        </extensions>
+    </system.serviceModel>
+</configuration>

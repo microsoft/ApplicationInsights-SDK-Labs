@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <!-- Insert global system.serviceModel node in any case -->
+  <system.serviceModel xdt:Transform="InsertIfMissing">
+      <extensions xdt:Transform="InsertIfMissing">
+          <behaviorExtensions xdt:Transform="InsertIfMissing">
+              <!-- register our extension -->
+              <add xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" name="serviceTelemetry" type="Microsoft.ApplicationInsights.Wcf.ServiceTelemetryExtensionElement, Microsoft.AI.Wcf" />
+          </behaviorExtensions>
+      </extensions>
+  </system.serviceModel>
+</configuration>
