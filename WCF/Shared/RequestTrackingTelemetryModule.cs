@@ -1,5 +1,6 @@
 ﻿using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.ApplicationInsights.Wcf.Implementation;
 using System;
 using System.Net;
@@ -24,6 +25,7 @@ namespace Microsoft.ApplicationInsights.Wcf
         void ITelemetryModule.Initialize(TelemetryConfiguration configuration)
         {
             this.telemetryClient = new TelemetryClient(configuration);
+            this.telemetryClient.Context.GetInternalContext().SdkVersion = "wcf: " + SdkVersionUtils.GetAssemblyVersion();
         }
 
         void IWcfTelemetryModule.OnBeginRequest(IOperationContext operation)
