@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>8c96edf0-da3e-4031-b2cc-beff29893ace</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Microsoft.ApplicationInsights.Wcf</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ContractFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\Executor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\OperationFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SdkVersionUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfOperationContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfEventSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfInterceptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OperationCorrelationTelemetryInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OperationTelemetryAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceTelemetryAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceTelemetryExtensionElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExceptionTrackingTelemetryModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IOperationContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IWcfTelemetryModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OperationNameTelemetryInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RequestTrackingTelemetryModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UserAgentTelemetryInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UserTelemetryInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WcfTelemetryInitializer.cs" />
+  </ItemGroup>
+</Project>

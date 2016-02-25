@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+  <metadata minClientVersion="2.8.5">
+    <id>Microsoft.ApplicationInsights.Wcf</id>
+    <version>$version$</version>
+    <title>Application Insights for WCF Services</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <description>Application Insights for WCF Services</description>
+    <iconUrl>http://appanacdn.blob.core.windows.net/cdn/icons/aic.png</iconUrl>
+    <licenseUrl>http://go.microsoft.com/fwlink/?LinkID=510709</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <copyright>$copyright$</copyright>
+    <tags>Analytics ApplicationInsights Telemetry AppInsights</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.0">
+        <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.0.0-rc1" />
+      </group>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.0.0-rc1" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- .NET v4.0 -->
+    <file src="$configuration$\WCF\net40\Microsoft.AI.Wcf.dll" target="lib\net40\" />
+    <file src="$configuration$\WCF\net40\Microsoft.AI.Wcf.pdb" target="lib\net40\" />
+    <file src="$configuration$\WCF\NuGet\Common\ApplicationInsights.config.install.xdt" target="content\net40" />
+    <file src="$configuration$\WCF\NuGet\Common\ApplicationInsights.config.uninstall.xdt" target="content\net40" />
+    <file src="$configuration$\WCF\NuGet\Common\ApplicationInsights.config.transform" target="content\net40" />
+    <file src="$configuration$\WCF\NuGet\Common\web.config.install.xdt" target="content\net40" />
+    <file src="$configuration$\WCF\NuGet\Common\web.config.uninstall.xdt" target="content\net40" />
+    <!-- .NET v4.5 -->
+    <file src="$configuration$\WCF\net45\Microsoft.AI.Wcf.dll" target="lib\net45\" />
+    <file src="$configuration$\WCF\net45\Microsoft.AI.Wcf.pdb" target="lib\net45\" />
+    <file src="$configuration$\WCF\NuGet\Common\ApplicationInsights.config.install.xdt" target="content\net45" />
+    <file src="$configuration$\WCF\NuGet\Common\ApplicationInsights.config.uninstall.xdt" target="content\net45" />
+    <file src="$configuration$\WCF\NuGet\Common\ApplicationInsights.config.transform" target="content\net45" />
+    <file src="$configuration$\WCF\NuGet\Common\web.config.install.xdt" target="content\net45" />
+    <file src="$configuration$\WCF\NuGet\Common\web.config.uninstall.xdt" target="content\net45" />
+  </files>
+</package>

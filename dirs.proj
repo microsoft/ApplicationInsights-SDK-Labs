@@ -3,6 +3,7 @@
   <ItemGroup>
     <Solution Include="AggregateMetrics\AggregateMetrics.sln" />    
     <Solution Include="DependencyCallstacks\DependencyCallstacks.sln" />
+    <Solution Include="WCF\WCF.sln" />
   </ItemGroup>
   <Target Name="Build">
     <Exec Command='IF EXIST "%(Solution.FullPath)" .\.nuget\nuget.exe restore "%(Solution.FullPath)" -NonInteractive' 
