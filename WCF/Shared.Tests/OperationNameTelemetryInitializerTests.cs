@@ -39,7 +39,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
-        public void HttpEndpointHasMethodInName()
+        public void HttpEndpointDoesNotHaveMethodInName()
         {
             var context = new MockOperationContext();
             context.EndpointUri = new Uri("http://localhost/Service1.svc");
@@ -54,7 +54,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             initializer.Initialize(telemetry, context);
 
             String name = telemetry.Context.Operation.Name;
-            Assert.AreEqual(name, "POST IFakeService.GetData");
+            Assert.AreEqual(name, "IFakeService.GetData");
         }
     }
 }
