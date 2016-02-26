@@ -8,7 +8,7 @@
         /// <summary>
         /// Maximum length of the counter and property names.
         /// </summary>
-        public const int NameMaxLength = 16;
+        public const int NameMaxLength = 20;
 
         /// <summary>
         /// Maximum length of the property values.

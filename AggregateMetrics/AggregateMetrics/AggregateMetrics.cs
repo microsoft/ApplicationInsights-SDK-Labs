@@ -121,15 +121,22 @@
             TimerFlushCallback(null);
         }
 
+        /// <summary>
+        /// Clears all aggregation buffers and associated state. 
+        /// This method is for use in Unit Tests only and not meant to be public.
+        /// </summary>
         internal static void Clear()
         {
-            while (aggregationSets != null && aggregationSets.Count > 0)
+            lock (clientsSyncRoot)
             {
-                foreach (int key in aggregationSets.Keys)
+                if (aggregationTimer != null)
                 {
-                    AggregationSet agg;
-                    aggregationSets.TryRemove(key, out agg);
+                    aggregationTimer.Dispose();
+                    aggregationTimer = null;
+                    AppDomain.CurrentDomain.DomainUnload -= CurrentDomain_DomainUnload;
                 }
+                                
+                aggregationSets = null;
             }
         }
 
