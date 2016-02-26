@@ -23,7 +23,7 @@ namespace Microsoft.ApplicationInsights.Wcf
     /// Any operation contract methods without an [OperationTelemetry] attribute will be ignored
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method)]
-    public class OperationTelemetryAttribute : Attribute, IOperationBehavior
+    public sealed class OperationTelemetryAttribute : Attribute, IOperationBehavior
     {
         void IOperationBehavior.AddBindingParameters(OperationDescription operationDescription, BindingParameterCollection bindingParameters)
         {

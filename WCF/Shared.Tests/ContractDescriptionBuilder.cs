@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Reflection;
 using System.ServiceModel.Description;
 
@@ -16,7 +17,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                 "LoadContractDescription",
                 BindingFlags.InvokeMethod,
                 null, typeLoader,
-                new object[] { contractType, serviceType }
+                new object[] { contractType, serviceType },
+                CultureInfo.InvariantCulture
                 );
         }
     }

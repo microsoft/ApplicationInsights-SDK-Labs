@@ -45,10 +45,6 @@
     <None Include="Package.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\net40\Microsoft.AI.Wcf.Net40.csproj">
-      <Project>{a43c7e00-0f6d-41ea-982b-870dbc08b8c9}</Project>
-      <Name>Microsoft.AI.Wcf.Net40</Name>
-    </ProjectReference>
     <ProjectReference Include="..\net45\Microsoft.AI.Wcf.Net45.csproj">
       <Project>{2dbb5fb7-f219-4999-bdbb-25eb6355c808}</Project>
       <Name>Microsoft.AI.Wcf.Net45</Name>

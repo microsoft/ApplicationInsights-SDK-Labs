@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
@@ -22,7 +23,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public HostingContext()
         {
             binding = new NetTcpBinding();
-            baseAddress = new Uri(String.Format("net.tcp://localhost:57669/{0}/", Guid.NewGuid()));
+            baseAddress = new Uri(String.Format(CultureInfo.InvariantCulture, "net.tcp://localhost:57669/{0}/", Guid.NewGuid()));
 
             host = new ServiceHost(typeof(TServiceImpl), baseAddress);
             endpoint = host.AddServiceEndpoint(typeof(TServiceIFace), binding, "svc");
@@ -57,7 +58,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         {
             host.Open();
 
-            channelFactory = new ChannelFactory<TServiceIFace>(binding, new Uri(baseAddress, "svc").ToString());
+            channelFactory = new ChannelFactory<TServiceIFace>(binding, new Uri(baseAddress, new Uri("svc", UriKind.Relative)).ToString());
             channelFactory.Open();
         }
 

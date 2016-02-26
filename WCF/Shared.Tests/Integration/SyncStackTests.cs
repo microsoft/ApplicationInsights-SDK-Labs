@@ -42,7 +42,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
                                .Select(x => x.Context.Operation.Name)
                                .First();
 
-            Assert.IsTrue(operationName.EndsWith("GetSimpleData"));
+            Assert.IsTrue(operationName.EndsWith("GetSimpleData", StringComparison.Ordinal));
         }
 
         [TestMethod]
