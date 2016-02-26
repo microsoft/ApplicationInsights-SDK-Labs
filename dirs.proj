@@ -6,9 +6,13 @@
     <Solution Include="WCF\WCF.sln" />
   </ItemGroup>
   <Target Name="Build">
-    <Exec Command='IF EXIST "%(Solution.FullPath)" .\.nuget\nuget.exe restore "%(Solution.FullPath)" -NonInteractive' 
+    <Exec Command='IF EXIST "%(Solution.FullPath)" nuget.exe restore "%(Solution.FullPath)" -NonInteractive' 
           ContinueOnError="ErrorAndStop"/>
           
     <MSBuild Projects="@(Solution)" ContinueOnError="ErrorAndStop"/> 
+  </Target>
+  <Target Name="Clean">
+    <RemoveDir Directories="$(BinRoot)\$(Configuration)" />
+    <RemoveDir Directories="$(BaseIntermediateOutputPath)" />
   </Target>
 </Project>
