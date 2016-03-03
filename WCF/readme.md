@@ -1,7 +1,7 @@
 # Application Insights SDK WCF Telemetry Module
 
->The Microsoft Application Insights API SDK enables developers to instrument their .NET application to track events and metrics. 
-> -- <cite>[Getting started with Application Insights](http://azure.microsoft.com/documentation/articles/app-insights-start-monitoring-app-health-usage/)</cite> 
+>The Microsoft Application Insights API SDK enables you to instrument your .NET application to track performance and usage. 
+> -- <cite>[Getting started with Application Insights](http://azure.microsoft.com/documentation/articles/app-insights-get-started/)</cite> 
 
 This project extends the Application Insights SDK for .NET to provide telemetry for WCF services.
 This provides a better telemetry experience than with the SDK for Web Applications:
@@ -9,6 +9,7 @@ This provides a better telemetry experience than with the SDK for Web Applicatio
 * Operation names will now include the service operation being invoked
 * Support adding telemetry for WCF services exposed over non-HTTP bindings, such as Net.TCP
 * Supports tracking service errors through an IErrorHandler extension
+* Selective control of which services are monitored
 
 
 Requirements
@@ -23,8 +24,8 @@ Installation
 - Instrument your WCF service using one of the two following methods:
   - Mark your service class with the `[ServiceTelemetry]` attribute
   - Add the `<serviceTelemetry/>` service behavior through configuration to your service
-- Add the InstrumentationKey element in your ApplicationInsights.config file
-  - You can also provide the instrumentation key through code or web config
+- Add [the Instrumentation Key of your Application Insights resource](https://azure.microsoft.com/documentation/articles/app-insights-create-new-resource/) to ApplicationInsights.config
+  - Or you can also provide the instrumentation key [through code or web config](https://azure.microsoft.com/documentation/articles/app-insights-api-custom-events-metrics/#ikey).
 - That's it!
 
 Using the command line package manager? This is what you need.
