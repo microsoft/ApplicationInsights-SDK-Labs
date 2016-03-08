@@ -4,9 +4,15 @@
   <system.serviceModel xdt:Transform="InsertIfMissing">
       <extensions xdt:Transform="InsertIfMissing">
           <behaviorExtensions xdt:Transform="InsertIfMissing">
-              <!-- register our extension -->
               <add xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" name="serviceTelemetry" type="Microsoft.ApplicationInsights.Wcf.ServiceTelemetryExtensionElement, Microsoft.AI.Wcf" />
           </behaviorExtensions>
       </extensions>
+      <behaviors xdt:Transform="InsertIfMissing">
+          <serviceBehaviors xdt:Transform="InsertIfMissing">
+              <behavior xdt:Transform="InsertIfMissing">
+                  <serviceTelemetry xdt:Transform="InsertIfMissing" />
+              </behavior>
+          </serviceBehaviors>
+      </behaviors>
   </system.serviceModel>
 </configuration>

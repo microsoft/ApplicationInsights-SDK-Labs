@@ -3,9 +3,15 @@
     <system.serviceModel>
         <extensions>
             <behaviorExtensions>
-                <!-- remove our extension -->
                 <add xdt:Transform="Remove" xdt:Locator="Match(name)" name="serviceTelemetry" type="Microsoft.ApplicationInsights.Wcf.ServiceTelemetryExtensionElement, Microsoft.AI.Wcf" />
             </behaviorExtensions>
         </extensions>
+        <behaviors>
+            <serviceBehaviors>
+                <behavior>
+                    <serviceTelemetry xdt:Transform="Remove" />
+                </behavior>
+            </serviceBehaviors>
+        </behaviors>
     </system.serviceModel>
 </configuration>
