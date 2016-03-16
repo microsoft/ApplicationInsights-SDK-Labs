@@ -14,7 +14,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             public const EventKeywords WcfModule = (EventKeywords)0x10;
             public const EventKeywords RequestTelemetry = (EventKeywords)0x20;
-            public const EventKeywords ExceptionTelemetry = (EventKeywords)0x20;
+            public const EventKeywords ExceptionTelemetry = (EventKeywords)0x30;
         }
 
         public static readonly WcfEventSource Log = new WcfEventSource();
