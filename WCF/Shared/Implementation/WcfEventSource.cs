@@ -69,6 +69,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             this.WriteEvent(9, typeName, ApplicationName);
         }
 
+        [Event(15, Keywords = Keywords.WcfModule, Message = "Location.Id set to: {0}", Level = EventLevel.Verbose)]
+        public void LocationIdSet(String ip, String appDomainName = "Invalid")
+        {
+            this.WriteEvent(15, ip ?? "NULL", this.ApplicationName);
+        }
+
         [NonEvent]
         private String GetApplicationName()
         {

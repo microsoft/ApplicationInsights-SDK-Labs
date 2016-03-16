@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using System.ServiceModel.Channels;
+using Microsoft.ApplicationInsights.Wcf.Implementation;
 
 namespace Microsoft.ApplicationInsights.Wcf
 {
@@ -37,6 +38,7 @@ namespace Microsoft.ApplicationInsights.Wcf
                 var property = (RemoteEndpointMessageProperty)
                     operation.GetIncomingMessageProperty(RemoteEndpointMessageProperty.Name);
                 location.Ip = property.Address;
+                WcfEventSource.Log.LocationIdSet(location.Ip);
             }
         }
     }
