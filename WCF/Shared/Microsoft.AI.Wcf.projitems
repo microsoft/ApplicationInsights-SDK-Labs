@@ -9,6 +9,7 @@
     <Import_RootNamespace>Microsoft.ApplicationInsights.Wcf</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ClientIpTelemetryInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ContractFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\Executor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\OperationFilter.cs" />
