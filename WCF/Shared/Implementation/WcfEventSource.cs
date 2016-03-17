@@ -14,7 +14,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             public const EventKeywords WcfModule = (EventKeywords)0x10;
             public const EventKeywords RequestTelemetry = (EventKeywords)0x20;
-            public const EventKeywords ExceptionTelemetry = (EventKeywords)0x20;
+            public const EventKeywords ExceptionTelemetry = (EventKeywords)0x30;
         }
 
         public static readonly WcfEventSource Log = new WcfEventSource();
@@ -67,6 +67,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public void WcfTelemetryInitializerLoaded(String typeName, String appDomainName = "Invalid")
         {
             this.WriteEvent(9, typeName, ApplicationName);
+        }
+
+        [Event(15, Keywords = Keywords.WcfModule, Message = "Location.Id set to: {0}", Level = EventLevel.Verbose)]
+        public void LocationIdSet(String ip, String appDomainName = "Invalid")
+        {
+            this.WriteEvent(15, ip ?? "NULL", this.ApplicationName);
         }
 
         [NonEvent]
