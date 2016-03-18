@@ -76,14 +76,20 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             return default(T);
         }
 
-        private static IOperationContext GetContext()
+        public static WcfOperationContext FindContext(OperationContext owner)
         {
-            var owner = OperationContext.Current;
             if ( owner == null )
                 return null;
 
-            WcfOperationContext context = owner.Extensions.Find<WcfOperationContext>();
-            if ( context == null )
+            return owner.Extensions.Find<WcfOperationContext>();
+        }
+
+        private static IOperationContext GetContext()
+        {
+            var owner = OperationContext.Current;
+            WcfOperationContext context = FindContext(owner);
+
+            if ( context == null && owner != null )
             {
                 context = new WcfOperationContext(owner);
                 owner.Extensions.Add(context);
