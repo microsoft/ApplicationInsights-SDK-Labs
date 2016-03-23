@@ -22,7 +22,8 @@ namespace Microsoft.ApplicationInsights.Wcf
             if ( context == null )
                 return null;
             var icontext = WcfOperationContext.FindContext(context);
-            return icontext?.Request;
+
+            return icontext != null ? icontext.Request : null;
         }
     }
 }
