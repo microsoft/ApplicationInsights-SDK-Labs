@@ -13,12 +13,12 @@
       Date when Semantic Version was changed. 
       Update for every public release.
     -->
-    <SemanticVersionDate>2015-08-03</SemanticVersionDate>
+    <SemanticVersionDate>2016-03-24</SemanticVersionDate>
 
     <!-- 
       Pre-release version is used to distinguish internally built NuGet packages.
       Pre-release version = Minutes since semantic version was set, divided by 5 (to make it fit in a UInt16).
     -->
-    <PreReleaseVersion>$([MSBuild]::Divide($([System.DateTime]::Now.Subtract($([System.DateTime]::Parse($(SemanticVersionDate)))).TotalMinutes), 5).ToString('F0'))</PreReleaseVersion>
+    <PreReleaseVersion>$([MSBuild]::Divide($([System.DateTime]::Now.Subtract($([System.DateTime]::Parse($(SemanticVersionDate)))).TotalHours), 6).ToString('F0'))</PreReleaseVersion>
   </PropertyGroup>
 </Project>
