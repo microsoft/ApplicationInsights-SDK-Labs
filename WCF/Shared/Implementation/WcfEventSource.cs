@@ -10,11 +10,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
     [EventSource(Name = "Microsoft-ApplicationInsights-Wcf")]
     internal sealed class WcfEventSource : EventSource
     {
+        // Keywords must be powers of 2 since they are used as bitmasks
         public sealed class Keywords
         {
             public const EventKeywords WcfModule = (EventKeywords)0x10;
             public const EventKeywords RequestTelemetry = (EventKeywords)0x20;
-            public const EventKeywords ExceptionTelemetry = (EventKeywords)0x30;
+            public const EventKeywords ExceptionTelemetry = (EventKeywords)0x40;
         }
 
         public static readonly WcfEventSource Log = new WcfEventSource();
