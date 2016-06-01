@@ -16,15 +16,17 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// <param name="operation">The operation context</param>
         protected override void OnInitialize(ITelemetry telemetry, IOperationContext operation)
         {
-            // TODO: consider including the HTTP verb
-            // if service is using WebHttpBinding.
-            String name = operation.ContractName + '.' + operation.OperationName;
-
-            telemetry.Context.Operation.Name = name;
+            var ctxt = telemetry.Context.Operation;
+            if ( String.IsNullOrEmpty(ctxt.Name) )
+            {
+                // TODO: consider including the HTTP verb
+                // if service is using WebHttpBinding.
+                ctxt.Name = operation.ContractName + '.' + operation.OperationName;
+            }
             RequestTelemetry request = telemetry as RequestTelemetry;
             if ( request != null )
             {
-                request.Name = name;
+                request.Name = ctxt.Name;
             }
         }
     }
