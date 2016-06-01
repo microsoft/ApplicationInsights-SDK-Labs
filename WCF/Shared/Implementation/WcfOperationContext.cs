@@ -119,7 +119,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 foreach ( var op in runtime.Operations )
                 {
                     if ( op.Action == action )
+                    {
                         return op.Name;
+                    }
                 }
             } else
             {
