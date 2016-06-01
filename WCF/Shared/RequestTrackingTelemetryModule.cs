@@ -45,6 +45,11 @@ namespace Microsoft.ApplicationInsights.Wcf
             if ( httpHeaders != null )
             {
                 telemetry.HttpMethod = httpHeaders.Method;
+                if ( operation.ToHeader != null )
+                {
+                    // overwrite it for WebHttpBinding requests
+                    telemetry.Url = operation.ToHeader;
+                }
             }
         }
 

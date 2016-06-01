@@ -18,5 +18,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
         void CallFailsWithTypedFault();
         [OperationContract]
         void CallFailsWithException();
+        [OperationContract(Action="*")]
+        void CatchAllOperation();
     }
 }

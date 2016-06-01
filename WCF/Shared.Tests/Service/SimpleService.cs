@@ -38,6 +38,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
         public void SampleOperation()
         {
         }
+
+        public void CatchAllOperation()
+        {
+        }
     }
 
     public class TypedFault

@@ -1,6 +1,8 @@
 ﻿using Microsoft.ApplicationInsights.DataContracts;
 using System;
 using System.ServiceModel;
+using System.ServiceModel.Dispatcher;
+using System.ServiceModel.Web;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
@@ -23,10 +25,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             get { return context.EndpointDispatcher.ContractNamespace; }
         }
-
         public Uri EndpointUri
         {
             get { return context.EndpointDispatcher.EndpointAddress.Uri; }
+        }
+        public Uri ToHeader
+        {
+            get { return context.IncomingMessageHeaders.To; }
         }
         public ServiceSecurityContext SecurityContext
         {
@@ -107,14 +112,39 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         private String DiscoverOperationName(OperationContext operationContext)
         {
+            var runtime = operationContext.EndpointDispatcher.DispatchRuntime;
             String action = operationContext.IncomingMessageHeaders.Action;
-            foreach ( var op in operationContext.EndpointDispatcher.DispatchRuntime.Operations )
+            if ( !String.IsNullOrEmpty(action) )
             {
-                if ( op.Action == action )
-                    return op.Name;
+                foreach ( var op in runtime.Operations )
+                {
+                    if ( op.Action == action )
+                    {
+                        return op.Name;
+                    }
+                }
+            } else
+            {
+                // WebHttpDispatchOperationSelector will stick the
+                // selected operation name into a message property
+                return GetWebHttpOperationName(operationContext);
+            }
+            var catchAll = runtime.UnhandledDispatchOperation;
+            if ( catchAll != null )
+            {
+                return catchAll.Name;
             }
             return "*";
         }
 
+        private string GetWebHttpOperationName(OperationContext operationContext)
+        {
+            var name = WebHttpDispatchOperationSelector.HttpOperationNamePropertyName;
+            if ( HasIncomingMessageProperty(name) )
+            {
+                return GetIncomingMessageProperty(name) as String;
+            }
+            return "<unknown>";
+        }
     }
 }
