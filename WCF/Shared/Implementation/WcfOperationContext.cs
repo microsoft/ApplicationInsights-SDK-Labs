@@ -142,9 +142,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 foreach ( var op in runtime.Operations )
                 {
                     if ( op.Action == action )
-                    {
                         return op.Name;
-                    }
                 }
             } else
             {
@@ -153,11 +151,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 return GetWebHttpOperationName(operationContext);
             }
             var catchAll = runtime.UnhandledDispatchOperation;
-            if ( catchAll != null )
-            {
-                return catchAll.Name;
-            }
-            var catchAll = operationContext.EndpointDispatcher.DispatchRuntime.UnhandledDispatchOperation;
             if ( catchAll != null )
             {
                 return catchAll.Name;
