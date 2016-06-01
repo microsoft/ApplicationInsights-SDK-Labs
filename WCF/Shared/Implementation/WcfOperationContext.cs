@@ -157,6 +157,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 return catchAll.Name;
             }
+            var catchAll = operationContext.EndpointDispatcher.DispatchRuntime.UnhandledDispatchOperation;
+            if ( catchAll != null )
+            {
+                return catchAll.Name;
+            }
             return "*";
         }
 
