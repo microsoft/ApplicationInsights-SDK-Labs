@@ -25,10 +25,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             get { return context.EndpointDispatcher.ContractNamespace; }
         }
-
         public Uri EndpointUri
         {
             get { return context.EndpointDispatcher.EndpointAddress.Uri; }
+        }
+        public Uri ToHeader
+        {
+            get { return context.IncomingMessageHeaders.To; }
         }
         public ServiceSecurityContext SecurityContext
         {

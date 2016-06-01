@@ -17,6 +17,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public String OperationId { get { return Request.Id; } }
         public RequestTelemetry Request { get; private set; }
         public Uri EndpointUri { get; set; }
+        public Uri ToHeader { get; set; }
         public String OperationName { get; set; }
         public String ContractName { get; set; }
         public String ContractNamespace { get; set; }

@@ -20,6 +20,10 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// </summary>
         Uri EndpointUri { get; }
         /// <summary>
+        /// The URI the message was addressed to 
+        /// </summary>
+        Uri ToHeader { get; }
+        /// <summary>
         /// The RequestTelemetry event
         /// </summary>
         RequestTelemetry Request { get; }
