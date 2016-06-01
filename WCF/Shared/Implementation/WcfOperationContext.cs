@@ -113,6 +113,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 if ( op.Action == action )
                     return op.Name;
             }
+            var catchAll = operationContext.EndpointDispatcher.DispatchRuntime.UnhandledDispatchOperation;
+            if ( catchAll != null )
+            {
+                return catchAll.Name;
+            }
             return "*";
         }
 

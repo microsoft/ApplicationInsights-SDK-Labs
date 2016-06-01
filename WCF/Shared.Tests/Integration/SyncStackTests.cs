@@ -65,6 +65,28 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 
         [TestMethod]
         [TestCategory("Integration"), TestCategory("Sync")]
+        public void CallWithUnknownActionReportsCatchAllOperation()
+        {
+            TestTelemetryChannel.Clear();
+            var host = new HostingContext<SimpleService, ISimpleService>();
+            using ( host )
+            {
+                host.Open();
+
+                ISimpleService client = host.GetChannel();
+                using ( OperationContextScope scope = new OperationContextScope((IContextChannel)client) )
+                {
+                    OperationContext.Current.OutgoingMessageHeaders.Action = "http://someaction";
+                    client.CatchAllOperation();
+                }
+            }
+            var evt = TestTelemetryChannel.CollectedData().First();
+            Assert.AreEqual("ISimpleService.CatchAllOperation", evt.Context.Operation.Name);
+        }
+
+
+        [TestMethod]
+        [TestCategory("Integration"), TestCategory("Sync")]
         public void ErrorTelemetryEventsAreGeneratedOnFault()
         {
             TestTelemetryChannel.Clear();
@@ -223,7 +245,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             }
             Assert.AreEqual(0, TestTelemetryChannel.CollectedData().Count);
         }
-
 
         [TestMethod]
         [TestCategory("Integration"), TestCategory("OperationTelemetry")]
