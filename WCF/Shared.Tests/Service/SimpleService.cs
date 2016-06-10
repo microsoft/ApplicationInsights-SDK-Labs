@@ -58,6 +58,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
         public void CatchAllOperation()
         {
         }
+        public void CallThatEmitsEvent()
+        {
+            TelemetryClient client = new TelemetryClient();
+            client.TrackEvent("MyCustomEvent");
+        }
     }
 
     public class TypedFault
