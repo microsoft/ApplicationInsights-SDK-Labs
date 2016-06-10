@@ -59,6 +59,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
             TelemetryClient client = new TelemetryClient();
             client.TrackEvent("MyCustomEvent");
         }
+
         public void CallAnotherServiceAndLeakOperationContext(String address)
         {
             var factory = new ChannelFactory<ISimpleService>(new NetTcpBinding(), new EndpointAddress(address));
@@ -76,6 +77,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
             }
             factory.Close();
         }
+
         public bool CallIsClientSideContext()
         {
             return OperationContext.Current.IsClientSideContext();
