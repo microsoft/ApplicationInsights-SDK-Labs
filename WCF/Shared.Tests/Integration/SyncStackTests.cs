@@ -212,6 +212,30 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             Assert.IsTrue(errors.Count() > 0);
         }
 
+        [TestMethod]
+        [TestCategory("Integration"), TestCategory("Sync")]
+        public void TelemetryEventsEmittedInsideServiceCallContainExpectedContext()
+        {
+            TestTelemetryChannel.Clear();
+            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            {
+                host.Open();
+                ISimpleService client = host.GetChannel();
+                client.CallThatEmitsEvent();
+
+                var data = TestTelemetryChannel.CollectedData();
+                var request = data
+                             .OfType<RequestTelemetry>()
+                             .First();
+                var customEvent = data
+                                 .OfType<EventTelemetry>()
+                                 .FirstOrDefault();
+                Assert.IsNotNull(customEvent);
+                Assert.AreEqual(request.Context.Operation.Id, customEvent.Context.Operation.Id);
+                Assert.AreEqual(request.Context.Operation.Name, customEvent.Context.Operation.Name);
+            }
+        }
+
 
 
         [TestMethod]
