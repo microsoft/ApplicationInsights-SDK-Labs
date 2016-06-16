@@ -52,8 +52,8 @@
             for (int i = 1; i <= metric.Properties.Count; i++)
             {
                 KeyValuePair<string, string> prop = metric.Properties.Skip(i - 1).First();
-                Assert.AreEqual("p" + i, prop.Key);
-                Assert.AreEqual("prop" + i, prop.Value);
+
+                Assert.IsTrue(metric.Properties.Contains(new KeyValuePair<string, string>("p" + i, "prop" + i)));
             }
         }
 
@@ -69,8 +69,7 @@
             for (int i = 1; i <= metric.Properties.Count; i++)
             {
                 KeyValuePair<string, string> prop = metric.Properties.Skip(i - 1).First();
-                Assert.AreEqual("p" + i, prop.Key);
-                Assert.AreEqual("prop" + i, prop.Value);
+                Assert.IsTrue(metric.Properties.Contains(new KeyValuePair<string, string>("p" + i, "prop" + i)));
             }
         }
 
@@ -83,10 +82,10 @@
             metric.AddProperties(bag, null, null, null);
 
             Assert.AreEqual(3, metric.Properties.Count);
+
             for (int i = 1; i <= metric.Properties.Count; i++)
             {
-                KeyValuePair<string, string> prop = metric.Properties.Skip(i - 1).First();
-                Assert.AreEqual("metric1_p" + i, prop.Key);
+                Assert.IsTrue(metric.Properties.ContainsKey("metric1_p" + i));
             }
         }
     }
