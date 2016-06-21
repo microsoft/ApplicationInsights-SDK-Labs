@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics;
-
+    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One;
     class Program
     {
         static void Main(string[] args)

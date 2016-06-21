@@ -56,25 +56,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AggregateMetricProperties.cs" />
-    <Compile Include="AggregateMetricsEventSource.cs" />
-    <Compile Include="AggregateMetricsTelemetryModule.cs" />
-    <Compile Include="AggregationResult.cs" />
-    <Compile Include="AggregationSet.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="AggregateMetrics.cs" />
-    <Compile Include="MetricsBag.cs" />
-    <Compile Include="MetricTelemetryExtensions.cs" />
-    <Compile Include="One\IMeter.cs" />
-    <Compile Include="One\Implementation\CounterImplementation.cs" />
-    <Compile Include="One\ICounter.cs" />
-    <Compile Include="One\ICounterValue.cs" />
-    <Compile Include="One\Implementation\GaugeImplementation.cs" />
-    <Compile Include="One\Implementation\MeterImplementation.cs" />
-    <Compile Include="One\Implementation\NamedCounterValueBase.cs" />
-    <Compile Include="One\TelemetryClientExtensions.cs" />
-    <Compile Include="One\TelemetryConfigurationExtensions.cs" />
-    <Compile Include="PercentileCalculation.cs" />
+    <Compile Include="One\AggregateMetricProperties.cs" />
+    <Compile Include="One\AggregateMetricsEventSource.cs" />
+    <Compile Include="One\AggregateMetricsTelemetryModule.cs" />
+    <Compile Include="One\AggregationResult.cs" />
+    <Compile Include="One\AggregationSet.cs" />
+    <Compile Include="One\Constants.cs" />
+    <Compile Include="One\AggregateMetrics.cs" />
+    <Compile Include="One\MetricsBag.cs" />
+    <Compile Include="One\MetricTelemetryExtensions.cs" />
+    <Compile Include="Two\IMeter.cs" />
+    <Compile Include="Two\Implementation\CounterImplementation.cs" />
+    <Compile Include="Two\ICounter.cs" />
+    <Compile Include="Two\ICounterValue.cs" />
+    <Compile Include="Two\Implementation\GaugeImplementation.cs" />
+    <Compile Include="Two\Implementation\MeterImplementation.cs" />
+    <Compile Include="Two\Implementation\NamedCounterValueBase.cs" />
+    <Compile Include="Two\TelemetryClientExtensions.cs" />
+    <Compile Include="Two\TelemetryConfigurationExtensions.cs" />
+    <Compile Include="One\PercentileCalculation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SdkVersionUtils.cs" />
   </ItemGroup>

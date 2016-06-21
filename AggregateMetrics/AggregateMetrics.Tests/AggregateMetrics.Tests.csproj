@@ -68,20 +68,21 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AggregationSetLimitsTests.cs" />
-    <Compile Include="AggregationSetTests.cs" />
-    <Compile Include="AggregationTests.cs" />
-    <Compile Include="CounterCollectionLimitsTests.cs" />
-    <Compile Include="CounterCollectionTests.cs" />
-    <Compile Include="CounterDataTests.cs" />
-    <Compile Include="DataQualityTests.cs" />
-    <Compile Include="FlushTests.cs" />
-    <Compile Include="MetricTelemetryExtensionsTests.cs" />
-    <Compile Include="One\TelemetryClientExtensisonsTests.cs" />
-    <Compile Include="PerfCollector.cs" />
-    <Compile Include="PerfData.cs" />
+    <Compile Include="AggregateMetrics\aggregationSets.cs" />
+    <Compile Include="One\AggregationSetLimitsTests.cs" />
+    <Compile Include="One\AggregationSetTests.cs" />
+    <Compile Include="One\AggregationTests.cs" />
+    <Compile Include="One\CounterCollectionLimitsTests.cs" />
+    <Compile Include="One\CounterCollectionTests.cs" />
+    <Compile Include="One\CounterDataTests.cs" />
+    <Compile Include="One\DataQualityTests.cs" />
+    <Compile Include="One\FlushTests.cs" />
+    <Compile Include="One\MetricTelemetryExtensionsTests.cs" />
+    <Compile Include="Two\TelemetryClientExtensisonsTests.cs" />
+    <Compile Include="One\PerfCollector.cs" />
+    <Compile Include="One\PerfData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnitTests.cs" />
+    <Compile Include="One\UnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AggregateMetrics\AggregateMetrics.csproj">
@@ -96,6 +97,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
