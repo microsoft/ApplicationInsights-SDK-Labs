@@ -4,17 +4,21 @@
     using System.Threading;
     using DataContracts;
 
-    internal class CounterImplementation : ICounter, ICounterValue
+    internal class CounterImplementation : NamedCounterValueBase, ICounter, ICounterValue
     {
         private long value;
+
+        public CounterImplementation(string name, TelemetryContext context)
+            : base(name, context)
+        {
+        }
 
         public MetricTelemetry Value
         {
             get
             {
-                var metric = new MetricTelemetry();
+                var metric = this.GetInitializedMetricTelemetry();
                 metric.Value = this.value;
-                metric.Count = 1;
                 return metric;
             }
         }
@@ -31,12 +35,7 @@
 
         public MetricTelemetry GetValueAndReset()
         {
-            var returnValue = Interlocked.Exchange(ref value, 0);
-
-            var metric = new MetricTelemetry();
-            metric.Value = returnValue;
-            metric.Count = 1;
-            return metric;
+            return this.Value;
         }
 
         public void Increment(long value)

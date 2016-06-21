@@ -65,10 +65,13 @@
     <Compile Include="AggregateMetrics.cs" />
     <Compile Include="MetricsBag.cs" />
     <Compile Include="MetricTelemetryExtensions.cs" />
+    <Compile Include="One\IMeter.cs" />
     <Compile Include="One\Implementation\CounterImplementation.cs" />
     <Compile Include="One\ICounter.cs" />
     <Compile Include="One\ICounterValue.cs" />
     <Compile Include="One\Implementation\GaugeImplementation.cs" />
+    <Compile Include="One\Implementation\MeterImplementation.cs" />
+    <Compile Include="One\Implementation\NamedCounterValueBase.cs" />
     <Compile Include="One\TelemetryClientExtensions.cs" />
     <Compile Include="One\TelemetryConfigurationExtensions.cs" />
     <Compile Include="PercentileCalculation.cs" />

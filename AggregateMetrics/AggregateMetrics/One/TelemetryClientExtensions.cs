@@ -22,7 +22,7 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One
         /// <returns></returns>
         public static ICounter Counter(this TelemetryClient telemetryClient, string name)
         {
-            var counter = new CounterImplementation();
+            var counter = new CounterImplementation(name, telemetryClient.Context);
 
             var configuration = GetConfigurationFromClient(telemetryClient);
 
@@ -33,13 +33,21 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One
 
         public static void Gauge(this TelemetryClient telemetryClient, string name, Func<long> valueFunc)
         {
-            var gauge = new GaugeImplementation(valueFunc);
+            var gauge = new GaugeImplementation(name, telemetryClient.Context, valueFunc);
 
             var configuration = GetConfigurationFromClient(telemetryClient);
 
             configuration.RegisterCounter(name, gauge);
         }
 
+        public static IMeter Meter(this TelemetryClient telemetryClient, string name)
+        {
+            var meter = new MeterImplementation(name, telemetryClient.Context);
 
+            var configuration = GetConfigurationFromClient(telemetryClient);
+            configuration.RegisterCounter(name, meter);
+
+            return meter;
+        }
     }
 }

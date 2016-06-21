@@ -3,11 +3,12 @@ using Microsoft.ApplicationInsights.DataContracts;
 
 namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One
 {
-    internal class GaugeImplementation : ICounterValue
+    internal class GaugeImplementation : NamedCounterValueBase, ICounterValue
     {
         private readonly Func<long> valueFunc;
 
-        public GaugeImplementation(Func<long> valueFunc)
+        public GaugeImplementation(string name, TelemetryContext context, Func<long> valueFunc)
+            : base(name, context)
         {
             this.valueFunc = valueFunc;
         }
@@ -16,7 +17,7 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One
         {
             get
             {
-                var metric = new MetricTelemetry();
+                var metric = this.GetInitializedMetricTelemetry();
                 //TODO: Add try/catch here
                 metric.Value = valueFunc();
                 return metric;
