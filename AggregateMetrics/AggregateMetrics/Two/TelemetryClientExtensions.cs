@@ -26,7 +26,7 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two
 
             var configuration = GetConfigurationFromClient(telemetryClient);
 
-            configuration.RegisterCounter(name, counter);
+            configuration.RegisterCounter(counter);
 
             return counter;
         }
@@ -37,7 +37,7 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two
 
             var configuration = GetConfigurationFromClient(telemetryClient);
 
-            configuration.RegisterCounter(name, gauge);
+            configuration.RegisterCounter(gauge);
         }
 
         public static IMeter Meter(this TelemetryClient telemetryClient, string name)
@@ -45,7 +45,7 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two
             var meter = new MeterImplementation(name, telemetryClient.Context);
 
             var configuration = GetConfigurationFromClient(telemetryClient);
-            configuration.RegisterCounter(name, meter);
+            configuration.RegisterCounter(meter);
 
             return meter;
         }

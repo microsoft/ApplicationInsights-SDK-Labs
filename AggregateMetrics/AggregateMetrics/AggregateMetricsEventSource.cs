@@ -2,9 +2,9 @@
 {
     using System;
     using System.Globalization;
-    using Microsoft.Diagnostics.Tracing;
-    using EventLevel = Microsoft.Diagnostics.Tracing.EventLevel;
-    using EventOpcode = Microsoft.Diagnostics.Tracing.EventOpcode;
+    using System.Diagnostics.Tracing;
+    using EventLevel = System.Diagnostics.Tracing.EventLevel;
+    using EventOpcode = System.Diagnostics.Tracing.EventOpcode;
 
     [EventSource(Name = "Microsoft-ApplicationInsights-Extensibility-AggregateMetrics")]
     internal sealed class AggregateMetricsEventSource : EventSource

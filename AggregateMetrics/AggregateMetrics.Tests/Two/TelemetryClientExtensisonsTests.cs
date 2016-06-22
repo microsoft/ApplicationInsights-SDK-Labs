@@ -27,7 +27,7 @@
                 simpleCounter.Increment();
             }
 
-            MetricTelemetry metric = counters["test"].Value;
+            MetricTelemetry metric = counters[0].Value;
             Assert.AreEqual(10, metric.Value);
             Assert.AreEqual(null, metric.Count);
             Assert.AreEqual("test", metric.Name);
@@ -47,7 +47,7 @@
 
             Assert.AreEqual(1, counters.Count);
 
-            MetricTelemetry metric = counters["test"].Value;
+            MetricTelemetry metric = counters[0].Value;
             Assert.AreEqual(10, metric.Value);
             Assert.AreEqual(null, metric.Count);
             Assert.AreEqual("test", metric.Name);
@@ -72,7 +72,7 @@
                 simpleMeter.Mark(2);
             }
 
-            MetricTelemetry metric = counters["test"].Value;
+            MetricTelemetry metric = counters[0].Value;
             Assert.AreEqual(2, metric.Value);
             Assert.AreEqual(10, metric.Count);
             Assert.AreEqual("test", metric.Name);

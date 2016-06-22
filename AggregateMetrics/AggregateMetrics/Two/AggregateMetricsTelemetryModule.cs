@@ -18,7 +18,7 @@
         {
             foreach(var counter in this.configuration.GetCounters())
             {
-                this.telemetryClient.TrackMetric(counter.Value.GetValueAndReset());
+                this.telemetryClient.TrackMetric(counter.GetValueAndReset());
             }
         }
 
