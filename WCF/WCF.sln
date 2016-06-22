@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{74E830EA-5350-408B-9971-15B42E6225B0}"
 	ProjectSection(SolutionItems) = preProject
 		readme.md = readme.md
+		Version.props = Version.props
 	EndProjectSection
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.AI.Wcf", "Shared\Microsoft.AI.Wcf.shproj", "{A9362B74-DDDA-4EAF-8BD8-E165BE426883}"
