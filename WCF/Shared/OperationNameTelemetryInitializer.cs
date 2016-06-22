@@ -2,7 +2,6 @@
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using System;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
 namespace Microsoft.ApplicationInsights.Wcf
 {

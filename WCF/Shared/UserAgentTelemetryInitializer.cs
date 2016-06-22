@@ -2,7 +2,6 @@
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.ApplicationInsights.Wcf.Implementation;
 using System;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
 namespace Microsoft.ApplicationInsights.Wcf
 {
