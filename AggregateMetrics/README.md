@@ -5,6 +5,7 @@
 
 This project extends the Application Insights SDK API for .NET to support in-process aggregation of metrics. This enables the developer to both track a higher volume of metrics and reduces the actual volume of data sent over the network.
 
+There are two different implementation of the metrics API. Those APIs optimized for the different usage patterns. The reason to keep both is to choose which one to integrate into Application Insights core.
 
 ## Requirements ##
 
@@ -20,9 +21,9 @@ Instructions for getting started with MyGet can be found at http://docs.myget.or
 > Install-Package Microsoft.ApplicationInsights.AggregateMetrics -IncludePrerelease
 ```
 
-## Usage ##
+## Usage - first API ##
 
-Once installed, add a using for the AggregateMetrics namespace then you can use the TrackAggregateMetric extension method to track metrics you want automatically aggregated using your instance of TelemetryClient.
+Once installed, add a using for the `AggregateMetrics.One` namespace then you can use the `TrackAggregateMetric` extension method to track metrics you want automatically aggregated using your instance of `TelemetryClient`.
 
 ## Limitations ##
 
@@ -57,4 +58,47 @@ telemetryClient.TrackAggregateMetric("MyMetricName", 123.00, "My property val");
 ```C#
 telemetryClient.RegisterAggregateMetric("MyMetricName", percentileCalculation: PercentileCalculation.OrderByLargest);
 telemetryClient.TrackAggregateMetric("MyMetricName", 123.00, "My property val");
+```
+
+## Usage - second API ##
+
+This API implements the number of metric types with the names consistent with the metric types from [Metrics.NET](https://github.com/etishor/Metrics.NET/wiki/Available-Metrics) library.
+
+Once installed, add a using for the `AggregateMetrics.Two` namespace. You can than use different types of metrics like.
+
+### Gauges (IGauge interface)
+
+Gauges is a simple metric type that takes the value from the delegate. It can be used to track the value of performance counter or queue size. Use it like this:
+
+``` csharp
+TelemetryClient client = new TelemetryClient();
+
+client.Gauge("Queue length", () => { return queue.Length; });
+```
+
+### Counters (ICounter interface)
+
+Counter represents an integer value that can be incremented or decremented. You can use this metric type to count the number of worker threads or some business metric.
+
+``` csharp
+TelemetryClient client = new TelemetryClient();
+
+var simpleCounter = client.Counter("# of active worker threads");
+
+simpleCounter.Increment();
+simpleCounter.Decrement();
+simpleCounter.Increment(2);
+simpleCounter.Decrement(2);
+```
+
+### Meters (IMeter interface)
+
+Meter represents the metric that measurese the rate at which an event occurs. You can use meter to count failed requests per second metric.
+
+``` charp
+TelemetryClient client = new TelemetryClient();
+
+var simpleMeter = client.Meter("Failed requests");
+
+simpleMeter.Mark();
 ```
