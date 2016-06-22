@@ -1,6 +1,6 @@
 ﻿using Microsoft.ApplicationInsights.Channel;
-using System;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
+using System;
 
 namespace Microsoft.ApplicationInsights.Wcf
 {

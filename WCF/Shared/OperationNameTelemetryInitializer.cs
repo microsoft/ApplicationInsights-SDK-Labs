@@ -1,7 +1,7 @@
 ﻿using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
-using System;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
+using System;
 
 namespace Microsoft.ApplicationInsights.Wcf
 {
