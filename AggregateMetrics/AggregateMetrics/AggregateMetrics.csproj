@@ -56,15 +56,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregateMetricsEventSource.cs" />
     <Compile Include="One\AggregateMetricProperties.cs" />
-    <Compile Include="One\AggregateMetricsEventSource.cs" />
     <Compile Include="One\AggregateMetricsTelemetryModule.cs" />
     <Compile Include="One\AggregationResult.cs" />
     <Compile Include="One\AggregationSet.cs" />
-    <Compile Include="One\Constants.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="One\AggregateMetrics.cs" />
     <Compile Include="One\MetricsBag.cs" />
     <Compile Include="One\MetricTelemetryExtensions.cs" />
+    <Compile Include="Two\AggregateMetricsTelemetryModule.cs" />
     <Compile Include="Two\IMeter.cs" />
     <Compile Include="Two\Implementation\CounterImplementation.cs" />
     <Compile Include="Two\ICounter.cs" />

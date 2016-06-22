@@ -15,7 +15,7 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two
 
         public MetricTelemetry GetInitializedMetricTelemetry()
         {
-            var metric = this.GetInitializedMetricTelemetry();
+            var metric = new MetricTelemetry();
             metric.Name = this.name;
 
             //TODO: copy all the rest of the context

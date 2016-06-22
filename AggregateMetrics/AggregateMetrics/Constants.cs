@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One
+﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics
 {
     /// <summary>
     /// Configuration constants.

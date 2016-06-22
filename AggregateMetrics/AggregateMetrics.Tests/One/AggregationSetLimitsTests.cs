@@ -5,6 +5,7 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One;
+    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics;
     [TestClass]
     public class AggregationSetLimitsTests : AggregationTests
     {

@@ -78,6 +78,8 @@
     <Compile Include="One\DataQualityTests.cs" />
     <Compile Include="One\FlushTests.cs" />
     <Compile Include="One\MetricTelemetryExtensionsTests.cs" />
+    <Compile Include="StubTelemetryChannel.cs" />
+    <Compile Include="Two\AggregateMetricsTelemetryModuleTests.cs" />
     <Compile Include="Two\TelemetryClientExtensisonsTests.cs" />
     <Compile Include="One\PerfCollector.cs" />
     <Compile Include="One\PerfData.cs" />
