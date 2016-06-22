@@ -64,7 +64,7 @@ telemetryClient.TrackAggregateMetric("MyMetricName", 123.00, "My property val");
 
 This API implements the number of metric types with the names consistent with the metric types from [Metrics.NET](https://github.com/etishor/Metrics.NET/wiki/Available-Metrics) library.
 
-Once installed, add a using for the `AggregateMetrics.Two` namespace. You can than use different types of metrics like.
+Once installed, add a using for the `AggregateMetrics.Two` namespace. You can than use different types of metrics in your application.
 
 ### Gauges (IGauge interface)
 
@@ -100,7 +100,14 @@ TelemetryClient client = new TelemetryClient();
 
 var simpleMeter = client.Meter("Failed requests");
 
-simpleMeter.Mark();
+try
+{
+  request
+}
+catch (Exception ex)
+{
+  simpleMeter.Mark();
+}
 ```
 
 
