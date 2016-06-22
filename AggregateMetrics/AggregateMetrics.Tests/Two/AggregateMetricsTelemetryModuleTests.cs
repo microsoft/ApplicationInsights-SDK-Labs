@@ -24,12 +24,14 @@
             config.InstrumentationKey = "dummy";
 
             AggregateMetricsTelemetryModule module = new AggregateMetricsTelemetryModule();
+            module.FlushInterval = TimeSpan.FromSeconds(6);
+
             module.Initialize(config);
 
             var client = new TelemetryClient(config);
             client.Gauge("test", () => { return 10; });
 
-            Thread.Sleep(TimeSpan.FromSeconds(65));
+            Thread.Sleep(TimeSpan.FromSeconds(7));
 
             Assert.AreEqual(1, sentItems.Count);
             var metric = (MetricTelemetry)sentItems[0];

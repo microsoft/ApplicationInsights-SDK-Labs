@@ -1,12 +1,7 @@
 ﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two
 {
     using Microsoft.ApplicationInsights.DataContracts;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using System.Threading;
-    using System.Threading.Tasks;
 
     class MeterImplementation : NamedCounterValueBase, IMeter, ICounterValue
     {
@@ -24,8 +19,16 @@
             get 
             {
                 var metric = this.GetInitializedMetricTelemetry();
-                metric.Value = value / count;
-                metric.Count = count;
+                if (count != 0)
+                {
+                    metric.Value = value / count;
+                    metric.Count = count;
+                }
+                else
+                {
+                    metric.Value = 0;
+                    metric.Count = 0;
+                }
                 return metric;
             }
         }
@@ -36,8 +39,16 @@
             var returnCount = Interlocked.Exchange(ref count, 0);
 
             var metric = this.GetInitializedMetricTelemetry();
-            metric.Value = returnValue / returnCount;
-            metric.Count = returnCount;
+            if (returnValue != 0)
+            {
+                metric.Value = returnValue / returnCount;
+                metric.Count = returnCount;
+            }
+            else
+            {
+                metric.Value = 0;
+                metric.Count = 0;
+            }
             return metric;
         }
 
@@ -48,10 +59,10 @@
             Interlocked.Increment(ref count);
         }
 
-        public void Mark(int count)
+        public void Mark(int markCount)
         {
-            Interlocked.Add(ref value, count);
-            Interlocked.Increment(ref count);
+            Interlocked.Add(ref this.value, markCount);
+            Interlocked.Increment(ref this.count);
         }
     }
 }
