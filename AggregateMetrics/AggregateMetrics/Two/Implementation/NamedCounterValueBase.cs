@@ -18,6 +18,11 @@
 
         private static void CopyContext(TelemetryContext context, TelemetryContext newContext)
         {
+            if (!string.IsNullOrWhiteSpace(context.InstrumentationKey))
+            {
+                newContext.InstrumentationKey = context.InstrumentationKey;
+            }
+
             newContext.Cloud.RoleInstance = context.Cloud.RoleInstance;
             newContext.Cloud.RoleName = context.Cloud.RoleName;
             newContext.Component.Version = context.Component.Version;

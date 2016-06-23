@@ -15,7 +15,7 @@
         /// Increment counter by the value passed as an argument.
         /// </summary>
         /// <param name="value">Value to which increment a counter.</param>
-        void Increment(long value);
+        void Increment(int value);
 
         /// <summary>
         /// Decrement counter by 1.
@@ -26,6 +26,6 @@
         /// Decrement counter by the value passed as an argument.
         /// </summary>
         /// <param name="value">Value to which decrement a counter.</param>
-        void Decrement(long value);
+        void Decrement(int value);
     }
 }

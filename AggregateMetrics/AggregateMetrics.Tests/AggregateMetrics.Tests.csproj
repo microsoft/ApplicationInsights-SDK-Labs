@@ -63,6 +63,9 @@
     <Compile Include="One\MetricTelemetryExtensionsTests.cs" />
     <Compile Include="StubTelemetryChannel.cs" />
     <Compile Include="Two\AggregateMetricsTelemetryModuleTests.cs" />
+    <Compile Include="Two\Implementation\GaugeImplementationTests.cs" />
+    <Compile Include="Two\Implementation\MeterImplementationTests.cs" />
+    <Compile Include="Two\Implementation\CounterImplementationTests.cs" />
     <Compile Include="Two\TelemetryClientExtensisonsTests.cs" />
     <Compile Include="One\PerfCollector.cs" />
     <Compile Include="One\PerfData.cs" />

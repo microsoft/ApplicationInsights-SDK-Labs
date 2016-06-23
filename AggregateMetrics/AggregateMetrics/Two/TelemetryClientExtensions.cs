@@ -38,7 +38,7 @@
         /// <param name="telemetryClient">Telemetry client to get Gauge from.</param>
         /// <param name="name">Name of the gauge.</param>
         /// <param name="valueFunc">Callback function to return the gauge value.</param>
-        public static void Gauge(this TelemetryClient telemetryClient, string name, Func<long> valueFunc)
+        public static void Gauge(this TelemetryClient telemetryClient, string name, Func<int> valueFunc)
         {
             var gauge = new GaugeImplementation(name, telemetryClient.Context, valueFunc);
 

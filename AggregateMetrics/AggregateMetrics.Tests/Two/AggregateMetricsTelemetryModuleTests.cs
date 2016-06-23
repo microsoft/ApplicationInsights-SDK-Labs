@@ -15,7 +15,6 @@
     [TestClass]
     public class AggregateMetricsTelemetryModuleTests
     {
-
         [TestMethod]
         public void SimpleModuleUsage()
         {

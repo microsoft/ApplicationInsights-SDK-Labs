@@ -1,7 +1,6 @@
 ﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics
 {
     using System;
-    using System.Globalization;
     using System.Diagnostics.Tracing;
     using EventLevel = System.Diagnostics.Tracing.EventLevel;
     using EventOpcode = System.Diagnostics.Tracing.EventOpcode;

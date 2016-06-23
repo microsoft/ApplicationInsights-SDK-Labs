@@ -6,7 +6,7 @@
 
     internal class CounterImplementation : NamedCounterValueBase, ICounter, ICounterValue
     {
-        private long value;
+        private int value;
 
         public CounterImplementation(string name, TelemetryContext context)
             : base(name, context)
@@ -25,12 +25,12 @@
 
         public void Increment()
         {
-            Interlocked.Increment(ref value);
+            Interlocked.Increment(ref this.value);
         }
 
         public void Decrement()
         {
-            Interlocked.Decrement(ref value);
+            Interlocked.Decrement(ref this.value);
         }
 
         public MetricTelemetry GetValueAndReset()
@@ -38,14 +38,14 @@
             return this.Value;
         }
 
-        public void Increment(long value)
+        public void Increment(int count)
         {
-            Interlocked.Add(ref value, value);
+            Interlocked.Add(ref this.value, count);
         }
 
-        public void Decrement(long value)
+        public void Decrement(int count)
         {
-            Interlocked.Add(ref value, -1 * value);
+            Interlocked.Add(ref this.value, -count);
         }
     }
 }

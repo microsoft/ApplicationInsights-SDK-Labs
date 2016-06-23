@@ -5,9 +5,9 @@
 
     internal class GaugeImplementation : NamedCounterValueBase, ICounterValue
     {
-        private readonly Func<long> valueFunc;
+        private readonly Func<int> valueFunc;
 
-        public GaugeImplementation(string name, TelemetryContext context, Func<long> valueFunc)
+        public GaugeImplementation(string name, TelemetryContext context, Func<int> valueFunc)
             : base(name, context)
         {
             this.valueFunc = valueFunc;

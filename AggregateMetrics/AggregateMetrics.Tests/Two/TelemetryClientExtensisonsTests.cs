@@ -79,5 +79,29 @@
             Assert.AreEqual("b", metric.Context.Properties["a"]);
         }
 
+        [TestMethod]
+        public void CounterWillCopyTelemetryContextFromTelemetryClient()
+        {
+            TelemetryConfiguration configuraiton = new TelemetryConfiguration();
+
+            TelemetryClient client = new TelemetryClient(configuraiton);
+            client.Context.Properties["a"] = "b";
+            client.Context.Component.Version = "10";
+            client.Context.InstrumentationKey = "ikey";
+            var simpleCounter = client.Counter("test");
+            var counters = configuraiton.GetCounters();
+            Assert.AreEqual(1, counters.Count);
+            MetricTelemetry metric = counters[0].Value;
+
+            client.Context.Device.Id = "device.id";
+
+            // validate that copy was made at the moment of creation
+            Assert.AreNotEqual(client.Context, metric.Context);
+            Assert.AreNotEqual("device.id", metric.Context.Device.Id);
+
+            Assert.AreEqual("b", metric.Context.Properties["a"]);
+            Assert.AreEqual("10", metric.Context.Component.Version);
+            Assert.AreEqual("ikey", metric.Context.InstrumentationKey);
+        }
     }
 }
