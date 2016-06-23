@@ -9,6 +9,8 @@
     using Microsoft.ApplicationInsights.Channel;
     using System.Threading;
     using System;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
 
     [TestClass]
     public class AggregateMetricsTelemetryModuleTests
@@ -38,5 +40,44 @@
             Assert.AreEqual("test", metric.Name);
             Assert.AreEqual(10, metric.Value);
         }
+
+        [TestMethod]
+        public void ModuleWillKeepIntervalWithThreadsStarvation()
+        {
+            var sentItems = new List<ITelemetry>();
+            var channel = new StubTelemetryChannel() { OnSend = (item) => { sentItems.Add(item); } };
+            var config = new TelemetryConfiguration();
+            config.TelemetryChannel = channel;
+            config.InstrumentationKey = "dummy";
+
+            AggregateMetricsTelemetryModule module = new AggregateMetricsTelemetryModule();
+            module.FlushInterval = TimeSpan.FromSeconds(6);
+
+            module.Initialize(config);
+
+            var startTime = DateTime.Now;
+
+            var client = new TelemetryClient(config);
+            client.Gauge("test", () => { return 10; });
+
+            ThreadPool.SetMaxThreads(10, 10);
+            for (int i = 0; i < 50; i++) 
+            {
+                new Task(() => {
+                    Debug.WriteLine("task started");
+                    Thread.Sleep(TimeSpan.FromSeconds(10));
+                    Debug.WriteLine("task finihed");
+                }).Start();
+            }
+
+            Thread.Sleep(TimeSpan.FromSeconds(7));
+
+            Assert.AreEqual(1, sentItems.Count);
+            var metric = (MetricTelemetry)sentItems[0];
+            Assert.AreEqual("test", metric.Name);
+            Assert.AreEqual(10, metric.Value);
+            Assert.IsTrue(metric.Timestamp.Subtract(startTime).Seconds == 6);
+        }
+
     }
 }

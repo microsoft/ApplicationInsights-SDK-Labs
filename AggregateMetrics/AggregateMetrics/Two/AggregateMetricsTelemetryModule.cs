@@ -2,6 +2,7 @@
 {
     using System;
     using Microsoft.ApplicationInsights.Extensibility.Implementation;
+    using System.Threading;
 
     /// <summary>
     /// Telemetry module that sends aggregated metrics to the backend periodically.
@@ -16,7 +17,22 @@
 
         private TimeSpan flushInterval = TimeSpan.FromSeconds(Constants.DefaultTimerFlushInterval);
 
-        private static System.Threading.Timer aggregationTimer;
+        //private static System.Threading.Timer aggregationTimer;
+
+        private Thread aggregationThread;
+
+        private void WorkerThread()
+        {
+            while (true)
+            {
+                Thread.Sleep(this.FlushInterval);
+
+                foreach (var counter in this.configuration.GetCounters())
+                {
+                    this.telemetryClient.TrackMetric(counter.GetValueAndReset());
+                }
+            }
+        }
 
         private void TimerFlushCallback(object obj)
         {
@@ -78,7 +94,10 @@
 
             AggregateMetricsEventSource.Log.ModuleInitializationStarted();
 
-            aggregationTimer = new System.Threading.Timer(new System.Threading.TimerCallback(this.TimerFlushCallback), null, this.FlushInterval, this.FlushInterval);
+            //aggregationTimer = new System.Threading.Timer(new System.Threading.TimerCallback(this.TimerFlushCallback), null, this.FlushInterval, this.FlushInterval);
+
+            aggregationThread = new Thread(new ThreadStart(WorkerThread)) { IsBackground = true };
+            aggregationThread.Start();
         }
     }
 }
