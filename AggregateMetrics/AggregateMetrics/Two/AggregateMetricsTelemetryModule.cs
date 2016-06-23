@@ -17,8 +17,6 @@
 
         private TimeSpan flushInterval = Constants.DefaultTimerFlushInterval;
 
-        //private static System.Threading.Timer aggregationTimer;
-
         private Thread aggregationThread;
 
         private void WorkerThread()
@@ -55,7 +53,7 @@
             {
                 if (value < Constants.MinimumTimerFlushInterval || value > Constants.MaximumTimerFlushInterval)
                 {
-                    AggregateMetricsEventSource.Log.FlushIntervalSecondsOutOfRange(value);
+                    AggregateMetricsEventSource.Log.FlushIntervalSecondsOutOfRange(value.TotalSeconds);
 
                     if (value < Constants.MinimumTimerFlushInterval)
                     {
@@ -85,18 +83,18 @@
                 throw new ArgumentNullException("configuration");
             }
 
+            AggregateMetricsEventSource.Log.ModuleInitializationBegin();
+
             sdkVersion = SdkVersionUtils.VersionPrefix + SdkVersionUtils.GetAssemblyVersion();
 
             this.configuration = configuration;
             this.telemetryClient = new TelemetryClient(this.configuration);
             this.telemetryClient.Context.GetInternalContext().SdkVersion = sdkVersion;
 
-            AggregateMetricsEventSource.Log.ModuleInitializationStarted();
-
-            //aggregationTimer = new System.Threading.Timer(new System.Threading.TimerCallback(this.TimerFlushCallback), null, this.FlushInterval, this.FlushInterval);
-
             aggregationThread = new Thread(new ThreadStart(WorkerThread)) { IsBackground = true };
             aggregationThread.Start();
+
+            AggregateMetricsEventSource.Log.ModuleInitializationEnd();
         }
     }
 }

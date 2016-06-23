@@ -21,9 +21,8 @@
             2,
             Message = "AggregateMetricsModule initialization start",
             Level = EventLevel.Verbose,
-            Opcode = EventOpcode.Start,
             Keywords = Keywords.ModuleInitialization)]
-        public void ModuleInitializationStarted()
+        public void ModuleInitializationBegin()
         {
             this.WriteEvent(2, this.ApplicationName);
         }
@@ -32,9 +31,8 @@
             3,
             Message = "AggregateMetricsModule initialization stop",
             Level = EventLevel.Verbose,
-            Opcode = EventOpcode.Stop,
             Keywords = Keywords.ModuleInitialization)]
-        public void ModuleInitializationStopped()
+        public void ModuleInitializationEnd()
         {
             this.WriteEvent(3, this.ApplicationName);
         }
@@ -130,9 +128,9 @@
             Message = "FlushIntervalSeconds of {0} was set out of range. Minimum interval is {1} and maxmimum interval is {2}. Setting to default of {3}.",
             Level = EventLevel.Error,
             Opcode = EventOpcode.Info)]
-        public void FlushIntervalSecondsOutOfRange(TimeSpan interval)
+        public void FlushIntervalSecondsOutOfRange(double intervalSeconds)
         {
-            this.WriteEvent(12, interval, Constants.MinimumTimerFlushInterval, Constants.MaximumTimerFlushInterval, Constants.DefaultTimerFlushInterval, this.ApplicationName);
+            this.WriteEvent(12, intervalSeconds, Constants.MinimumTimerFlushInterval, Constants.MaximumTimerFlushInterval, Constants.DefaultTimerFlushInterval, this.ApplicationName);
         }
 
         private string GetApplicationName()
@@ -153,7 +151,7 @@
         /// <summary>
         /// Keywords for the PlatformEventSource. Those keywords should match keywords in Core.
         /// </summary>
-        internal static class Keywords
+        public static class Keywords
         {
             /// <summary>
             /// Key word for user actionable events.

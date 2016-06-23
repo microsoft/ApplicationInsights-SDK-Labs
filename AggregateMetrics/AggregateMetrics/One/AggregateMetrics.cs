@@ -255,7 +255,7 @@
             {
                 if (aggregationSets == null)
                 {
-                    AggregateMetricsEventSource.Log.ModuleInitializationStarted();
+                    AggregateMetricsEventSource.Log.ModuleInitializationBegin();
 
                     sdkVersion = SdkVersionUtils.VersionPrefix + SdkVersionUtils.GetAssemblyVersion();
 
@@ -270,7 +270,7 @@
                         aggregationTimer = new System.Threading.Timer(new System.Threading.TimerCallback(TimerFlushCallback), null, aggregationWindow, aggregationWindow);
                     }
 
-                    AggregateMetricsEventSource.Log.ModuleInitializationStopped();
+                    AggregateMetricsEventSource.Log.ModuleInitializationEnd();
                 }
             }
         }

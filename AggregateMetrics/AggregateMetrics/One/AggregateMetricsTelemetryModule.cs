@@ -30,7 +30,7 @@
                 if (value < Constants.MinimumTimerFlushInterval || value > Constants.MaximumTimerFlushInterval)
                 {
                     _isTimerFlushEnabledInternal = false;
-                    AggregateMetricsEventSource.Log.FlushIntervalSecondsOutOfRange(value);
+                    AggregateMetricsEventSource.Log.FlushIntervalSecondsOutOfRange(value.TotalSeconds);
                 }
                 else
                 {
