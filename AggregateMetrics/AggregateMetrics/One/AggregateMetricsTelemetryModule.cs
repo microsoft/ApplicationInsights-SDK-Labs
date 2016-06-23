@@ -7,7 +7,7 @@
     /// </summary>
     public class AggregateMetricsTelemetryModule : ITelemetryModule
     {
-        private static int _flushIntervalSeconds = 15;
+        private static TimeSpan _flushIntervalSeconds = Constants.DefaultTimerFlushInterval;
         private static bool _isTimerFlushEnabledUser = true;
         private static bool _isTimerFlushEnabledInternal = true;
 
@@ -16,13 +16,13 @@
         /// </summary>
         public void Initialize(TelemetryConfiguration configuration)
         {
-            FlushIntervalSeconds = Constants.DefaultTimerFlushInterval;
+            FlushInterval = Constants.DefaultTimerFlushInterval;
         }
 
         /// <summary>
         /// The interval which to flush aggregate metrics into a MetricTelemetry item.
         /// </summary>
-        public static int FlushIntervalSeconds
+        public static TimeSpan FlushInterval
         {
             get { return _flushIntervalSeconds; }
             set

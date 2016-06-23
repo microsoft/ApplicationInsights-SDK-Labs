@@ -152,7 +152,7 @@
                 AggregationSet aggregationSet = aggregationSetPair.Value;
 
                 ConcurrentDictionary<int, MetricsBag> aggregations = aggregationSet.RemoveAggregations();
-                var periodStartTime = DateTimeOffset.Now.AddSeconds(-AggregateMetricsTelemetryModule.FlushIntervalSeconds);
+                var periodStartTime = DateTimeOffset.Now.Subtract(AggregateMetricsTelemetryModule.FlushInterval);
 
                 foreach (MetricsBag metricsBag in aggregations.Values)
                     {
@@ -263,7 +263,7 @@
 
                     if (AggregateMetricsTelemetryModule.IsTimerFlushEnabled)
                     {
-                        TimeSpan aggregationWindow = TimeSpan.FromSeconds(AggregateMetricsTelemetryModule.FlushIntervalSeconds);
+                        TimeSpan aggregationWindow = AggregateMetricsTelemetryModule.FlushInterval;
 
                         AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
 

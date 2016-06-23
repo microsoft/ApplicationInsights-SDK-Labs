@@ -15,7 +15,7 @@
 
         private string sdkVersion;
 
-        private TimeSpan flushInterval = TimeSpan.FromSeconds(Constants.DefaultTimerFlushInterval);
+        private TimeSpan flushInterval = Constants.DefaultTimerFlushInterval;
 
         //private static System.Threading.Timer aggregationTimer;
 
@@ -53,19 +53,18 @@
             }
             set
             {
-                //TODO: clear up the nonsense with timespan and int conversion by unifying approach with "One"
-                if (value < TimeSpan.FromSeconds(Constants.MinimumTimerFlushInterval) || value > TimeSpan.FromSeconds(Constants.MaximumTimerFlushInterval))
+                if (value < Constants.MinimumTimerFlushInterval || value > Constants.MaximumTimerFlushInterval)
                 {
-                    AggregateMetricsEventSource.Log.FlushIntervalSecondsOutOfRange(Convert.ToInt32(value.TotalSeconds));
+                    AggregateMetricsEventSource.Log.FlushIntervalSecondsOutOfRange(value);
 
-                    if (value < TimeSpan.FromSeconds(Constants.MinimumTimerFlushInterval))
+                    if (value < Constants.MinimumTimerFlushInterval)
                     {
-                        this.flushInterval = TimeSpan.FromSeconds(Constants.MinimumTimerFlushInterval);
+                        this.flushInterval = Constants.MinimumTimerFlushInterval;
                     }
 
-                    if (value > TimeSpan.FromSeconds(Constants.MaximumTimerFlushInterval))
+                    if (value > Constants.MaximumTimerFlushInterval)
                     {
-                        this.flushInterval = TimeSpan.FromSeconds(Constants.MaximumTimerFlushInterval);
+                        this.flushInterval = Constants.MaximumTimerFlushInterval;
                     }
                 }
                 else

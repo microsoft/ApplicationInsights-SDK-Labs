@@ -66,7 +66,7 @@
             client.TrackAggregateMetric("Test", 123.00);
 
             // Wait for aggregation timer
-            Thread.Sleep(AggregateMetricsTelemetryModule.FlushIntervalSeconds * 1000 * 2);
+            Thread.Sleep(AggregateMetricsTelemetryModule.FlushInterval);
         }
     }
 }

@@ -20,7 +20,7 @@
         [TestInitialize]
         public void Initialize()
         {
-            AggregateMetricsTelemetryModule.FlushIntervalSeconds = 5;
+            AggregateMetricsTelemetryModule.FlushInterval = TimeSpan.FromSeconds(5);
             AggregateMetricsTelemetryModule.IsTimerFlushEnabled = true;
             AggregateMetrics.Clear();
         }

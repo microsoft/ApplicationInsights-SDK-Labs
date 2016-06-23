@@ -5,12 +5,12 @@
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.ApplicationInsights.DataContracts;
-    using System.Collections.Generic;
     using Microsoft.ApplicationInsights.Channel;
     using System.Threading;
     using System;
-    using System.Threading.Tasks;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Threading.Tasks;
 
     [TestClass]
     public class AggregateMetricsTelemetryModuleTests
@@ -60,23 +60,34 @@
             var client = new TelemetryClient(config);
             client.Gauge("test", () => { return 10; });
 
-            ThreadPool.SetMaxThreads(10, 10);
-            for (int i = 0; i < 50; i++) 
+            int workerThread;
+            int ioCompletionThread;
+            ThreadPool.GetMaxThreads(out workerThread, out ioCompletionThread);
+            try
             {
-                new Task(() => {
-                    Debug.WriteLine("task started");
-                    Thread.Sleep(TimeSpan.FromSeconds(10));
-                    Debug.WriteLine("task finihed");
-                }).Start();
+                ThreadPool.SetMaxThreads(10, 10);
+                for (int i = 0; i < 50; i++)
+                {
+                    new Task(() => {
+                        Debug.WriteLine("task started");
+                        Thread.Sleep(TimeSpan.FromSeconds(10));
+                        Debug.WriteLine("task finihed");
+                    }).Start();
+                }
+
+                Thread.Sleep(TimeSpan.FromSeconds(7));
+
+                Assert.AreEqual(1, sentItems.Count);
+                var metric = (MetricTelemetry)sentItems[0];
+                Assert.AreEqual("test", metric.Name);
+                Assert.AreEqual(10, metric.Value);
+                Assert.IsTrue(metric.Timestamp.Subtract(startTime).Seconds <= 6, "Actual: " + metric.Timestamp.Subtract(startTime).Seconds);
+                Assert.IsTrue(metric.Timestamp.Subtract(startTime).Seconds >= 5, "Actual: " + metric.Timestamp.Subtract(startTime).Seconds);
             }
-
-            Thread.Sleep(TimeSpan.FromSeconds(7));
-
-            Assert.AreEqual(1, sentItems.Count);
-            var metric = (MetricTelemetry)sentItems[0];
-            Assert.AreEqual("test", metric.Name);
-            Assert.AreEqual(10, metric.Value);
-            Assert.IsTrue(metric.Timestamp.Subtract(startTime).Seconds == 6);
+            finally
+            {
+                ThreadPool.SetMaxThreads(workerThread, ioCompletionThread);
+            }
         }
 
     }

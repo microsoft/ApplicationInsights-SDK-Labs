@@ -131,7 +131,7 @@
             Message = "FlushIntervalSeconds of {0} was set out of range. Minimum interval is {1} and maxmimum interval is {2}. Setting to default of {3}.",
             Level = EventLevel.Error,
             Opcode = EventOpcode.Info)]
-        public void FlushIntervalSecondsOutOfRange(int interval)
+        public void FlushIntervalSecondsOutOfRange(TimeSpan interval)
         {
             this.WriteEvent(12, interval, Constants.MinimumTimerFlushInterval, Constants.MaximumTimerFlushInterval, Constants.DefaultTimerFlushInterval, this.ApplicationName);
         }
