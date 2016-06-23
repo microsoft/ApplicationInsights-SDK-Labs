@@ -1,7 +1,11 @@
 ﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two
 {
     using System;
+    using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
+    /// <summary>
+    /// Telemetry module that sends aggregated metrics to the backend periodically.
+    /// </summary>
     public class AggregateMetricsTelemetryModule : ITelemetryModule
     {
         private TelemetryConfiguration configuration;
@@ -22,6 +26,9 @@
             }
         }
 
+        /// <summary>
+        /// Metrics aggregation interval.
+        /// </summary>
         public TimeSpan FlushInterval
         {
             get
@@ -52,6 +59,10 @@
             }
         }
 
+        /// <summary>
+        /// Initialized telemetry module - starts the timer.
+        /// </summary>
+        /// <param name="configuration">Telemetry configuration to aggregate counters from.</param>
         public void Initialize(TelemetryConfiguration configuration)
         {
             if (configuration == null)
@@ -59,11 +70,13 @@
                 throw new ArgumentNullException("configuration");
             }
 
+            sdkVersion = SdkVersionUtils.VersionPrefix + SdkVersionUtils.GetAssemblyVersion();
+
             this.configuration = configuration;
             this.telemetryClient = new TelemetryClient(this.configuration);
+            this.telemetryClient.Context.GetInternalContext().SdkVersion = sdkVersion;
 
             AggregateMetricsEventSource.Log.ModuleInitializationStarted();
-            sdkVersion = SdkVersionUtils.VersionPrefix + SdkVersionUtils.GetAssemblyVersion();
 
             aggregationTimer = new System.Threading.Timer(new System.Threading.TimerCallback(this.TimerFlushCallback), null, this.FlushInterval, this.FlushInterval);
         }

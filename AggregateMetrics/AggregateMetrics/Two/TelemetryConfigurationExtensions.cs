@@ -19,7 +19,6 @@
         /// Registers counter for periodic extraction into telemetry configuration.
         /// </summary>
         /// <param name="configuration">Telemetry configuration to store the counter.</param>
-        /// <param name="name">Name of the counter.</param>
         /// <param name="counter">Counter vaue interface implementation.</param>
         public static void RegisterCounter(this TelemetryConfiguration configuration, ICounterValue counter)
         {

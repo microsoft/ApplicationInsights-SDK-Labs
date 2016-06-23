@@ -5,9 +5,7 @@
 
     class MeterImplementation : NamedCounterValueBase, IMeter, ICounterValue
     {
-        private int value;
-
-        private int count;
+        private long compositeValue;
 
         public MeterImplementation(string name, TelemetryContext context)
             : base(name, context)
@@ -19,6 +17,11 @@
             get 
             {
                 var metric = this.GetInitializedMetricTelemetry();
+
+                var curValue = this.compositeValue;
+                var count = (int)(curValue & ((1 << 24) - 1));
+                double value = curValue >> 24;
+
                 if (count != 0)
                 {
                     metric.Value = value / count;
@@ -35,14 +38,16 @@
 
         public DataContracts.MetricTelemetry GetValueAndReset()
         {
-            var returnValue = Interlocked.Exchange(ref value, 0);
-            var returnCount = Interlocked.Exchange(ref count, 0);
+            long curValue = Interlocked.Exchange(ref this.compositeValue, 0);
+
+            var count = (int)(curValue & ((1 << 24) - 1));
+            double value = curValue >> 24;
 
             var metric = this.GetInitializedMetricTelemetry();
-            if (returnValue != 0)
+            if (count != 0)
             {
-                metric.Value = returnValue / returnCount;
-                metric.Count = returnCount;
+                metric.Value = value / count;
+                metric.Count = count;
             }
             else
             {
@@ -54,15 +59,13 @@
 
         public void Mark()
         {
-            //TODO: potentially we need to increment them together in one atomic operation
-            Interlocked.Increment(ref value);
-            Interlocked.Increment(ref count);
+            this.Mark(1);
         }
 
         public void Mark(int markCount)
         {
-            Interlocked.Add(ref this.value, markCount);
-            Interlocked.Increment(ref this.count);
+            long delta = ((markCount) << 24) + 1;
+            Interlocked.Add(ref this.compositeValue, delta);
         }
     }
 }

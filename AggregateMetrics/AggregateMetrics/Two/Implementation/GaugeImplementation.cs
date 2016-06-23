@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.ApplicationInsights.DataContracts;
-
-namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two
+﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two
 {
+    using System;
+    using Microsoft.ApplicationInsights.DataContracts;
+
     internal class GaugeImplementation : NamedCounterValueBase, ICounterValue
     {
         private readonly Func<long> valueFunc;
@@ -18,8 +18,14 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two
             get
             {
                 var metric = this.GetInitializedMetricTelemetry();
-                //TODO: Add try/catch here
-                metric.Value = valueFunc();
+                try
+                {
+                    metric.Value = valueFunc();
+                }
+                catch (Exception)
+                {
+                    //TODO: trace the error
+                }
                 return metric;
             }
         }
