@@ -13,8 +13,6 @@
 
         private TelemetryClient telemetryClient;
 
-        private string sdkVersion;
-
         private TimeSpan flushInterval = Constants.DefaultTimerFlushInterval;
 
         private Thread aggregationThread;
@@ -29,14 +27,6 @@
                 {
                     this.telemetryClient.TrackMetric(counter.GetValueAndReset());
                 }
-            }
-        }
-
-        private void TimerFlushCallback(object obj)
-        {
-            foreach(var counter in this.configuration.GetCounters())
-            {
-                this.telemetryClient.TrackMetric(counter.GetValueAndReset());
             }
         }
 
@@ -85,7 +75,7 @@
 
             AggregateMetricsEventSource.Log.ModuleInitializationBegin();
 
-            sdkVersion = SdkVersionUtils.VersionPrefix + SdkVersionUtils.GetAssemblyVersion();
+            var sdkVersion = SdkVersionUtils.VersionPrefix + SdkVersionUtils.GetAssemblyVersion();
 
             this.configuration = configuration;
             this.telemetryClient = new TelemetryClient(this.configuration);

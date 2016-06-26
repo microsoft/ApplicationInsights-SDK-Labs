@@ -1,15 +1,19 @@
 ﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two
 {
     using Microsoft.ApplicationInsights.DataContracts;
+    using System.Diagnostics;
     using System.Threading;
 
     class MeterImplementation : NamedCounterValueBase, IMeter, ICounterValue
     {
-        private long compositeValue;
+        private int value;
+        private Stopwatch timer;
 
         public MeterImplementation(string name, TelemetryContext context)
             : base(name, context)
         {
+            value = 0;
+            timer = Stopwatch.StartNew();
         }
 
         public DataContracts.MetricTelemetry Value
@@ -18,54 +22,48 @@
             {
                 var metric = this.GetInitializedMetricTelemetry();
 
-                var curValue = this.compositeValue;
-                var count = (int)(curValue & ((1 << 24) - 1));
-                double value = curValue >> 24;
+                var currentValue = this.value;
 
-                if (count != 0)
+                var seconds = this.timer.Elapsed.TotalSeconds;
+                if (seconds == 0)
                 {
-                    metric.Value = value / count;
-                    metric.Count = count;
+                    seconds = 1;
                 }
-                else
-                {
-                    metric.Value = 0;
-                    metric.Count = 0;
-                }
+
+                metric.Value = currentValue / seconds;
+
                 return metric;
             }
         }
 
         public DataContracts.MetricTelemetry GetValueAndReset()
         {
-            long curValue = Interlocked.Exchange(ref this.compositeValue, 0);
+            var currentValue = Interlocked.Exchange(ref this.value, 0);
 
-            var count = (int)(curValue & ((1 << 24) - 1));
-            double value = curValue >> 24;
+            var seconds = this.timer.Elapsed.TotalSeconds;
+            if (seconds == 0)
+            {
+                seconds = 1;
+            }
+
+            this.timer.Restart();
+            this.value = 0;
 
             var metric = this.GetInitializedMetricTelemetry();
-            if (count != 0)
-            {
-                metric.Value = value / count;
-                metric.Count = count;
-            }
-            else
-            {
-                metric.Value = 0;
-                metric.Count = 0;
-            }
+
+            metric.Value = currentValue / seconds;
+
             return metric;
         }
 
         public void Mark()
         {
-            this.Mark(1);
+            Interlocked.Increment(ref this.value);
         }
 
-        public void Mark(int markCount)
+        public void Mark(int count)
         {
-            long delta = ((markCount) << 24) + 1;
-            Interlocked.Add(ref this.compositeValue, delta);
+            Interlocked.Add(ref this.value, count);
         }
     }
 }

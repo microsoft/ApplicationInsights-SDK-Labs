@@ -49,11 +49,13 @@
     <Compile Include="One\MetricsBag.cs" />
     <Compile Include="One\MetricTelemetryExtensions.cs" />
     <Compile Include="Two\AggregateMetricsTelemetryModule.cs" />
+    <Compile Include="Two\IHistogram.cs" />
     <Compile Include="Two\IMeter.cs" />
     <Compile Include="Two\Implementation\CounterImplementation.cs" />
     <Compile Include="Two\ICounter.cs" />
     <Compile Include="Two\ICounterValue.cs" />
     <Compile Include="Two\Implementation\GaugeImplementation.cs" />
+    <Compile Include="Two\Implementation\HistogramImplementation.cs" />
     <Compile Include="Two\Implementation\MeterImplementation.cs" />
     <Compile Include="Two\Implementation\NamedCounterValueBase.cs" />
     <Compile Include="Two\TelemetryClientExtensions.cs" />

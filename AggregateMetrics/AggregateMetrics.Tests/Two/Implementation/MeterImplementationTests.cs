@@ -3,6 +3,9 @@
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
+    using System.Diagnostics;
+    using System.Threading;
 
     [TestClass]
     public class MeterImplementationTests
@@ -26,14 +29,22 @@
         {
             var counter = new MeterImplementation("test", new TelemetryContext());
 
+            var timer = Stopwatch.StartNew();
             for (int i = 0; i < 10; i++)
             {
                 counter.Mark(i);
             }
 
-            var expected = 9 * (9 + 1) / 2 / 10.0;
-            Assert.IsTrue(expected - counter.Value.Value < 0.001);
-            Assert.IsTrue(expected - counter.GetValueAndReset().Value < 0.001);
+            Thread.Sleep(TimeSpan.FromSeconds(1));
+
+            timer.Stop();
+
+            var expected = 9 * (9 + 1) / 2 / timer.Elapsed.TotalSeconds;
+
+            var value = counter.Value.Value;
+            Assert.IsTrue(expected - value < 0.001, "Actual: " + value + " Expected: " + expected);
+            value = counter.GetValueAndReset().Value;
+            Assert.IsTrue(expected - value < 0.001, "Actual: " + value + " Expected: " + expected);
         }
 
         [TestMethod]
