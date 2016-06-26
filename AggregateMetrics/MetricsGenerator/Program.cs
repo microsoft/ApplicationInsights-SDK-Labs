@@ -3,10 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
-    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
-    using System.Diagnostics;
-    using System.Collections.Generic;
     using System.Collections.Concurrent;
     using System.Threading;
     class Program

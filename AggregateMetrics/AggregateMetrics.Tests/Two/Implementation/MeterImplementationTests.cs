@@ -19,9 +19,14 @@
             {
                 counter.Mark();
             }
+            Thread.Sleep(TimeSpan.FromSeconds(1));
 
-            Assert.AreEqual(1, counter.Value.Value);
-            Assert.AreEqual(1, counter.GetValueAndReset().Value);
+            var expected = 10;
+
+            var value = counter.Value.Value;
+            Assert.IsTrue(Math.Abs(expected - value) < 1, "Actual: " + value + " Expected: " + expected);
+            value = counter.GetValueAndReset().Value;
+            Assert.IsTrue(Math.Abs(expected - value) < 1, "Actual: " + value + " Expected: " + expected);
         }
 
         [TestMethod]
@@ -29,7 +34,6 @@
         {
             var counter = new MeterImplementation("test", new TelemetryContext());
 
-            var timer = Stopwatch.StartNew();
             for (int i = 0; i < 10; i++)
             {
                 counter.Mark(i);
@@ -37,14 +41,12 @@
 
             Thread.Sleep(TimeSpan.FromSeconds(1));
 
-            timer.Stop();
-
-            var expected = 9 * (9 + 1) / 2 / timer.Elapsed.TotalSeconds;
+            var expected = 9 * (9 + 1) / 2; // it's rate per second and only one second has passed
 
             var value = counter.Value.Value;
-            Assert.IsTrue(expected - value < 0.001, "Actual: " + value + " Expected: " + expected);
+            Assert.IsTrue(Math.Abs(expected - value) < 1, "Actual: " + value + " Expected: " + expected);
             value = counter.GetValueAndReset().Value;
-            Assert.IsTrue(expected - value < 0.001, "Actual: " + value + " Expected: " + expected);
+            Assert.IsTrue(Math.Abs(expected - value) < 1, "Actual: " + value + " Expected: " + expected);
         }
 
         [TestMethod]
@@ -57,8 +59,8 @@
                 counter.Mark(2);
             }
 
-            Assert.AreEqual(2, counter.Value.Value);
-            Assert.AreEqual(2, counter.GetValueAndReset().Value);
+
+            Assert.AreNotEqual(0, counter.GetValueAndReset().Value);
             Assert.AreEqual(0, counter.Value.Value);
         }
     }

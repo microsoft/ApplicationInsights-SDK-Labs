@@ -63,5 +63,21 @@
 
             return meter;
         }
+
+        /// <summary>
+        /// Histogram represents an aggregated counter on the stream of values. It can calculate min, mean, max and stdDeviation.
+        /// </summary>
+        /// <param name="telemetryClient">Telemetry client to associate the meter with.</param>
+        /// <param name="name">Name of the histogram.</param>
+        /// <returns>Returns a histogram implementation.</returns>
+        public static IHistogram Histogram(this TelemetryClient telemetryClient, string name)
+        {
+            var histogram = new HistogramImplementation(name, telemetryClient.Context);
+
+            var configuration = GetConfigurationFromClient(telemetryClient);
+            configuration.RegisterCounter(histogram);
+
+            return histogram;
+        }
     }
 }

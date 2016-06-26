@@ -5,7 +5,8 @@
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.ApplicationInsights.DataContracts;
-
+    using System.Threading;
+    using System;
     [TestClass]
     public class TelemetryClientExtensisonsTests
     {
@@ -72,9 +73,38 @@
                 simpleMeter.Mark(2);
             }
 
+            Thread.Sleep(TimeSpan.FromSeconds(1));
+
             MetricTelemetry metric = counters[0].Value;
-            Assert.AreEqual(2, metric.Value);
+            Assert.IsTrue(2 - metric.Value < 1);
+            Assert.AreEqual(null, metric.Count);
+            Assert.AreEqual("test", metric.Name);
+            Assert.AreEqual("b", metric.Context.Properties["a"]);
+        }
+
+        [TestMethod]
+        public void SimpleHistogramUsageExample()
+        {
+            TelemetryConfiguration configuraiton = new TelemetryConfiguration();
+
+            TelemetryClient client = new TelemetryClient(configuraiton);
+            client.Context.Properties["a"] = "b";
+
+            var simpleMeter = client.Histogram("test");
+            var counters = configuraiton.GetCounters();
+
+            Assert.AreEqual(1, counters.Count);
+
+            for (int i = 0; i < 10; i++)
+            {
+                simpleMeter.Update(i);
+            }
+
+            MetricTelemetry metric = counters[0].Value;
+            Assert.AreEqual(9 * (9 + 1) / 2 / 10.0, metric.Value);
             Assert.AreEqual(10, metric.Count);
+            Assert.AreEqual(0, metric.Min);
+            Assert.AreEqual(9, metric.Max);
             Assert.AreEqual("test", metric.Name);
             Assert.AreEqual("b", metric.Context.Properties["a"]);
         }
