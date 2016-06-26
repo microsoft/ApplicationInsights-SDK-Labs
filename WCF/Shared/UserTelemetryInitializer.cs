@@ -1,5 +1,4 @@
 ﻿using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using System;
 
 namespace Microsoft.ApplicationInsights.Wcf
@@ -16,28 +15,13 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// <param name="operation">The operation context</param>
         protected override void OnInitialize(ITelemetry telemetry, IOperationContext operation)
         {
-            if ( String.IsNullOrEmpty(telemetry.Context.User.Id) )
-            {
-                var userContext = operation.Request.Context.User;
-                if ( String.IsNullOrEmpty(userContext.Id) )
-                {
-                    UpdateUserContext(operation, userContext);
-                }
-                telemetry.Context.User.Id = userContext.Id;
-            }
-        }
-
-        private void UpdateUserContext(IOperationContext operation, UserContext userContext)
-        {
             var ctxt = operation.SecurityContext;
             if ( ctxt == null || ctxt.IsAnonymous )
-            {
                 return;
-            }
 
             if ( ctxt.PrimaryIdentity != null )
             {
-                userContext.Id = ctxt.PrimaryIdentity.Name;
+                telemetry.Context.User.Id = ctxt.PrimaryIdentity.Name;
             }
         }
     }

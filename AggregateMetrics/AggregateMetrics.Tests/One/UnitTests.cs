@@ -1,4 +1,4 @@
-﻿namespace CounterCollection.Tests
+﻿namespace AggregateMetrics.Tests.One
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 

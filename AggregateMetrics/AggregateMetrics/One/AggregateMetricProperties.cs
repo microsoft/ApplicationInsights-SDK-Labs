@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics
+﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One
 {
     internal class AggregateMetricProperties
     {

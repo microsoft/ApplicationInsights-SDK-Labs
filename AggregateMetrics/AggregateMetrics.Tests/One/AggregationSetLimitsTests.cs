@@ -1,14 +1,11 @@
-﻿namespace CounterCollection.Tests
+﻿namespace AggregateMetrics.Tests.One
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
-    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One;
+    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics;
     [TestClass]
     public class AggregationSetLimitsTests : AggregationTests
     {

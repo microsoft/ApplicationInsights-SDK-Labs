@@ -1,4 +1,4 @@
-﻿namespace CounterCollection.Tests
+﻿namespace AggregateMetrics.Tests.One
 {
     using System;
     using System.Threading;
@@ -6,7 +6,7 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics;
-
+    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One;
     [TestClass]
     public class CounterCollectionTests : UnitTests
     {
@@ -66,7 +66,7 @@
             client.TrackAggregateMetric("Test", 123.00);
 
             // Wait for aggregation timer
-            Thread.Sleep(AggregateMetricsTelemetryModule.FlushIntervalSeconds * 1000 * 2);
+            Thread.Sleep(AggregateMetricsTelemetryModule.FlushInterval);
         }
     }
 }

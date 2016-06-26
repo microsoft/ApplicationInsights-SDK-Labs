@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics
+﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One
 {
     using System.Globalization;
     using Microsoft.ApplicationInsights.DataContracts;
