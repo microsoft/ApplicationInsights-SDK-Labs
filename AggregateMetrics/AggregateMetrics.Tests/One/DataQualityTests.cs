@@ -1,4 +1,4 @@
-﻿namespace AggregateMetrics.Tests
+﻿namespace AggregateMetrics.Tests.One
 {
     using System;
     using System.Collections.Generic;
@@ -13,14 +13,14 @@
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics;
     using Microsoft.ApplicationInsights.Extensibility.Implementation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One;
     [TestClass]
     public class DataQualityTests
     {
         [TestInitialize]
         public void Initialize()
         {
-            AggregateMetricsTelemetryModule.FlushIntervalSeconds = 5;
+            AggregateMetricsTelemetryModule.FlushInterval = TimeSpan.FromSeconds(5);
             AggregateMetricsTelemetryModule.IsTimerFlushEnabled = true;
             AggregateMetrics.Clear();
         }

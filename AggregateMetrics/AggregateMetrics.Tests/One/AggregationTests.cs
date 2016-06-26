@@ -1,6 +1,7 @@
-﻿namespace CounterCollection.Tests
+﻿namespace AggregateMetrics.Tests.One
 {
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics;
+    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     public abstract class AggregationTests : UnitTests

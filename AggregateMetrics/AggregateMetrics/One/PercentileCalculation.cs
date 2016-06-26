@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics
+﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One
 {
     /// <summary>
     /// How the percentiles should be calculated.

@@ -1,9 +1,11 @@
-﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics
+﻿using System;
+
+namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics
 {
     /// <summary>
     /// Configuration constants.
     /// </summary>
-    public class Constants
+    public static class Constants
     {
         /// <summary>
         /// Maximum length of the counter and property names.
@@ -26,19 +28,19 @@
         public const int PercentileMinimumCount = 100;
 
         /// <summary>
-        /// The default timer flush interval in seconds.
+        /// The default timer flush interval.
         /// </summary>
-        public const int DefaultTimerFlushInterval = 15;
+        public static TimeSpan DefaultTimerFlushInterval = TimeSpan.FromSeconds(15);
 
         /// <summary>
-        /// The minimum timer flush interval in seconds.
+        /// The minimum timer flush interval.
         /// </summary>
-        public const int MinimumTimerFlushInterval = 5;
+        public static TimeSpan MinimumTimerFlushInterval = TimeSpan.FromSeconds(5);
 
         /// <summary>
-        /// The maxmimum timer flush interval in seconds.
+        /// The maxmimum timer flush interval.
         /// </summary>
-        public const int MaximumTimerFlushInterval = 60;
+        public static TimeSpan MaximumTimerFlushInterval = TimeSpan.FromMinutes(2);
 
         internal const string DefaultP1Name = "p1";
 

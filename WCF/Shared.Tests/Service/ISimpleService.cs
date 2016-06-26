@@ -20,7 +20,5 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
         void CallFailsWithException();
         [OperationContract(Action="*")]
         void CatchAllOperation();
-        [OperationContract]
-        void CallThatEmitsEvent();
     }
 }

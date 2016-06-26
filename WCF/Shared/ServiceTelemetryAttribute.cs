@@ -43,12 +43,12 @@ namespace Microsoft.ApplicationInsights.Wcf
                 var interceptor = new WcfInterceptor(configuration, contractFilter);
                 foreach ( ChannelDispatcher channelDisp in serviceHost.ChannelDispatchers )
                 {
-                    channelDisp.ErrorHandlers.Insert(0, interceptor);
+                    channelDisp.ErrorHandlers.Add(interceptor);
                     foreach ( var ep in channelDisp.Endpoints )
                     {
                         if ( !ep.IsSystemEndpoint )
                         {
-                            ep.DispatchRuntime.MessageInspectors.Insert(0, interceptor);
+                            ep.DispatchRuntime.MessageInspectors.Add(interceptor);
                         }
                     }
                 }

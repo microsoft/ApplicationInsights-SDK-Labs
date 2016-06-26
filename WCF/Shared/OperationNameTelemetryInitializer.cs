@@ -1,6 +1,5 @@
 ﻿using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using System;
 
 namespace Microsoft.ApplicationInsights.Wcf
@@ -17,26 +16,18 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// <param name="operation">The operation context</param>
         protected override void OnInitialize(ITelemetry telemetry, IOperationContext operation)
         {
-            if ( String.IsNullOrEmpty(telemetry.Context.Operation.Name) )
+            var ctxt = telemetry.Context.Operation;
+            if ( String.IsNullOrEmpty(ctxt.Name) )
             {
-                var opContext = operation.Request.Context.Operation;
-                if ( String.IsNullOrEmpty(opContext.Name) )
-                {
-                    UpdateOperationContext(operation, opContext);
-                }
-                telemetry.Context.Operation.Name = opContext.Name;
-
-                RequestTelemetry request = telemetry as RequestTelemetry;
-                if ( request != null )
-                {
-                    request.Name = opContext.Name;
-                }
+                // TODO: consider including the HTTP verb
+                // if service is using WebHttpBinding.
+                ctxt.Name = operation.ContractName + '.' + operation.OperationName;
             }
-        }
-
-        private void UpdateOperationContext(IOperationContext operation, OperationContext opContext)
-        {
-            opContext.Name = operation.ContractName + '.' + operation.OperationName;
+            RequestTelemetry request = telemetry as RequestTelemetry;
+            if ( request != null )
+            {
+                request.Name = ctxt.Name;
+            }
         }
     }
 }

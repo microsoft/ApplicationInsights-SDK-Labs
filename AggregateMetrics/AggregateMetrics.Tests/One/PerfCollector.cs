@@ -1,4 +1,4 @@
-﻿namespace CounterCollection.Tests
+﻿namespace AggregateMetrics.Tests.One
 {
     using System;
     using System.Collections.Generic;

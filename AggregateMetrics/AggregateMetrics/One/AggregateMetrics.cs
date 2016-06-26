@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics
+﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.One
 {
     using System;
     using System.Collections.Concurrent;
@@ -152,7 +152,7 @@
                 AggregationSet aggregationSet = aggregationSetPair.Value;
 
                 ConcurrentDictionary<int, MetricsBag> aggregations = aggregationSet.RemoveAggregations();
-                var periodStartTime = DateTimeOffset.Now.AddSeconds(-AggregateMetricsTelemetryModule.FlushIntervalSeconds);
+                var periodStartTime = DateTimeOffset.Now.Subtract(AggregateMetricsTelemetryModule.FlushInterval);
 
                 foreach (MetricsBag metricsBag in aggregations.Values)
                     {
@@ -255,7 +255,7 @@
             {
                 if (aggregationSets == null)
                 {
-                    AggregateMetricsEventSource.Log.ModuleInitializationStarted();
+                    AggregateMetricsEventSource.Log.ModuleInitializationBegin();
 
                     sdkVersion = SdkVersionUtils.VersionPrefix + SdkVersionUtils.GetAssemblyVersion();
 
@@ -263,14 +263,14 @@
 
                     if (AggregateMetricsTelemetryModule.IsTimerFlushEnabled)
                     {
-                        TimeSpan aggregationWindow = TimeSpan.FromSeconds(AggregateMetricsTelemetryModule.FlushIntervalSeconds);
+                        TimeSpan aggregationWindow = AggregateMetricsTelemetryModule.FlushInterval;
 
                         AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
 
                         aggregationTimer = new System.Threading.Timer(new System.Threading.TimerCallback(TimerFlushCallback), null, aggregationWindow, aggregationWindow);
                     }
 
-                    AggregateMetricsEventSource.Log.ModuleInitializationStopped();
+                    AggregateMetricsEventSource.Log.ModuleInitializationEnd();
                 }
             }
         }
