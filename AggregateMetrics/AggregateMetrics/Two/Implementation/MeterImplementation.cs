@@ -4,7 +4,7 @@
     using System.Diagnostics;
     using System.Threading;
 
-    class MeterImplementation : NamedCounterValueBase, IMeter, ICounterValue
+    internal class MeterImplementation : NamedCounterValueBase, IMeter, ICounterValue
     {
         private int value;
         private Stopwatch timer;

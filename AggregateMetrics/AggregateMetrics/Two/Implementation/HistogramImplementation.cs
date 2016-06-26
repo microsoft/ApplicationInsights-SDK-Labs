@@ -11,9 +11,12 @@
         private int minValue = Int32.MaxValue;
         private int maxValue = Int32.MinValue;
 
-        public HistogramImplementation(string name, TelemetryContext context)
+        private readonly bool shouldCalculateMinMax;
+
+        public HistogramImplementation(string name, TelemetryContext context, HistogramAggregations aggregations)
             : base(name, context)
         {
+            this.shouldCalculateMinMax = (aggregations & HistogramAggregations.MinMax) == HistogramAggregations.MinMax;
         }
 
         private static void InterlockedExchangeOnCondition(ref int location, int value, Func<int, int, bool> condition)
@@ -50,8 +53,12 @@
                 {
                     metric.Value = value / count;
                     metric.Count = count;
-                    metric.Min = curMinValue;
-                    metric.Max = curMaxValue;
+
+                    if (this.shouldCalculateMinMax)
+                    {
+                        metric.Min = curMinValue;
+                        metric.Max = curMaxValue;
+                    }
                 }
                 else
                 {
@@ -81,8 +88,12 @@
             {
                 metric.Value = value / count;
                 metric.Count = count;
-                metric.Min = curMinValue;
-                metric.Max = curMaxValue;
+
+                if (this.shouldCalculateMinMax)
+                {
+                    metric.Min = curMinValue;
+                    metric.Max = curMaxValue;
+                }
             }
             else
             {
@@ -97,8 +108,12 @@
         {
             long delta = ((value) << 24) + 1;
             Interlocked.Add(ref this.compositeValue, delta);
-            InterlockedExchangeOnCondition(ref this.minValue, value, (currentValue, newValue) => { return currentValue > newValue; });
-            InterlockedExchangeOnCondition(ref this.maxValue, value, (currentValue, newValue) => { return currentValue < newValue; });
+
+            if (this.shouldCalculateMinMax)
+            {
+                InterlockedExchangeOnCondition(ref this.minValue, value, (currentValue, newValue) => { return currentValue > newValue; });
+                InterlockedExchangeOnCondition(ref this.maxValue, value, (currentValue, newValue) => { return currentValue < newValue; });
+            }
         }
     }
 }

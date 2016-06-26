@@ -49,6 +49,7 @@
     <Compile Include="One\MetricsBag.cs" />
     <Compile Include="One\MetricTelemetryExtensions.cs" />
     <Compile Include="Two\AggregateMetricsTelemetryModule.cs" />
+    <Compile Include="Two\HistogramAggregations.cs" />
     <Compile Include="Two\IHistogram.cs" />
     <Compile Include="Two\IMeter.cs" />
     <Compile Include="Two\Implementation\CounterImplementation.cs" />
