@@ -53,10 +53,11 @@
         /// </summary>
         /// <param name="telemetryClient">Telemetry client to associate the meter with.</param>
         /// <param name="name">Name of the meter.</param>
+        /// <param name="aggregations">Aggregation to apply.</param>
         /// <returns>Returns a meter implementation.</returns>
-        public static IMeter Meter(this TelemetryClient telemetryClient, string name)
+        public static IMeter Meter(this TelemetryClient telemetryClient, string name, MeterAggregations aggregations = MeterAggregations.Rate)
         {
-            var meter = new MeterImplementation(name, telemetryClient.Context);
+            var meter = new MeterImplementation(name, telemetryClient.Context, aggregations);
 
             var configuration = GetConfigurationFromClient(telemetryClient);
             configuration.RegisterCounter(meter);

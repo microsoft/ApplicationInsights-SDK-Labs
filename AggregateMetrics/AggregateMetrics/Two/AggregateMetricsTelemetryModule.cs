@@ -3,6 +3,7 @@
     using System;
     using Microsoft.ApplicationInsights.Extensibility.Implementation;
     using System.Threading;
+    using System.Diagnostics;
 
     /// <summary>
     /// Telemetry module that sends aggregated metrics to the backend periodically.
@@ -19,13 +20,32 @@
 
         private void WorkerThread()
         {
+            var sleepInterval = this.FlushInterval;
+
             while (true)
             {
-                Thread.Sleep(this.FlushInterval);
+                Thread.Sleep(sleepInterval);
 
+                var timer = Stopwatch.StartNew();
+                var currentTime = DateTimeOffset.Now;
+                
                 foreach (var counter in this.configuration.GetCounters())
                 {
-                    this.telemetryClient.TrackMetric(counter.GetValueAndReset());
+                    var metric = counter.GetValueAndReset();
+                    metric.Timestamp = currentTime;
+
+                    this.telemetryClient.TrackMetric(metric);
+                }
+
+                timer.Stop();
+
+                if (this.FlushInterval < timer.Elapsed)
+                {
+                    sleepInterval = new TimeSpan(0);
+                }
+                else
+                {
+                    sleepInterval = this.FlushInterval - timer.Elapsed;
                 }
             }
         }

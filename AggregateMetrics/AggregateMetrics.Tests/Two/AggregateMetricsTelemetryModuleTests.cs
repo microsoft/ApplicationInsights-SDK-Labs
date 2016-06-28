@@ -41,6 +41,34 @@
         }
 
         [TestMethod]
+        public void ModuleKeepsIntervalSteadyWhenMetricsAreLongToCollect()
+        {
+            var sentItems = new List<ITelemetry>();
+            var channel = new StubTelemetryChannel() { OnSend = (item) => { sentItems.Add(item); } };
+            var config = new TelemetryConfiguration();
+            config.TelemetryChannel = channel;
+            config.InstrumentationKey = "dummy";
+            var startTime = DateTimeOffset.Now;
+
+            AggregateMetricsTelemetryModule module = new AggregateMetricsTelemetryModule();
+            module.FlushInterval = TimeSpan.FromSeconds(6);
+
+            module.Initialize(config);
+
+            var client = new TelemetryClient(config);
+            client.Gauge("test", () => { Thread.Sleep(TimeSpan.FromSeconds(1)); return 10; });
+
+            Thread.Sleep(TimeSpan.FromSeconds(15));
+
+            Assert.AreEqual(2, sentItems.Count);
+            var metric0 = (MetricTelemetry)sentItems[0];
+            var metric1 = (MetricTelemetry)sentItems[1];
+
+            var timeDelta = metric1.Timestamp - metric0.Timestamp - TimeSpan.FromSeconds(6);
+            Assert.IsTrue(timeDelta.TotalMilliseconds < 50, "Actual: " + timeDelta);
+        }
+
+        [TestMethod]
         public void ModuleWillKeepIntervalWithThreadsStarvation()
         {
             var sentItems = new List<ITelemetry>();

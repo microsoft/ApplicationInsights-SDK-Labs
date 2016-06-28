@@ -1,19 +1,19 @@
 ﻿namespace AggregateMetrics.Tests.Two
 {
-    using Microsoft.ApplicationInsights.DataContracts;
-    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Diagnostics;
     using System.Threading;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class MeterImplementationTests
     {
         [TestMethod]
-        public void MeterMarkWorks()
+        public void RateMeterMarkWorks()
         {
-            var counter = new MeterImplementation("test", new TelemetryContext());
+            var counter = new MeterImplementation("test", new TelemetryContext(), MeterAggregations.Rate);
 
             for (int i = 0; i < 10; i++)
             {
@@ -30,9 +30,9 @@
         }
 
         [TestMethod]
-        public void MeterMarkByValueWorks()
+        public void RateMeterMarkByValueWorks()
         {
-            var counter = new MeterImplementation("test", new TelemetryContext());
+            var counter = new MeterImplementation("test", new TelemetryContext(), MeterAggregations.Rate);
 
             for (int i = 0; i < 10; i++)
             {
@@ -50,18 +50,53 @@
         }
 
         [TestMethod]
-        public void MeterResetSetsValueToZero()
+        public void RateMeterResetSetsValueToZero()
         {
-            var counter = new MeterImplementation("test", new TelemetryContext());
+            var counter = new MeterImplementation("test", new TelemetryContext(), MeterAggregations.Rate);
 
             for (int i = 0; i < 10; i++)
             {
                 counter.Mark(2);
             }
 
-
             Assert.AreNotEqual(0, counter.GetValueAndReset().Value);
             Assert.AreEqual(0, counter.Value.Value);
+        }
+
+        [TestMethod]
+        public void SumMeterMarkWorks()
+        {
+            var counter = new MeterImplementation("test", new TelemetryContext(), MeterAggregations.Sum);
+
+            for (int i = 0; i < 10; i++)
+            {
+                counter.Mark();
+            }
+
+            var expected = 10;
+
+            var value = counter.Value.Value;
+            Assert.AreEqual(expected, value);
+            value = counter.GetValueAndReset().Value;
+            Assert.AreEqual(expected, value);
+        }
+
+        [TestMethod]
+        public void SumMeterMarkByValueWorks()
+        {
+            var counter = new MeterImplementation("test", new TelemetryContext(), MeterAggregations.Sum);
+
+            for (int i = 0; i < 10; i++)
+            {
+                counter.Mark(i);
+            }
+
+            var expected = 9 * (9 + 1) / 2;
+
+            var value = counter.Value.Value;
+            Assert.AreEqual(expected, value);
+            value = counter.GetValueAndReset().Value;
+            Assert.AreEqual(expected, value);
         }
     }
 }
