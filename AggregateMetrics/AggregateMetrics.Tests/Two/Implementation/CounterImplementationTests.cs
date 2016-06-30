@@ -17,7 +17,6 @@
                 counter.Increment();
             }
 
-            Assert.AreEqual(10, counter.Value.Value);
             Assert.AreEqual(10, counter.GetValueAndReset().Value);
         }
 
@@ -31,7 +30,6 @@
                 counter.Increment(2);
             }
 
-            Assert.AreEqual(20, counter.Value.Value);
             Assert.AreEqual(20, counter.GetValueAndReset().Value);
         }
 
@@ -45,7 +43,6 @@
                 counter.Decrement();
             }
 
-            Assert.AreEqual(-10, counter.Value.Value);
             Assert.AreEqual(-10, counter.GetValueAndReset().Value);
         }
 
@@ -59,7 +56,6 @@
                 counter.Decrement(2);
             }
 
-            Assert.AreEqual(-20, counter.Value.Value);
             Assert.AreEqual(-20, counter.GetValueAndReset().Value);
         }
 
@@ -73,9 +69,8 @@
                 counter.Decrement(2);
             }
 
-            Assert.AreEqual(-20, counter.Value.Value);
             Assert.AreEqual(-20, counter.GetValueAndReset().Value);
-            Assert.AreEqual(-20, counter.Value.Value);
+            Assert.AreEqual(-20, counter.GetValueAndReset().Value);
         }
     }
 }

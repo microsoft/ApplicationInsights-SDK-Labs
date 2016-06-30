@@ -36,40 +36,6 @@
             }
         }
 
-        public MetricTelemetry Value
-        {
-            get 
-            {
-                var metric = this.GetInitializedMetricTelemetry();
-
-                var curCompositeValue = Interlocked.Read(ref this.compositeValue);
-                int curMinValue = this.minValue;
-                int curMaxValue = this.maxValue;
-
-                var count = (int)(curCompositeValue & ((1 << 24) - 1));
-                double value = curCompositeValue >> 24;
-
-                if (count != 0)
-                {
-                    metric.Value = value / count;
-                    metric.Count = count;
-
-                    if (this.shouldCalculateMinMax)
-                    {
-                        metric.Min = curMinValue;
-                        metric.Max = curMaxValue;
-                    }
-                }
-                else
-                {
-                    metric.Value = 0;
-                    metric.Count = 0;
-                }
-
-                return metric;
-            }
-        }
-
         public MetricTelemetry GetValueAndReset()
         {
             long curValue = Interlocked.Exchange(ref this.compositeValue, 0);

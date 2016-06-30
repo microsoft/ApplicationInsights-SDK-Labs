@@ -13,26 +13,18 @@
             this.valueFunc = valueFunc;
         }
 
-        public MetricTelemetry Value
-        {
-            get
-            {
-                var metric = this.GetInitializedMetricTelemetry();
-                try
-                {
-                    metric.Value = valueFunc();
-                }
-                catch (Exception)
-                {
-                    //TODO: trace the error
-                }
-                return metric;
-            }
-        }
-
         public MetricTelemetry GetValueAndReset()
         {
-            return this.Value;
+            var metric = this.GetInitializedMetricTelemetry();
+            try
+            {
+                metric.Value = valueFunc();
+            }
+            catch (Exception)
+            {
+                //TODO: trace the error
+            }
+            return metric;
         }
     }
 }

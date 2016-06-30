@@ -28,7 +28,7 @@
                 simpleCounter.Increment();
             }
 
-            MetricTelemetry metric = counters[0].Value;
+            MetricTelemetry metric = counters[0].GetValueAndReset();
             Assert.AreEqual(10, metric.Value);
             Assert.AreEqual(null, metric.Count);
             Assert.AreEqual("test", metric.Name);
@@ -48,7 +48,7 @@
 
             Assert.AreEqual(1, counters.Count);
 
-            MetricTelemetry metric = counters[0].Value;
+            MetricTelemetry metric = counters[0].GetValueAndReset();
             Assert.AreEqual(10, metric.Value);
             Assert.AreEqual(null, metric.Count);
             Assert.AreEqual("test", metric.Name);
@@ -75,7 +75,7 @@
 
             Thread.Sleep(TimeSpan.FromSeconds(1));
 
-            MetricTelemetry metric = counters[0].Value;
+            MetricTelemetry metric = counters[0].GetValueAndReset();
             Assert.IsTrue(2 - metric.Value < 1);
             Assert.AreEqual(null, metric.Count);
             Assert.AreEqual("test", metric.Name);
@@ -100,7 +100,7 @@
                 simpleMeter.Update(i);
             }
 
-            MetricTelemetry metric = counters[0].Value;
+            MetricTelemetry metric = counters[0].GetValueAndReset();
             Assert.AreEqual(9 * (9 + 1) / 2 / 10.0, metric.Value);
             Assert.AreEqual(10, metric.Count);
             Assert.AreEqual(0, metric.Min);
@@ -121,7 +121,7 @@
             var simpleCounter = client.Counter("test");
             var counters = configuraiton.GetCounters();
             Assert.AreEqual(1, counters.Count);
-            MetricTelemetry metric = counters[0].Value;
+            MetricTelemetry metric = counters[0].GetValueAndReset();
 
             client.Context.Device.Id = "device.id";
 

@@ -13,16 +13,6 @@
         {
         }
 
-        public MetricTelemetry Value
-        {
-            get
-            {
-                var metric = this.GetInitializedMetricTelemetry();
-                metric.Value = this.value;
-                return metric;
-            }
-        }
-
         public void Increment()
         {
             Interlocked.Increment(ref this.value);
@@ -35,7 +25,9 @@
 
         public MetricTelemetry GetValueAndReset()
         {
-            return this.Value;
+            var metric = this.GetInitializedMetricTelemetry();
+            metric.Value = this.value;
+            return metric;
         }
 
         public void Increment(int count)
