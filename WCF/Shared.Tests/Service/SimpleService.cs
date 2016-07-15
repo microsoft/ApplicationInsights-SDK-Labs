@@ -34,6 +34,22 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
         {
             throw new InvalidOperationException();
         }
+        public void CallWritesExceptionEvent()
+        {
+            try
+            {
+                throw new InvalidOperationException("Some exception");
+            } catch ( Exception ex )
+            {
+                TelemetryClient client = new TelemetryClient();
+                client.TrackException(ex);
+            }
+        }
+        public void CallMarksRequestAsFailed()
+        {
+            var request = OperationContext.Current.GetRequestTelemetry();
+            request.Success = false;
+        }
 
         public void SampleOperation()
         {

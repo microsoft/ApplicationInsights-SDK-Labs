@@ -50,6 +50,19 @@ that does __not__ have an `[OperationTelemetry]` attribute
 will not generate a request telemetry event.
 
 
+Obtaining the current request context
+-------------------------------------
+If you need to set a value on the `RequestTelemetry` event in your application code,
+you can get access to it through the `GetRequestTelemetry()` extension method
+on the current `OperationContext`, like this:
+
+```C#
+using Microsoft.ApplicationInsights.Wcf;
+...
+var request = OperationContext.Current.GetRequestTelemetry();
+```
+
+
 Current Limitations
 ---------------------
 - Tracking WCF services in a single application where you're already using the Web Applications SDK is not supported.

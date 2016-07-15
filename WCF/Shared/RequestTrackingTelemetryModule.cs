@@ -85,7 +85,12 @@ namespace Microsoft.ApplicationInsights.Wcf
                 responseCode = HttpStatusCode.InternalServerError;
             }
 
-            telemetry.Success = !isFault;
+            // if the operation code has already marked the request as failed
+            // don't overwrite the value if we think it was successful
+            if ( isFault || !telemetry.Success.HasValue )
+            {
+                telemetry.Success = !isFault;
+            }
             telemetry.ResponseCode = responseCode.ToString("d");
             telemetry.Properties.Add("Protocol", telemetry.Url.Scheme);
             telemetryClient.TrackRequest(telemetry);

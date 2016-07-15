@@ -213,6 +213,43 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         }
 
 
+        [TestMethod]
+        [TestCategory("Integration"), TestCategory("Sync")]
+        public void ErrorTelemetryEventsWrittenFromMethodAreLogged()
+        {
+            TestTelemetryChannel.Clear();
+            var host = new HostingContext<SimpleService, ISimpleService>();
+            using ( host )
+            {
+                host.Open();
+
+                ISimpleService client = host.GetChannel();
+                client.CallWritesExceptionEvent();
+            }
+            var request = TestTelemetryChannel.CollectedData().OfType<RequestTelemetry>().First();
+            var errors = from item in TestTelemetryChannel.CollectedData()
+                         where item is ExceptionTelemetry
+                         select item;
+            Assert.IsTrue(errors.Count() > 0);
+            Assert.AreEqual(request.Id, errors.First().Context.Operation.Id);
+        }
+
+        [TestMethod]
+        [TestCategory("Integration"), TestCategory("Sync")]
+        public void OperationMarksRequestAsFailedAndIsPropagated()
+        {
+            TestTelemetryChannel.Clear();
+            var host = new HostingContext<SimpleService, ISimpleService>();
+            using ( host )
+            {
+                host.Open();
+
+                ISimpleService client = host.GetChannel();
+                client.CallMarksRequestAsFailed();
+            }
+            var request = TestTelemetryChannel.CollectedData().OfType<RequestTelemetry>().First();
+            Assert.IsFalse(request.Success.Value);
+        }
 
         [TestMethod]
         [TestCategory("Integration"), TestCategory("OperationTelemetry")]
