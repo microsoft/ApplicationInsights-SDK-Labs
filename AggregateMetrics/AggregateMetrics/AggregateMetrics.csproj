@@ -32,6 +32,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateMetricsEventSource.cs" />
+    <Compile Include="AzureWebApp\AzureWebApp.cs" />
     <Compile Include="One\AggregateMetricProperties.cs" />
     <Compile Include="One\AggregateMetricsTelemetryModule.cs" />
     <Compile Include="One\AggregationResult.cs" />
