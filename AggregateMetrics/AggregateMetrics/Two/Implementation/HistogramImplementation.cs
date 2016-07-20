@@ -135,8 +135,6 @@
                     metric.Properties.Add(Constants.P90Name, percentiles.P90.ToString(CultureInfo.InvariantCulture));
                     metric.Properties.Add(Constants.P95Name, percentiles.P95.ToString(CultureInfo.InvariantCulture));
                     metric.Properties.Add(Constants.P99Name, percentiles.P99.ToString(CultureInfo.InvariantCulture));
-
-                    listValues.Clear();
                 }
             }
             else
