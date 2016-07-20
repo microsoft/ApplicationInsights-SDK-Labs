@@ -55,11 +55,6 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebA
             mt.Name = "Private bytes";
             mt.Value = Convert.ToInt32(value);
 
-            
-
-
-
-
             return mt;
         }
 
