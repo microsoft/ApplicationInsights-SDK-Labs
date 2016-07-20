@@ -110,6 +110,31 @@
         }
 
         [TestMethod]
+        public void HistogramPercentilesExample()
+        {
+            TelemetryConfiguration configuration = new TelemetryConfiguration();
+
+            TelemetryClient client = new TelemetryClient(configuration);
+
+            var histogramWithPercentiles = client.Histogram("test", HistogramAggregations.Percentiles);
+
+            for (int i = 1; i <= 1000; i++)
+            {
+                histogramWithPercentiles.Update(i);
+            }
+
+            var counters = configuration.GetCounters();
+
+            MetricTelemetry metric = counters[0].GetValueAndReset();
+            Assert.AreEqual(5, metric.Properties.Count);
+            Assert.AreEqual(true, metric.Properties["p50"].Equals("500"));
+            Assert.AreEqual(true, metric.Properties["p75"].Equals("750"));
+            Assert.AreEqual(true, metric.Properties["p90"].Equals("900"));
+            Assert.AreEqual(true, metric.Properties["p95"].Equals("950"));
+            Assert.AreEqual(true, metric.Properties["p99"].Equals("990"));
+        }
+
+        [TestMethod]
         public void CounterWillCopyTelemetryContextFromTelemetryClient()
         {
             TelemetryConfiguration configuraiton = new TelemetryConfiguration();
