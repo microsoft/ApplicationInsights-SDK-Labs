@@ -43,13 +43,13 @@
             }
         }
 
-        private int GetPercentileNearestIndex(int percentile)
+        private int GetPercentileNearestIndex(int numberOfElements, int percentile)
         {
             Debug.Assert(percentile > 0 && percentile < 100);
 
-            int index = ((int)Math.Round(listValues.Count * (percentile / 100.0), 0)) - 1;
+            int index = ((int)Math.Round(numberOfElements * (percentile / 100.0), 0)) - 1;
 
-            Debug.Assert(index >= 0 && index < listValues.Count);
+            Debug.Assert(index >= 0 && index < numberOfElements);
 
             return index;
         }
@@ -59,40 +59,40 @@
             InterlockedExchangeOnCondition(ref this.maxValue, value, (currentValue, newValue) => { return currentValue < newValue; });
         }
 
-        private PercentileAggregations CalculatePercentiles()
+        private PercentileAggregations CalculatePercentiles(List<double> values)
         {
             PercentileAggregations percentiles = new PercentileAggregations();
 
-            listValues.OrderBy(i => i);
+            values.OrderBy(i => i);
 
-            int percentile50Index = GetPercentileNearestIndex(50);
-            int percentile75Index = GetPercentileNearestIndex(75);
-            int percentile90Index = GetPercentileNearestIndex(90);
-            int percentile95Index = GetPercentileNearestIndex(95);
-            int percentile99Index = GetPercentileNearestIndex(99);
+            int percentile50Index = GetPercentileNearestIndex(values.Count, 50);
+            int percentile75Index = GetPercentileNearestIndex(values.Count, 75);
+            int percentile90Index = GetPercentileNearestIndex(values.Count, 90);
+            int percentile95Index = GetPercentileNearestIndex(values.Count, 95);
+            int percentile99Index = GetPercentileNearestIndex(values.Count, 99);
 
             int listValueIndex = 0;
-            foreach (double listValue in listValues)
+            foreach (double value in values)
             {
                 if (listValueIndex == percentile50Index)
                 {
-                    percentiles.P50 = listValue;
+                    percentiles.P50 = value;
                 }
                 else if (listValueIndex == percentile75Index)
                 {
-                    percentiles.P75 = listValue;
+                    percentiles.P75 = value;
                 }
                 else if (listValueIndex == percentile90Index)
                 {
-                    percentiles.P90 = listValue;
+                    percentiles.P90 = value;
                 }
                 else if (listValueIndex == percentile95Index)
                 {
-                    percentiles.P95 = listValue;
+                    percentiles.P95 = value;
                 }
                 else if (listValueIndex == percentile99Index)
                 {
-                    percentiles.P99 = listValue;
+                    percentiles.P99 = value;
                 }
 
                 listValueIndex++;
@@ -127,15 +127,14 @@
                 }
                 else if (this.shouldCalculatePercentiles)
                 {
-                    PercentileAggregations percentiles = CalculatePercentiles();
+                    List<double> curListValues = Interlocked.Exchange(ref this.listValues, new List<double>());
+                    PercentileAggregations percentiles = CalculatePercentiles(curListValues);
 
                     metric.Properties.Add(Constants.P50Name, percentiles.P50.ToString(CultureInfo.InvariantCulture));
                     metric.Properties.Add(Constants.P75Name, percentiles.P75.ToString(CultureInfo.InvariantCulture));
                     metric.Properties.Add(Constants.P90Name, percentiles.P90.ToString(CultureInfo.InvariantCulture));
                     metric.Properties.Add(Constants.P95Name, percentiles.P95.ToString(CultureInfo.InvariantCulture));
                     metric.Properties.Add(Constants.P99Name, percentiles.P99.ToString(CultureInfo.InvariantCulture));
-
-                    listValues.Clear();
                 }
             }
             else
