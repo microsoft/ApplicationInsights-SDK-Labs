@@ -26,6 +26,6 @@
         /// <summary>
         /// Calculate 50th percentile.
         /// </summary>
-        Percentile50 = 0x4
+        Percentiles = 0x4
     }
 }

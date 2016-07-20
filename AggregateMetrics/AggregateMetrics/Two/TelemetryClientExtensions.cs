@@ -72,7 +72,9 @@
         /// <param name="name">Name of the histogram.</param>
         /// <param name="aggregations">Types of aggregations to perform.</param>
         /// <returns>Returns a histogram implementation.</returns>
-        public static IHistogram Histogram(this TelemetryClient telemetryClient, string name, HistogramAggregations aggregations = HistogramAggregations.Mean | HistogramAggregations.MinMax)
+        public static IHistogram Histogram(this TelemetryClient telemetryClient, string name, HistogramAggregations aggregations = HistogramAggregations.Mean | 
+            HistogramAggregations.MinMax |
+            HistogramAggregations.Percentiles)
         {
             var histogram = new HistogramImplementation(name, telemetryClient.Context, aggregations);
 
