@@ -8,6 +8,9 @@
     /// </summary>
     public class FlexiblePerformanceCounterGauge : ICounterValue
     {
+        /// <summary>
+        /// Name of the counter variable to be used as cache key
+        /// </summary>
         private string name;
 
         /// <summary>
@@ -18,22 +21,19 @@
         {
             this.name = name;
         }
+
             /// <summary>
             /// Returns the current value of the counter as a <c ref="MetricTelemetry"/> and resets the metric.
             /// </summary>
             /// <returns> Metric Telemetry object mt, with values for Name and Value </returns>
-
             public MetricTelemetry GetValueAndReset()
             {
-
             var metric = new MetricTelemetry();
 
-            metric.Name = name; 
-            metric.Value = CacheHelper.GetCountervalue(name);
+            metric.Name = this.name; 
+            metric.Value = CacheHelper.GetCountervalue(this.name);
 
             return metric;
             }
     }
 }
-
-
