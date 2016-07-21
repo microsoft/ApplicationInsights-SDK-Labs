@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateMetricsEventSource.cs" />
-    <Compile Include="AzureWebApp\PerformanceCounterGauge.cs" />
     <Compile Include="AzureWebApp\FlexiblePerformanceCounterGauge.cs" />
     <Compile Include="One\AggregateMetricProperties.cs" />
     <Compile Include="One\AggregateMetricsTelemetryModule.cs" />
