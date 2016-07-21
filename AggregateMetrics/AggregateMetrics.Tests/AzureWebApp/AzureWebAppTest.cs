@@ -1,10 +1,10 @@
 ﻿namespace webAppTest
 {
     using System;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Microsoft.ApplicationInsights.DataContracts;
     using System.Diagnostics;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    
     [TestClass]
     public class UnitTestAzureWeb
     {
@@ -13,13 +13,12 @@
         {
             FlexiblePerformanceCounterGauge testingGage = new FlexiblePerformanceCounterGauge();
 
-            var metric= testingGage.GetRawCounterValue("privateBytes");
+            var metric= testingGage.GetValueAndReset("privateBytes");
         
             Debug.WriteLine("mt contents:");
-            Debug.WriteLine(metric.Value);
-            Debug.WriteLine(metric.Name);
+            Debug.WriteLine(metric);
 
-            Assert.IsTrue(testingGage.GetRawCounterValue("privateBytes") is MetricTelemetry );
+            Assert.IsTrue(testingGage.GetValueAndReset("privateBytes") is Double );
         }
     }
 }
