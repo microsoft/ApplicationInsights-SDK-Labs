@@ -11,14 +11,12 @@
         [TestMethod]
         public void TestGetValueAndReset()
         {
-            FlexiblePerformanceCounterGauge testingGage = new FlexiblePerformanceCounterGauge();
+            FlexiblePerformanceCounterGauge testingGage = new FlexiblePerformanceCounterGauge("privateBytes");
 
-            var metric= testingGage.GetValueAndReset("privateBytes");
+            var metric= testingGage.GetValueAndReset();
         
             Debug.WriteLine("mt contents:");
             Debug.WriteLine(metric);
-
-            Assert.IsTrue(testingGage.GetValueAndReset("privateBytes") is Double );
         }
     }
 }
