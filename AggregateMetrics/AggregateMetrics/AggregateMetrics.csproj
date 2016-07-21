@@ -45,6 +45,8 @@
     <Compile Include="AzureWebApp\AzureWebEnvironmentVariables.cs" />
     <Compile Include="AzureWebApp\CacheHelper.cs" />
     <Compile Include="AzureWebApp\IPerformanceCounter.cs" />
+    <Compile Include="AzureWebApp\PerformanceCollectorModule.cs" />
+    <Compile Include="AzureWebApp\PerformanceCounterCollectionRequest.cs" />
     <Compile Include="AzureWebApp\PerformanceCounterImplementation.cs" />
     <Compile Include="AzureWebApp\FlexiblePerformanceCounterGauge.cs" />
     <Compile Include="One\AggregateMetricProperties.cs" />
