@@ -7,10 +7,10 @@ using System.Runtime.Caching;
 namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp
 {
 
-    class PerformanceCounterGauge : ICounterValue
+    class PerformanceCounterGauge 
 
     {
-        public string GetJson()
+        private string GetJson()
         {
             HttpClient client = new HttpClient();
             var t = client.GetStringAsync("http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_APP/");
@@ -19,7 +19,7 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebA
             return t.Result;
         }
 
-        public string GetValue(string json)
+        private string GetValue(string json)
         {
             string prefix = "\\\"privateBytes\\\":";
             string postfix = ",\\";
@@ -30,7 +30,7 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebA
             return json.Substring(idx, endIdx - idx);
         }
 
-        public MetricTelemetry GetValueAndReset()
+        private MetricTelemetry GetRawCounterValue()
         {
             ObjectCache cache = MemoryCache.Default;
             CacheItemPolicy policy = new CacheItemPolicy();
