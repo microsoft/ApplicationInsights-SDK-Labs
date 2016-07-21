@@ -1,9 +1,6 @@
 ﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp
 {
-    using System;
-    using System.Net.Http;
     using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
 
@@ -14,6 +11,10 @@
     {
         private string name;
 
+        /// <summary>
+        /// Implements name variable
+        /// </summary>
+        /// <param name="name">Name of counter variable</param>
         public FlexiblePerformanceCounterGauge(string name)
         {
             this.name = name;
