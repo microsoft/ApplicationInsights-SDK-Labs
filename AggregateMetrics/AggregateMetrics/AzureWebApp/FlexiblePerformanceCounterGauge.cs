@@ -1,6 +1,5 @@
 ﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp
 {
-    using System.Text.RegularExpressions;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
 
@@ -28,13 +27,8 @@
             {
 
             var metric = new MetricTelemetry();
-            var regularExpressions = new Regex(
-                 @"(?<=[A-Z])(?=[A-Z][a-z]) |
-                 (?<=[^A-Z])(?=[A-Z]) |
-                 (?<=[A-Za-z])(?=[^A-Za-z])",
-                RegexOptions.IgnorePatternWhitespace);
 
-            metric.Name = regularExpressions.Replace(name, " "); 
+            metric.Name = name; 
             metric.Value = CacheHelper.GetCountervalue(name);
 
             return metric;
