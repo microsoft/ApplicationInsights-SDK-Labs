@@ -16,7 +16,7 @@
         /// Cleans raw JSON for only requested counter
         /// Creates value for caching
         /// </summary>
-        /// <param name="name">cache key and name of the counter to be selected from json</param>
+        /// <param name="name">cache key and name of the counter to be selected from JSON</param>
         /// <returns>value from cache</returns>
         public static int GetCountervalue(string name)
         {
@@ -28,6 +28,7 @@
                 http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_APP/
                 http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_CLR/
                http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_ALL/ */
+
                 Task<string> counterRetrieval = client.GetStringAsync("http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_APP/");
                 counterRetrieval.Wait();
 
@@ -54,16 +55,14 @@
         /// <param name="cacheKey"> string name of the counter value to be saved to cache</param>
         /// /<param name="toCache">Object to be cached</param>
         /// <param name="absoluteExpiration"> DateTimeOffset until item expires from cache</param>
-        public static void SaveToCache(string cacheKey,object toCache, DateTimeOffset absoluteExpiration)
-        {
-           
+        public static void SaveToCache(string cacheKey, object toCache,  DateTimeOffset absoluteExpiration)
+        {  
             MemoryCache.Default.Add(cacheKey, toCache, absoluteExpiration);
         }
 
         /// <summary>
         /// Retrieves requested item from cache
         /// </summary>
-        /// <typeparam name="T"> The desired type of the object to be retrieved from the cache</typeparam>
         /// <param name="cacheKey">Key for the retrieved object</param>
         /// <returns> The requested item, as object type T</returns>
         public static object GetFromCache(string cacheKey) 
