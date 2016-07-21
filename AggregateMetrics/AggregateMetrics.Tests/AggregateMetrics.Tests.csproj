@@ -46,11 +46,14 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AzureWebApp\AzureWebAppTest.cs" />
     <Compile Include="One\AggregationSetLimitsTests.cs" />
     <Compile Include="One\AggregationSetTests.cs" />
     <Compile Include="One\AggregationTests.cs" />
