@@ -20,7 +20,8 @@
         /// <returns>value from cache</returns>
         public static int GetCountervalue(string name)
         {
-            if (!CacheHelper.IsInCache(name))
+            const string jsonKey = "json";
+            if (!CacheHelper.IsInCache(jsonKey))
             {
                 HttpClient client = new HttpClient();
 
@@ -28,16 +29,15 @@
                 http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_APP/
                 http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_CLR/
                http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_ALL/ */
-
                 Task<string> counterRetrieval = client.GetStringAsync("http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_APP/");
                 counterRetrieval.Wait();
 
                 string uncachedJson = counterRetrieval.Result;
 
-                CacheHelper.SaveToCache(name, uncachedJson, DateTimeOffset.Now.AddSeconds(5.0));
+                CacheHelper.SaveToCache(jsonKey, uncachedJson, DateTimeOffset.Now.AddSeconds(5.0));
             }
 
-            string json = GetFromCache(name).ToString();
+            string json = GetFromCache(jsonKey).ToString();
             string prefix = "\\\"" + name + "\\\":";
             string postfix = ",\\";
 
