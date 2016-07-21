@@ -8,7 +8,7 @@
     /// <summary>
     /// Class to contain the one cache for all Gauges 
     /// </summary>
-    public class CacheHelper
+    internal class CacheHelper
     {
         /// <summary>
         /// Checks if a key is in the cache and if not
@@ -31,20 +31,21 @@
                 Task<string> counterRetrieval = client.GetStringAsync("http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_APP/");
                 counterRetrieval.Wait();
 
-                string json = counterRetrieval.Result;
+                string uncachedJson = counterRetrieval.Result;
 
-                string prefix = "\\\"" + name + "\\\":";
-                string postfix = ",\\";
-
-                int idx = json.IndexOf(prefix) + prefix.Length;
-                int endIdx = json.IndexOf(postfix, idx);
-
-                string value = json.Substring(idx, endIdx - idx);
-
-                CacheHelper.SaveToCache(name,value, DateTimeOffset.Now.AddSeconds(5.0));
+                CacheHelper.SaveToCache(name, uncachedJson, DateTimeOffset.Now.AddSeconds(5.0));
             }
 
-            return Convert.ToInt32(GetFromCache(name));
+            string json = GetFromCache(name).ToString();
+            string prefix = "\\\"" + name + "\\\":";
+            string postfix = ",\\";
+
+            int idx = json.IndexOf(prefix) + prefix.Length;
+            int endIdx = json.IndexOf(postfix, idx);
+
+            string value = json.Substring(idx, endIdx - idx);
+            
+            return Convert.ToInt32(value);
         }
 
         /// <summary>
