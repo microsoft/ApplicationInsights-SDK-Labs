@@ -52,8 +52,6 @@
         public MetricTelemetry GetRawCounterValue(string name)
         {
             ObjectCache cache = MemoryCache.Default;
-            CacheItemPolicy policy = new CacheItemPolicy();
-            policy.AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(5.0);
             
              /* http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_ASPNET/
              http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_APP/
