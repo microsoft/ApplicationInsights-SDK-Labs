@@ -24,8 +24,8 @@
         StdDev = 0x2,
 
         /// <summary>
-        /// Calculate 50th percentile.
+        /// Calculate percentiles.
         /// </summary>
-        Percentile50 = 0x4
+        Percentiles = 0x4
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.ApplicationInsights.Channel;
+﻿using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
-using System.ServiceModel.Channels;
 using Microsoft.ApplicationInsights.Wcf.Implementation;
+using System;
+using System.ServiceModel.Channels;
 
 namespace Microsoft.ApplicationInsights.Wcf
 {
