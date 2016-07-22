@@ -41,14 +41,13 @@
             }
 
             string json = GetFromCache(jsonKey).ToString();
-            string prefix = "\\\"" + name + "\\\":";
-            string postfix = ",\\";
+            string jsonSubstring = json.Substring(json.IndexOf(name), json.Length - json.IndexOf(name));
 
-            int idx = json.IndexOf(prefix) + prefix.Length;
-            int endIdx = json.IndexOf(postfix, idx);
+            int startingIdx = jsonSubstring.IndexOf(" ");
+            int endingIdx = jsonSubstring.IndexOf(",");
 
-            string value = json.Substring(idx, endIdx - idx);
-            
+            string value = jsonSubstring.Substring(startingIdx + 1, endingIdx - startingIdx - 1);
+
             return Convert.ToInt32(value);
         }
 
