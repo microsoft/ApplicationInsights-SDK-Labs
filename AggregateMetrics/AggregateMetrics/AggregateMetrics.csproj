@@ -69,6 +69,7 @@
     <Compile Include="Two\Implementation\MeterImplementation.cs" />
     <Compile Include="Two\Implementation\NamedCounterValueBase.cs" />
     <Compile Include="Two\MeterAggregations.cs" />
+    <Compile Include="Two\PercentileAggregations.cs" />
     <Compile Include="Two\TelemetryClientExtensions.cs" />
     <Compile Include="Two\TelemetryConfigurationExtensions.cs" />
     <Compile Include="One\PercentileCalculation.cs" />
