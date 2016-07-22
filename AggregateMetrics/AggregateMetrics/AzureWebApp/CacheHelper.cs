@@ -23,16 +23,19 @@
             const string jsonKey = "json";
             if (!CacheHelper.IsInCache(jsonKey))
             {
-                HttpClient client = new HttpClient();
+               
+                PerformanceCounterImplementation client = new PerformanceCounterImplementation();
+                string uncachedJson= client.GetAzureWebAppEnvironmentVariables(AzureWebApEnvironmentVariables.All);
 
                 /* http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_ASPNET/
                 http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_APP/
                 http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_CLR/
                http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_ALL/ */
-                Task<string> counterRetrieval = client.GetStringAsync("http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_APP/");
-                counterRetrieval.Wait();
 
-                string uncachedJson = counterRetrieval.Result;
+                if (uncachedJson == null)
+                {
+                    return 0;
+                }
 
                 CacheHelper.SaveToCache(jsonKey, uncachedJson, DateTimeOffset.Now.AddSeconds(5.0));
             }

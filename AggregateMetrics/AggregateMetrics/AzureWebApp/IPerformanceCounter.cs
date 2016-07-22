@@ -10,6 +10,6 @@
         /// </summary>
         /// <param name="environmentVariable">Name of environment variable</param>
         /// <returns>Raw Json with</returns>
-        string GetAzureWebAppEnvironmentVariables(AzureWebApEnvironmentVariables environmentVaribale);
+        string GetAzureWebAppEnvironmentVariables(AzureWebApEnvironmentVariables environmentVariable);
     }
 }
