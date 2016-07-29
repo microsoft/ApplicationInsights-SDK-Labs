@@ -22,18 +22,18 @@
             this.name = name;
         }
 
-            /// <summary>
-            /// Returns the current value of the counter as a <c ref="MetricTelemetry"/> and resets the metric.
-            /// </summary>
-            /// <returns> Metric Telemetry object mt, with values for Name and Value </returns>
-            public MetricTelemetry GetValueAndReset()
-            {
+        /// <summary>
+        /// Returns the current value of the counter as a <c ref="MetricTelemetry"/> and resets the metric.
+        /// </summary>
+        /// <returns> Metric Telemetry object mt, with values for Name and Value </returns>
+        public MetricTelemetry GetValueAndReset()
+        {
             var metric = new MetricTelemetry();
 
             metric.Name = this.name; 
-            metric.Value = CacheHelper.GetCountervalue(this.name);
+            metric.Value = CacheHelper.Instance.GetCounterValue(this.name);
 
             return metric;
-            }
+        }
     }
 }
