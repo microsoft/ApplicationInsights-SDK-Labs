@@ -12,8 +12,6 @@
     {
         private static readonly CacheHelper instance = new CacheHelper();
 
-        static CacheHelper() { }
-
         private CacheHelper() { }
 
         /// <summary>
@@ -35,14 +33,25 @@
         /// <returns> Value of the performance counter.</returns>
         public int PerformanceCounterValue(string performanceCounterName, string json)
         {
+            if (json.IndexOf(performanceCounterName) == -1)
+            {
+                throw new System.ArgumentException("Counter was not found.", performanceCounterName);
+            }
+
             string jsonSubstring = json.Substring(json.IndexOf(performanceCounterName), json.Length - json.IndexOf(performanceCounterName));
 
-            int startingIdx = jsonSubstring.IndexOf(" ");
-            int endingIdx = jsonSubstring.IndexOf(",");
+            int startingIndex = jsonSubstring.IndexOf(" ");
+            int endingIndex = jsonSubstring.IndexOf(",");
 
-            string value = jsonSubstring.Substring(startingIdx + 1, endingIdx - startingIdx - 1);
+            string valueString = jsonSubstring.Substring(startingIndex + 1, endingIndex - startingIndex - 1);
+            int value;
 
-            return Convert.ToInt32(value);
+            if (!int.TryParse(valueString, out value))
+            {
+                throw new System.InvalidCastException("The value of the counter cannot be converted to integer type.");
+            }
+
+            return value;
         }
 
         /// <summary>
