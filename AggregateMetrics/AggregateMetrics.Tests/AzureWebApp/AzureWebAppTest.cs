@@ -9,13 +9,13 @@
     public class UnitTestAzureWeb
     {
         [TestMethod]
-        public void GetCounterValue()
+        public void TestPerformanceCounterValuesAreCorrectlyRetrievedUsingFlexiblePerformanceCounterGauge()
         {
             string performanceCounter = "privateBytes";
 
             FlexiblePerformanceCounterGauge gauge = new FlexiblePerformanceCounterGauge(performanceCounter);
 
-            var metric = new MetricTelemetry();
+            MetricTelemetry metric = new MetricTelemetry();
 
             metric.Name = performanceCounter;
             metric.Value = CacheHelper.Instance.GetCounterValueHttp(performanceCounter);
