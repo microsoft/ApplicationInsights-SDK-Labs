@@ -54,7 +54,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AzureWebApp\GetEnvironmentVariablesHttpTest.cs" />
     <Compile Include="AzureWebApp\AzureWebAppTest.cs" />
     <Compile Include="One\AggregationSetLimitsTests.cs" />
     <Compile Include="One\AggregationSetTests.cs" />
