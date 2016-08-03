@@ -31,7 +31,7 @@
             var metric = new MetricTelemetry();
 
             metric.Name = this.name;
-            metric.Value = CacheHelper.Instance.GetCounterValueFromEnvironmentVariables(this.name);
+            metric.Value = CacheHelper.Instance.GetCounterValue(this.name);
 
             return metric;
         }
