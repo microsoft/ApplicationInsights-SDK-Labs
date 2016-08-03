@@ -55,6 +55,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AzureWebApp\AzureWebAppTest.cs" />
+    <Compile Include="AzureWebApp\CacheHelperTests.cs" />
     <Compile Include="One\AggregationSetLimitsTests.cs" />
     <Compile Include="One\AggregationSetTests.cs" />
     <Compile Include="One\AggregationTests.cs" />

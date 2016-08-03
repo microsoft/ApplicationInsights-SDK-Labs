@@ -66,7 +66,7 @@
         /// </summary>
         /// <param name="name">Cache key and name of the counter to be selected from JSON</param>
         /// <returns>value from cache</returns>
-        public int GetCounterValueFromEnvironmentVariables(string name)
+        public int GetCounterValue(string name)
         {
             const string jsonKey = "json";
             if (!CacheHelper.Instance.IsInCache(jsonKey))
@@ -83,29 +83,6 @@
             }
 
             string json = GetFromCache(jsonKey).ToString();
-            int value = PerformanceCounterValue(name, json);
-
-            return value;
-        }
-
-        /// <summary>
-        /// Retrieves raw counter data from Environment Variables.
-        /// This method is meant to be used only for testing.
-        /// </summary>
-        /// <param name="name"> Name of the counter to be selected from JSON.</param>
-        /// <returns> Value of the counter.</returns>
-        public int GetCounterValueFromHttpClient(string name)
-        {
-            /* http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_ASPNET/
-                http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_APP/
-                http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_CLR/
-               http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_ALL/ */
-
-            HttpClient client = new HttpClient();
-            Task<string> counterRetrieval = client.GetStringAsync("http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_ALL/");
-            counterRetrieval.Wait();
-
-            string json = counterRetrieval.Result;
             int value = PerformanceCounterValue(name, json);
 
             return value;
