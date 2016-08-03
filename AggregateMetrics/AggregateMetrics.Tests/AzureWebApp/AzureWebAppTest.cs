@@ -30,12 +30,10 @@
         [TestMethod]
         public void TestGetDefaultCountersWorks()
         {
-            DefaultCounters defaultCounters = new DefaultCounters();
-            defaultCounters.Initialize();
 
-            List<MetricTelemetry> metrics = defaultCounters.GetCounters();
 
-            Assert.AreEqual(3, metrics.Count);
+            List<MetricTelemetry> metrics = DefaultCounters.Instance.GetCountersHttp();
+            int countersFirstIteration = metrics.Count;
 
             foreach (MetricTelemetry metric in metrics)
             {
@@ -43,12 +41,15 @@
             }
 
             System.Threading.Thread.Sleep(7000);
-            metrics = defaultCounters.GetCounters();
+            metrics = DefaultCounters.Instance.GetCountersHttp();
+            int countersSecondIteration = metrics.Count;
 
             foreach (MetricTelemetry metric in metrics)
             {
                 Assert.IsTrue(metric.Value >= 0);
             }
+
+            Assert.IsTrue(countersSecondIteration > countersFirstIteration);
         }
     }
 }

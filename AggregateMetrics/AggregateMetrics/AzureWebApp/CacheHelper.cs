@@ -40,11 +40,15 @@
 
             string jsonSubstring = json.Substring(json.IndexOf(performanceCounterName), json.Length - json.IndexOf(performanceCounterName));
 
-            int startingIndex = jsonSubstring.IndexOf(" ");
-            int endingIndex = jsonSubstring.IndexOf(",");
-
-            string valueString = jsonSubstring.Substring(startingIndex + 1, endingIndex - startingIndex - 1);
+            int startingIndex = jsonSubstring.IndexOf(" ") + 1;
             int value;
+            string valueString = "";
+
+            while (char.IsDigit(jsonSubstring[startingIndex]))
+            {
+                valueString += jsonSubstring[startingIndex];
+                startingIndex++;
+            }
 
             if (!int.TryParse(valueString, out value))
             {
