@@ -30,24 +30,11 @@
         {
             var metric = new MetricTelemetry();
 
-            metric.Name = this.name; 
-            metric.Value = CacheHelper.Instance.GetCounterValue(this.name);
-
-            return metric;
-        }
-
-        /// <summary>
-        /// Returns the current value of the counter and resets the metric associated with the gauge. This method is for testing purposes only.
-        /// </summary>
-        /// <returns> Metric Telemetry object</returns>
-        public MetricTelemetry GetValueAndResetHttp()
-        {
-            var metric = new MetricTelemetry();
-
             metric.Name = this.name;
-            metric.Value = CacheHelper.Instance.GetCounterValueHttp(this.name);
+            metric.Value = CacheHelper.Instance.GetCounterValueFromEnvironmentVariables(this.name);
 
             return metric;
         }
+
     }
 }
