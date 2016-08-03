@@ -66,7 +66,7 @@
         /// </summary>
         /// <param name="name">Cache key and name of the counter to be selected from JSON</param>
         /// <returns>value from cache</returns>
-        public int GetCounterValue(string name)
+        public int GetCounterValueFromEnvironmentVariables(string name)
         {
             const string jsonKey = "json";
             if (!CacheHelper.Instance.IsInCache(jsonKey))
@@ -94,7 +94,7 @@
         /// </summary>
         /// <param name="name"> Name of the counter to be selected from JSON.</param>
         /// <returns> Value of the counter.</returns>
-        public int GetCounterValueHttp(string name)
+        public int GetCounterValueFromHttpClient(string name)
         {
             /* http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_ASPNET/
                 http://remoteenvironmentvariables.azurewebsites.net/api/EnvironmentVariables/WEBSITE_COUNTERS_APP/

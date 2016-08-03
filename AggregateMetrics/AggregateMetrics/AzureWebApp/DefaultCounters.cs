@@ -23,7 +23,7 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebA
         }
 
         Dictionary<FlexiblePerformanceCounterGauge, MetricTelemetry> defaultCounters;
-        Dictionary<FlexiblePerformanceCounterGauge, TimeDependentCounter> timeDependentCounters;
+        Dictionary<FlexiblePerformanceCounterGauge, RateCounter> timeDependentCounters;
 
         /// <summary>
         /// Initializes the dictionaries for the default performance counters.
@@ -39,13 +39,13 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebA
                 { new FlexiblePerformanceCounterGauge("requestsInApplicationQueue"), new MetricTelemetry() }
             };
 
-            timeDependentCounters = new Dictionary<FlexiblePerformanceCounterGauge, TimeDependentCounter>()
+            timeDependentCounters = new Dictionary<FlexiblePerformanceCounterGauge, RateCounter>()
             {
-                { new FlexiblePerformanceCounterGauge("requestsTotal"), new TimeDependentCounter() },
-                { new FlexiblePerformanceCounterGauge("exceptionsThrown"), new TimeDependentCounter() },
-                { new FlexiblePerformanceCounterGauge("readIoBytes"), new TimeDependentCounter() },
-                { new FlexiblePerformanceCounterGauge("writeIoBytes"), new TimeDependentCounter() },
-                { new FlexiblePerformanceCounterGauge("otherIoBytes"), new TimeDependentCounter() }
+                { new FlexiblePerformanceCounterGauge("requestsTotal"), new RateCounter() },
+                { new FlexiblePerformanceCounterGauge("exceptionsThrown"), new RateCounter() },
+                { new FlexiblePerformanceCounterGauge("readIoBytes"), new RateCounter() },
+                { new FlexiblePerformanceCounterGauge("writeIoBytes"), new RateCounter() },
+                { new FlexiblePerformanceCounterGauge("otherIoBytes"), new RateCounter() }
             };
         }
 
@@ -53,48 +53,20 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebA
         /// Gets the default performance counters.
         /// </summary>
         /// <returns> List of MetricTelemetry objects</returns>
-        public List<MetricTelemetry> GetCounters()
+        private List<MetricTelemetry> GetCounters(bool useEnvironmentVariables = true)
         {
             List<MetricTelemetry> metrics = new List<MetricTelemetry>();
 
             foreach (var item in defaultCounters.ToList())
             {
-                defaultCounters[item.Key] = item.Key.GetValueAndReset();
-                metrics.Add(defaultCounters[item.Key]);
-            }
-
-            foreach (var item in timeDependentCounters.ToList())
-            {
-                bool firstValue = timeDependentCounters[item.Key].DateTime == System.DateTime.MinValue;
-
-                TimeDependentCounter counter = new TimeDependentCounter();
-                counter.MetricTelemetry = item.Key.GetValueAndReset();
-                counter.DateTime = System.DateTime.Now;
-
-                if (!firstValue)
+                if (useEnvironmentVariables)
+                    defaultCounters[item.Key] = item.Key.GetValueAndReset();
+                else
                 {
-                    MetricTelemetry metric = counter.MetricTelemetry;
-                    metric.Value = (counter.MetricTelemetry.Value - timeDependentCounters[item.Key].MetricTelemetry.Value) / (counter.DateTime.Second - timeDependentCounters[item.Key].DateTime.Second);
-                    metrics.Add(metric);
+                    MetricTelemetry metric = new MetricTelemetry();
+                    metric.Value = defaultCounters[item.Key].Value;
                 }
 
-                timeDependentCounters[item.Key] = counter;
-            }
-
-            return metrics;
-        }
-
-        /// <summary>
-        /// Gets the default performance counters. This method is meant to be used only for testing.
-        /// </summary>
-        /// <returns> List of MetricTelemetry objects</returns>
-        public List<MetricTelemetry> GetCountersHttp()
-        {
-            List<MetricTelemetry> metrics = new List<MetricTelemetry>();
-
-            foreach (var item in defaultCounters.ToList())
-            {
-                defaultCounters[item.Key] = item.Key.GetValueAndResetHttp();
                 metrics.Add(defaultCounters[item.Key]);
             }
 
@@ -102,8 +74,8 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebA
             {
                 bool firstValue = timeDependentCounters[item.Key].DateTime == System.DateTime.MinValue;
 
-                TimeDependentCounter counter = new TimeDependentCounter();
-                counter.MetricTelemetry = item.Key.GetValueAndResetHttp();
+                RateCounter counter = new RateCounter();
+                counter.MetricTelemetry = item.Key.GetValueAndReset();
                 counter.DateTime = System.DateTime.Now;
 
                 if (!firstValue)
