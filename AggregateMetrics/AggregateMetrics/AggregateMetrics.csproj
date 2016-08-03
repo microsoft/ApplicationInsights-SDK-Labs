@@ -50,6 +50,7 @@
     <Compile Include="AzureWebApp\PerformanceCounterCollectionRequest.cs" />
     <Compile Include="AzureWebApp\PerformanceCounterImplementation.cs" />
     <Compile Include="AzureWebApp\FlexiblePerformanceCounterGauge.cs" />
+    <Compile Include="AzureWebApp\TimeDependentCounter.cs" />
     <Compile Include="One\AggregateMetricProperties.cs" />
     <Compile Include="One\AggregateMetricsTelemetryModule.cs" />
     <Compile Include="One\AggregationResult.cs" />
