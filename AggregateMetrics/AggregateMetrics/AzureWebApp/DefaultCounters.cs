@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.ApplicationInsights.DataContracts;
+    using Two;
 
     /// <summary>
     /// Class that gives the user the default performance counters.
@@ -11,8 +12,7 @@
     {
         private static readonly DefaultCounters DefaultCountersInstance = new DefaultCounters();
 
-        Dictionary<FlexiblePerformanceCounterGauge, MetricTelemetry> defaultCounters;
-        Dictionary<RateCounter, MetricTelemetry> rateDefaultCounters;
+        Dictionary<ICounterValue, MetricTelemetry> defaultCounters;
 
         SumUpGauge processorTime = new SumUpGauge(
                 "processorTime",
@@ -46,17 +46,13 @@
         /// </summary>
         public void Initialize()
         {
-            this.defaultCounters = new Dictionary<FlexiblePerformanceCounterGauge, MetricTelemetry>()
+            this.defaultCounters = new Dictionary<ICounterValue, MetricTelemetry>()
             {
                 { new FlexiblePerformanceCounterGauge("appRequestExecTime"), new MetricTelemetry() },
                 { new FlexiblePerformanceCounterGauge("privateBytes"), new MetricTelemetry() },
-                { new FlexiblePerformanceCounterGauge("requestsInApplicationQueue"), new MetricTelemetry() }
-            };
-
-            this.rateDefaultCounters = new Dictionary<RateCounter, MetricTelemetry>()
-            {
-                { new RateCounter("requestsTotal"), new MetricTelemetry() },
-                { new RateCounter("exceptionsThrown"), new MetricTelemetry() }
+                { new FlexiblePerformanceCounterGauge("requestsInApplicationQueue"), new MetricTelemetry() },
+                { new RateCounterGauge("requestsTotal"), new MetricTelemetry() },
+                { new RateCounterGauge("exceptionsThrown"), new MetricTelemetry() }
             };
         }
     }

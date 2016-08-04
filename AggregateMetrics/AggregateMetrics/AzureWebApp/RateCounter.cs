@@ -7,7 +7,7 @@
     /// <summary>
     /// Struct for metrics dependant on time.
     /// </summary>
-    public class RateCounter : ICounterValue
+    public class RateCounterGauge : ICounterValue
     {
         private string name;
 
@@ -16,13 +16,13 @@
         /// <summary>
         /// DateTime object to keep track of the last time this metric was retrieved.
         /// </summary>
-        private DateTime dateTime;
+        private DateTimeOffset dateTime;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RateCounter"/> class.
+        /// Initializes a new instance of the <see cref="RateCounterGauge"/> class.
         /// </summary>
         /// <param name="name"> Name of counter variable.</param>
-        public RateCounter(string name)
+        public RateCounterGauge(string name)
         {
             this.name = name;
         }
@@ -45,9 +45,9 @@
                 return metric;
             }
 
-            metric.Value = ((double)this.lastValue - CacheHelper.Instance.GetCounterValue(this.name)) / (System.DateTime.Now.Second - this.dateTime.Second);
+            metric.Value = ((double)this.lastValue - CacheHelper.Instance.GetCounterValue(this.name)) / (System.DateTimeOffset.Now.Second - this.dateTime.Second);
             this.lastValue = CacheHelper.Instance.GetCounterValue(this.name);
-            this.dateTime = System.DateTime.Now;
+            this.dateTime = System.DateTimeOffset.Now;
 
             return metric;
         }
