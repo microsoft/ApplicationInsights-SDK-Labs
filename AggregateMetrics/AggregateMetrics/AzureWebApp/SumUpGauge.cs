@@ -11,7 +11,7 @@
     {
         private string name;
 
-        private List<FlexiblePerformanceCounterGauge> gaugesToSum;
+        private readonly List<FlexiblePerformanceCounterGauge> gaugesToSum;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SumUpGauge"/> class.

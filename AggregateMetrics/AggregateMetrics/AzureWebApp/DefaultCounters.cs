@@ -12,7 +12,7 @@
         private static readonly DefaultCounters DefaultCountersInstance = new DefaultCounters();
 
         Dictionary<FlexiblePerformanceCounterGauge, MetricTelemetry> defaultCounters;
-        Dictionary<FlexiblePerformanceCounterGauge, RateCounter> rateDefaultCounters;
+        Dictionary<RateCounter, MetricTelemetry> rateDefaultCounters;
 
         SumUpGauge processorTime = new SumUpGauge(
                 "processorTime",
@@ -53,46 +53,11 @@
                 { new FlexiblePerformanceCounterGauge("requestsInApplicationQueue"), new MetricTelemetry() }
             };
 
-            this.rateDefaultCounters = new Dictionary<FlexiblePerformanceCounterGauge, RateCounter>()
+            this.rateDefaultCounters = new Dictionary<RateCounter, MetricTelemetry>()
             {
-                { new FlexiblePerformanceCounterGauge("requestsTotal"), new RateCounter() },
-                { new FlexiblePerformanceCounterGauge("exceptionsThrown"), new RateCounter() }
+                { new RateCounter("requestsTotal"), new MetricTelemetry() },
+                { new RateCounter("exceptionsThrown"), new MetricTelemetry() }
             };
-        }
-
-        /// <summary>
-        /// Gets the default performance counters.
-        /// </summary>
-        /// <returns> List of MetricTelemetry objects</returns>
-        private List<MetricTelemetry> GetCounters()
-        {
-            List<MetricTelemetry> metrics = new List<MetricTelemetry>();
-
-            foreach (var item in this.defaultCounters.ToList())
-            {
-                this.defaultCounters[item.Key] = item.Key.GetValueAndReset();
-                metrics.Add(this.defaultCounters[item.Key]);
-            }
-
-            foreach (var item in this.rateDefaultCounters.ToList())
-            {
-                bool firstValue = this.rateDefaultCounters[item.Key].DateTime == System.DateTime.MinValue;
-
-                RateCounter counter = new RateCounter();
-                counter.MetricTelemetry = item.Key.GetValueAndReset();
-                counter.DateTime = System.DateTime.Now;
-
-                if (!firstValue)
-                {
-                    MetricTelemetry metric = counter.MetricTelemetry;
-                    metric.Value = (counter.MetricTelemetry.Value - this.rateDefaultCounters[item.Key].MetricTelemetry.Value) / (counter.DateTime.Second - this.rateDefaultCounters[item.Key].DateTime.Second);
-                    metrics.Add(metric);
-                }
-
-                this.rateDefaultCounters[item.Key] = counter;
-            }
-
-            return metrics;
         }
     }
 }
