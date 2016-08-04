@@ -4,23 +4,8 @@ using System.Threading.Tasks;
 
 namespace AggregateMetrics.Tests.AzureWebApp
 {
-    internal class CacheHelperTests
+    internal class CacheHelperTests : ICacheHelper
     {
-        private static readonly CacheHelperTests instance = new CacheHelperTests();
-
-        private CacheHelperTests() { }
-
-        /// <summary>
-        /// Return the only instance of CacheHelper.
-        /// </summary>
-        public static CacheHelperTests Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
-
         /// <summary>
         /// Retrieves raw counter data from Environment Variables.
         /// </summary>

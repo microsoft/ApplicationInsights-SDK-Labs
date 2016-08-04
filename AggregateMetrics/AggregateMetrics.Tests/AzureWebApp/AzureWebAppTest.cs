@@ -14,14 +14,10 @@
         {
             string performanceCounter = "privateBytes";
 
-            FlexiblePerformanceCounterGauge gauge = new FlexiblePerformanceCounterGauge(performanceCounter);
+            FlexiblePerformanceCounterGauge gauge = new FlexiblePerformanceCounterGauge(performanceCounter, new CacheHelperTests());
+            MetricTelemetry metric = gauge.GetValueAndReset();
 
-            MetricTelemetry metric = new MetricTelemetry();
-
-            metric.Name = performanceCounter;
-            metric.Value = CacheHelperTests.Instance.GetCounterValue(performanceCounter);
-
-            Assert.IsTrue(metric.Value >= 0);
+            Assert.IsTrue(metric.Value > 0);
         }
     }
 }

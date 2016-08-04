@@ -13,7 +13,7 @@
 
         private double? lastValue;
 
-        private dynamic cacheHelper;
+        private ICacheHelper cacheHelper;
 
         /// <summary>
         /// DateTime object to keep track of the last time this metric was retrieved.
@@ -26,7 +26,7 @@
         /// </summary>
         /// <param name="name"> Name of the counter variable.</param>
         /// <param name="cache"> Cache object.</param>
-        internal RateCounterGauge(string name, dynamic cache)
+        internal RateCounterGauge(string name, ICacheHelper cache) 
         {
             this.name = name;
             this.cacheHelper = cache;
@@ -37,9 +37,8 @@
         /// </summary>
         /// <param name="name"> Name of counter variable.</param>
         public RateCounterGauge(string name)
+            : this(name, CacheHelper.Instance)
         {
-            this.name = name;
-            this.cacheHelper = CacheHelper.Instance;
         }
 
         /// <summary>
@@ -55,14 +54,14 @@
 
             if (this.lastValue == null)
             {
-                this.lastValue = cacheHelper;
+                this.lastValue = cacheHelper.GetCounterValue(this.name);
                 this.dateTime = currentTime;
 
                 return metric;
             }
 
-            metric.Value = ((double)this.lastValue - cacheHelper) / (currentTime.Second - this.dateTime.Second);
-            this.lastValue = cacheHelper;
+            metric.Value = (currentTime.Second - this.dateTime.Second != 0) ? ((double)this.lastValue - cacheHelper.GetCounterValue(this.name)) / (currentTime.Second - this.dateTime.Second) : 0;
+            this.lastValue = cacheHelper.GetCounterValue(this.name);
             this.dateTime = currentTime;
 
             return metric;

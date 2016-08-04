@@ -8,7 +8,7 @@
     /// <summary>
     /// Class to contain the one cache for all Gauges.
     /// </summary>
-    internal class CacheHelper
+    internal class CacheHelper : ICacheHelper
     {
         private static readonly CacheHelper instance = new CacheHelper();
 

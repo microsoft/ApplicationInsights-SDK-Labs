@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="AggregateMetricsEventSource.cs" />
     <Compile Include="AzureWebApp\AzureWebEnvironmentVariables.cs" />
+    <Compile Include="AzureWebApp\ICacheHelper.cs" />
     <Compile Include="AzureWebApp\SumUpGauge.cs" />
     <Compile Include="AzureWebApp\CacheHelper.cs" />
     <Compile Include="AzureWebApp\DefaultCounters.cs" />

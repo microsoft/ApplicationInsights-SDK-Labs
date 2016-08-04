@@ -13,13 +13,21 @@
         /// </summary>
         private string name;
 
+        private ICacheHelper cacheHelper;
+
+        internal FlexiblePerformanceCounterGauge(string name, ICacheHelper cache)
+        {
+            this.name = name;
+            this.cacheHelper = cache;
+        }
+
         /// <summary>
         /// Implements name variable
         /// </summary>
         /// <param name="name">Name of counter variable</param>
         public FlexiblePerformanceCounterGauge(string name)
+            : this(name, CacheHelper.Instance)
         {
-            this.name = name;
         }
 
         /// <summary>
@@ -31,7 +39,7 @@
             var metric = new MetricTelemetry();
 
             metric.Name = this.name;
-            metric.Value = CacheHelper.Instance.GetCounterValue(this.name);
+            metric.Value = cacheHelper.GetCounterValue(this.name);
 
             return metric;
         }
