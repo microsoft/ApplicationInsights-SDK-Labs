@@ -35,6 +35,5 @@
 
             return metric;
         }
-
     }
 }
