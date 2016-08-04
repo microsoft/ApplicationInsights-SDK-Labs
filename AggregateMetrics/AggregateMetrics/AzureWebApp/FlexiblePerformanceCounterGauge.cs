@@ -25,7 +25,7 @@
         /// <summary>
         /// Returns the current value of the counter as a <c ref="MetricTelemetry"/> and resets the metric.
         /// </summary>
-        /// <returns> Metric Telemetry object mt, with values for Name and Value </returns>
+        /// <returns> Metric Telemetry object, with values for Name and Value </returns>
         public MetricTelemetry GetValueAndReset()
         {
             var metric = new MetricTelemetry();
