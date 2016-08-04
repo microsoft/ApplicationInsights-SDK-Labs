@@ -10,36 +10,7 @@
     /// </summary>
     internal class DefaultCounters
     {
-        private static readonly DefaultCounters DefaultCountersInstance = new DefaultCounters();
-
         List<ICounterValue> defaultCounters;
-
-        SumUpGauge processorTime = new SumUpGauge(
-                "processorTime",
-                new FlexiblePerformanceCounterGauge("kernelTime"),
-                new FlexiblePerformanceCounterGauge("userTime"));
-
-        SumUpGauge ioDataBytesRate = new SumUpGauge(
-                "ioDataBytesRate",
-                new FlexiblePerformanceCounterGauge("readIoBytes"),
-                new FlexiblePerformanceCounterGauge("writeIoBytes"),
-                new FlexiblePerformanceCounterGauge("otherIoBytes"));
-
-        private DefaultCounters()
-        {
-            this.Initialize();
-        }
-
-        /// <summary>
-        /// Gets the only instance of DefaultCounters.
-        /// </summary>
-        public static DefaultCounters Instance
-        {
-            get
-            {
-                return DefaultCountersInstance;
-            }
-        }
 
         /// <summary>
         /// Initializes the dictionaries for the default performance counters.
@@ -52,7 +23,14 @@
                 new FlexiblePerformanceCounterGauge("privateBytes"),
                 new FlexiblePerformanceCounterGauge("requestsInApplicationQueue"),
                 new RateCounterGauge("requestsTotal"),
-                new RateCounterGauge("exceptionsThrown")
+                new RateCounterGauge("exceptionsThrown"),
+                new SumUpGauge("processorTime", 
+                    new FlexiblePerformanceCounterGauge("kernelTime"), 
+                    new FlexiblePerformanceCounterGauge("userTime")),
+                new SumUpGauge("ioDataBytesRate",
+                    new FlexiblePerformanceCounterGauge("readIoBytes"), 
+                    new FlexiblePerformanceCounterGauge("writeIoBytes"), 
+                    new FlexiblePerformanceCounterGauge("otherIoBytes"))
             };
         }
     }
