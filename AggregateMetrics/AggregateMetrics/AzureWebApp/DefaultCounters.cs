@@ -12,7 +12,7 @@
     {
         private static readonly DefaultCounters DefaultCountersInstance = new DefaultCounters();
 
-        Dictionary<ICounterValue, MetricTelemetry> defaultCounters;
+        List<ICounterValue> defaultCounters;
 
         SumUpGauge processorTime = new SumUpGauge(
                 "processorTime",
@@ -46,13 +46,13 @@
         /// </summary>
         public void Initialize()
         {
-            this.defaultCounters = new Dictionary<ICounterValue, MetricTelemetry>()
+            this.defaultCounters = new List<ICounterValue>
             {
-                { new FlexiblePerformanceCounterGauge("appRequestExecTime"), new MetricTelemetry() },
-                { new FlexiblePerformanceCounterGauge("privateBytes"), new MetricTelemetry() },
-                { new FlexiblePerformanceCounterGauge("requestsInApplicationQueue"), new MetricTelemetry() },
-                { new RateCounterGauge("requestsTotal"), new MetricTelemetry() },
-                { new RateCounterGauge("exceptionsThrown"), new MetricTelemetry() }
+                new FlexiblePerformanceCounterGauge("appRequestExecTime"),
+                new FlexiblePerformanceCounterGauge("privateBytes"),
+                new FlexiblePerformanceCounterGauge("requestsInApplicationQueue"),
+                new RateCounterGauge("requestsTotal"),
+                new RateCounterGauge("exceptionsThrown")
             };
         }
     }

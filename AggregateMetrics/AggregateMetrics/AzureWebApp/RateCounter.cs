@@ -36,18 +36,19 @@
             MetricTelemetry metric = new MetricTelemetry();
 
             metric.Name = this.name;
+            DateTimeOffset currentTime = System.DateTimeOffset.Now;
 
             if (this.lastValue == null)
             {
                 this.lastValue = CacheHelper.Instance.GetCounterValue(this.name);
-                this.dateTime = System.DateTime.Now;
+                this.dateTime = currentTime;
 
                 return metric;
             }
 
-            metric.Value = ((double)this.lastValue - CacheHelper.Instance.GetCounterValue(this.name)) / (System.DateTimeOffset.Now.Second - this.dateTime.Second);
+            metric.Value = ((double)this.lastValue - CacheHelper.Instance.GetCounterValue(this.name)) / (currentTime.Second - this.dateTime.Second);
             this.lastValue = CacheHelper.Instance.GetCounterValue(this.name);
-            this.dateTime = System.DateTimeOffset.Now;
+            this.dateTime = currentTime;
 
             return metric;
         }
