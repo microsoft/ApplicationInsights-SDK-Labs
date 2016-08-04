@@ -8,14 +8,14 @@
     /// <summary>
     /// Class that gives the user the default performance counters.
     /// </summary>
-    internal class DefaultCounters
+    public class DefaultCounters : ITelemetryModule
     {
         List<ICounterValue> defaultCounters;
 
         /// <summary>
         /// Initializes the dictionaries for the default performance counters.
         /// </summary>
-        public void Initialize()
+        public void Initialize(TelemetryConfiguration configuration)
         {
             this.defaultCounters = new List<ICounterValue>
             {
@@ -32,6 +32,11 @@
                     new FlexiblePerformanceCounterGauge("writeIoBytes"), 
                     new FlexiblePerformanceCounterGauge("otherIoBytes"))
             };
+
+            foreach (var defaultCounter in defaultCounters)
+            {
+                configuration.RegisterCounter(defaultCounter);
+            }
         }
     }
 }

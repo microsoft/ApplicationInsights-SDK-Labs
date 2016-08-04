@@ -29,9 +29,8 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebA
 
         public void Initialize(TelemetryConfiguration configuration)
         {
-            FlexiblePerformanceCounterGauge gauge = new FlexiblePerformanceCounterGauge("privateBytes");
-            configuration.RegisterCounter(gauge);
-
+            DefaultCounters defaultCounters = new DefaultCounters();
+            defaultCounters.Initialize(configuration);
         }
     }
 }
