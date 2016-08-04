@@ -13,10 +13,24 @@
 
         private double? lastValue;
 
+        private dynamic cacheHelper;
+
         /// <summary>
         /// DateTime object to keep track of the last time this metric was retrieved.
         /// </summary>
         private DateTimeOffset dateTime;
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="RateCounterGauge"/> class. 
+        /// This constructor is intended for Unit Tests.
+        /// </summary>
+        /// <param name="name"> Name of the counter variable.</param>
+        /// <param name="cache"> Cache object.</param>
+        internal RateCounterGauge(string name, dynamic cache)
+        {
+            this.name = name;
+            this.cacheHelper = cache;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RateCounterGauge"/> class.
@@ -25,6 +39,7 @@
         public RateCounterGauge(string name)
         {
             this.name = name;
+            this.cacheHelper = CacheHelper.Instance;
         }
 
         /// <summary>
@@ -40,14 +55,14 @@
 
             if (this.lastValue == null)
             {
-                this.lastValue = CacheHelper.Instance.GetCounterValue(this.name);
+                this.lastValue = cacheHelper;
                 this.dateTime = currentTime;
 
                 return metric;
             }
 
-            metric.Value = ((double)this.lastValue - CacheHelper.Instance.GetCounterValue(this.name)) / (currentTime.Second - this.dateTime.Second);
-            this.lastValue = CacheHelper.Instance.GetCounterValue(this.name);
+            metric.Value = ((double)this.lastValue - cacheHelper) / (currentTime.Second - this.dateTime.Second);
+            this.lastValue = cacheHelper;
             this.dateTime = currentTime;
 
             return metric;
