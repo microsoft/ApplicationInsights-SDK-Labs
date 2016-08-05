@@ -60,7 +60,7 @@
                 return metric;
             }
 
-            metric.Value = (currentTime.Second - this.dateTime.Second != 0) ? ((double)this.lastValue - cacheHelper.GetCounterValue(this.name)) / (currentTime.Second - this.dateTime.Second) : 0;
+            metric.Value = (currentTime.Second - this.dateTime.Second != 0) ? (cacheHelper.GetCounterValue(this.name) - (double)this.lastValue) / (currentTime.Subtract(this.dateTime).Seconds) : 0;
             this.lastValue = cacheHelper.GetCounterValue(this.name);
             this.dateTime = currentTime;
 
