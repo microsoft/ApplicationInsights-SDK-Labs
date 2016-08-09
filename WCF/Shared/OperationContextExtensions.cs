@@ -38,6 +38,8 @@ namespace Microsoft.ApplicationInsights.Wcf
             {
                 throw new ArgumentNullException("context");
             }
+            // OperationContext.IsUserContext probably does the same thing
+            // but exact semantics are not documented.
             return context.Host == null;
         }
     }
