@@ -57,6 +57,14 @@
                             new PerformanceCounterFromJsonGauge(
                                 "otherIoBytes", 
                                 "otherIoBytes")));
+                case @"\Process(w3wp)\Handle Count":
+                    return new PerformanceCounterFromJsonGauge(
+                        counterName,
+                        "handles");
+                case @"\Process(w3wp)\Thread Count":
+                    return new PerformanceCounterFromJsonGauge(
+                        counterName,
+                        "threads");
                 default:
                     throw new ArgumentException();
             }

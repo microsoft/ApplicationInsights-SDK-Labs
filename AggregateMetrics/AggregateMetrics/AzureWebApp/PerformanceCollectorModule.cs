@@ -21,13 +21,26 @@
                                                                 @"\Processor(_Total)\% Processor Time"
                                                             };
 
-        public IList<PerformanceCounterCollectionRequest> Counters { get; private set; }
-
+        /// <summary>
+        /// Initializes the default performance counters.
+        /// </summary>
         public void Initialize(TelemetryConfiguration configuration)
         {
             CounterFactory factory = new CounterFactory();
 
             foreach (string counter in defaultCounters)
+                factory.GetCounter(counter);
+        }
+
+        /// <summary>
+        /// Get specific performance counters that are not in the default counters list.
+        /// </summary>
+        /// <param name="counterName"> Counter name.</param>
+        public void AddCounter(params string[] counterName)
+        {
+            CounterFactory factory = new CounterFactory();
+
+            foreach (string counter in counterName)
                 factory.GetCounter(counter);
         }
     }
