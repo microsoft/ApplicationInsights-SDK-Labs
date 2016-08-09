@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ClientIpTelemetryInitializerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContractDescriptionBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContractFilterTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Integration\MultipleServiceCallsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\OperationContextExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationFilterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\OneWayTests.cs" />

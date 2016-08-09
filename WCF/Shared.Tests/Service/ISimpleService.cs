@@ -26,5 +26,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
         void CatchAllOperation();
         [OperationContract]
         void CallThatEmitsEvent();
+        [OperationContract]
+        void CallAnotherServiceAndLeakOperationContext(String address);
+        [OperationContract]
+        bool CallIsClientSideContext();
     }
 }

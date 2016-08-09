@@ -29,6 +29,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             endpoint = host.AddServiceEndpoint(typeof(TServiceIFace), binding, "svc");
         }
 
+        public String GetServiceAddress()
+        {
+            return endpoint.Address.Uri.ToString();
+        }
+
         public HostingContext<TServiceImpl, TServiceIFace> IncludeDetailsInFaults()
         {
             ServiceDebugBehavior sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();

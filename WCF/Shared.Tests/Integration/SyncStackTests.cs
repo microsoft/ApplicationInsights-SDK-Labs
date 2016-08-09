@@ -1,4 +1,5 @@
 ﻿using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Wcf.Implementation;
 using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
 using Microsoft.ApplicationInsights.Wcf.Tests.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,6 +14,34 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
     [TestClass]
     public class FullStackTests
     {
+        [TestMethod]
+        [TestCategory("Integration"), TestCategory("Sync")]
+        public void IsClientSideContextReturnsTrueForClientChannel()
+        {
+            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            {
+                host.Open();
+                ISimpleService client = host.GetChannel();
+
+                using ( var scope = new OperationContextScope((IContextChannel)client) )
+                {
+                    Assert.IsTrue(OperationContext.Current.IsClientSideContext());
+                }
+            }
+        }
+        [TestMethod]
+        [TestCategory("Integration"), TestCategory("Sync")]
+        public void IsClientSideContextReturnsFalseForServerChannel()
+        {
+            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            {
+                host.Open();
+                ISimpleService client = host.GetChannel();
+
+                Assert.IsFalse(client.CallIsClientSideContext());
+            }
+        }
+
         [TestMethod]
         [TestCategory("Integration"), TestCategory("Sync")]
         public void TelemetryEventsAreGeneratedOnServiceCall()
