@@ -10,8 +10,8 @@
         [TestMethod]
         public void SumUpGaugeGetValueAndResetWorking()
         {
-            SumUpGauge twoTimesPrivateBytes = new SumUpGauge("twoTimesPrivateBytes", new FlexiblePerformanceCounterGauge("privateBytes", new CacheHelperTests()), new FlexiblePerformanceCounterGauge("privateBytes", new CacheHelperTests()));
-            FlexiblePerformanceCounterGauge privateBytes = new FlexiblePerformanceCounterGauge("privateBytes", new CacheHelperTests());
+            SumUpGauge twoTimesPrivateBytes = new SumUpGauge("twoTimesPrivateBytes", new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes * 2", "privateBytes", new CacheHelperTests()), new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes", "privateBytes", new CacheHelperTests()));
+            PerformanceCounterFromJsonGauge privateBytes = new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes", "privateBytes", new CacheHelperTests());
 
             MetricTelemetry expectedTelemetry = privateBytes.GetValueAndReset();
             MetricTelemetry actualTelemetry = twoTimesPrivateBytes.GetValueAndReset();

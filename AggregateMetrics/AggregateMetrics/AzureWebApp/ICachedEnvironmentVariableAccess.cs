@@ -3,7 +3,7 @@
     /// <summary>
     /// Interface for classes that implement a CacheHelper.
     /// </summary>
-    public interface ICacheHelper
+    public interface ICachedEnvironmentVariableAccess
     {
         /// <summary>
         /// Returns value of a counter from cache.

@@ -10,11 +10,9 @@
     public class UnitTestAzureWeb
     {
         [TestMethod]
-        public void TestPerformanceCounterValuesAreCorrectlyRetrievedUsingFlexiblePerformanceCounterGauge()
+        public void TestPerformanceCounterValuesAreCorrectlyRetrievedUsingPerformanceCounterFromJsonGauge()
         {
-            string performanceCounter = "privateBytes";
-
-            FlexiblePerformanceCounterGauge gauge = new FlexiblePerformanceCounterGauge(performanceCounter, new CacheHelperTests());
+            PerformanceCounterFromJsonGauge gauge = new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes", "privateBytes", new CacheHelperTests());
             MetricTelemetry metric = gauge.GetValueAndReset();
 
             Assert.IsTrue(metric.Value > 0);

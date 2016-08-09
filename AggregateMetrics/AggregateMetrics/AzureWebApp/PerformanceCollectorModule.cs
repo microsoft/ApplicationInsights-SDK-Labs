@@ -1,15 +1,11 @@
-﻿using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
-using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp
+﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp
 {
+    using System.Collections.Generic;
+    using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector;
+    using Implementation;
+    /// <summary>
+    /// Telemetry module for collecting performance counters.
+    /// </summary>
     public class PerformanceCollectorModule : ITelemetryModule
     {
         private readonly List<string> defaultCounters = new List<string>()
@@ -29,8 +25,10 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebA
 
         public void Initialize(TelemetryConfiguration configuration)
         {
-            DefaultCounters defaultCounters = new DefaultCounters();
-            defaultCounters.Initialize(configuration);
+            CounterFactory factory = new CounterFactory();
+
+            foreach (string counter in defaultCounters)
+                factory.GetCounter(counter);
         }
     }
 }

@@ -8,28 +8,36 @@
     /// <summary>
     /// Class to contain the one cache for all Gauges.
     /// </summary>
-    internal class CacheHelper : ICacheHelper
+    internal class CacheHelper : ICachedEnvironmentVariableAccess
     {
-        private static readonly CacheHelper instance = new CacheHelper();
-
-        private CacheHelper() { }
+        /// <summary>
+        /// Only instance of CacheHelper.
+        /// </summary>
+        private static readonly CacheHelper Instance = new CacheHelper();
 
         /// <summary>
-        /// Return the only instance of CacheHelper.
+        /// Prevents a default instance of the <see cref="CacheHelper"/> class from being created.
         /// </summary>
-        public static CacheHelper Instance
+        private CacheHelper()
+        {
+        }
+
+        /// <summary>
+        /// Gets the only instance of CacheHelper.
+        /// </summary>
+        public static CacheHelper GetInstance
         {
             get
             {
-                return instance;
+                return Instance;
             }
         }
 
         /// <summary>
-        /// Searchs for the value of a given performance counter in a json.
+        /// Search for the value of a given performance counter in a Json.
         /// </summary>
         /// <param name="performanceCounterName"> The name of the performance counter.</param>
-        /// <param name="json"> String containing the json.</param>
+        /// <param name="json"> String containing the Json.</param>
         /// <returns> Value of the performance counter.</returns>
         public int PerformanceCounterValue(string performanceCounterName, string json)
         {
@@ -42,7 +50,7 @@
 
             int startingIndex = jsonSubstring.IndexOf(" ") + 1;
             int value;
-            string valueString = "";
+            string valueString = string.Empty;
 
             while (char.IsDigit(jsonSubstring[startingIndex]))
             {
@@ -68,22 +76,22 @@
         /// <returns>value from cache</returns>
         public int GetCounterValue(string name)
         {
-            const string jsonKey = "json";
-            if (!CacheHelper.Instance.IsInCache(jsonKey))
+            const string JonKey = "json";
+            if (!CacheHelper.Instance.IsInCache(JonKey))
             {
                 PerformanceCounterImplementation client = new PerformanceCounterImplementation();
-                string uncachedJson= client.GetAzureWebAppEnvironmentVariables(AzureWebApEnvironmentVariables.All);
+                string uncachedJson = client.GetAzureWebAppEnvironmentVariables(AzureWebApEnvironmentVariables.All);
 
                 if (uncachedJson == null)
                 {
                     return 0;
                 }
 
-                CacheHelper.Instance.SaveToCache(jsonKey, uncachedJson, DateTimeOffset.Now.AddSeconds(5.0));
+                CacheHelper.Instance.SaveToCache(JonKey, uncachedJson, DateTimeOffset.Now.AddSeconds(5.0));
             }
 
-            string json = GetFromCache(jsonKey).ToString();
-            int value = PerformanceCounterValue(name, json);
+            string json = this.GetFromCache(JonKey).ToString();
+            int value = this.PerformanceCounterValue(name, json);
 
             return value;
         }

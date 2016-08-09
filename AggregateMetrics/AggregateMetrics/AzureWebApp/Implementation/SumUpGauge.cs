@@ -8,11 +8,17 @@
     /// <summary>
     /// Gauge that sums up the values of different gauges.
     /// </summary>
-    public class SumUpGauge : ICounterValue
+    internal class SumUpGauge : ICounterValue
     {
-        private string name;
-
+        /// <summary>
+        /// List of gauges whose values will be added.
+        /// </summary>
         private readonly List<ICounterValue> gaugesToSum;
+
+        /// <summary>
+        /// Name of the counter.
+        /// </summary>
+        private string name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SumUpGauge"/> class.
