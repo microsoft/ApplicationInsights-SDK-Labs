@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
 {
@@ -26,5 +22,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
         void CatchAllOperation();
         [OperationContract]
         void CallThatEmitsEvent();
+        [OperationContract]
+        void CallAnotherServiceAndLeakOperationContext(String address);
+        [OperationContract]
+        bool CallIsClientSideContext();
     }
 }

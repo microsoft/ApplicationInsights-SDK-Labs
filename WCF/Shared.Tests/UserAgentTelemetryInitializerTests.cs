@@ -1,11 +1,7 @@
 ﻿using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel.Channels;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests
 {

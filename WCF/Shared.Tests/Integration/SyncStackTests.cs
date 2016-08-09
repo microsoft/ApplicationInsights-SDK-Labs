@@ -15,6 +15,34 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
     {
         [TestMethod]
         [TestCategory("Integration"), TestCategory("Sync")]
+        public void IsClientSideContextReturnsTrueForClientChannel()
+        {
+            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            {
+                host.Open();
+                ISimpleService client = host.GetChannel();
+
+                using ( var scope = new OperationContextScope((IContextChannel)client) )
+                {
+                    Assert.IsTrue(OperationContext.Current.IsClientSideContext());
+                }
+            }
+        }
+        [TestMethod]
+        [TestCategory("Integration"), TestCategory("Sync")]
+        public void IsClientSideContextReturnsFalseForServerChannel()
+        {
+            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            {
+                host.Open();
+                ISimpleService client = host.GetChannel();
+
+                Assert.IsFalse(client.CallIsClientSideContext());
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Integration"), TestCategory("Sync")]
         public void TelemetryEventsAreGeneratedOnServiceCall()
         {
             TestTelemetryChannel.Clear();

@@ -1,14 +1,15 @@
 ﻿using Microsoft.ApplicationInsights.DataContracts;
 using System;
+using System.Runtime.Remoting.Messaging;
 using System.ServiceModel;
 using System.ServiceModel.Dispatcher;
-using System.ServiceModel.Web;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
     internal class WcfOperationContext : IOperationContext, IExtension<OperationContext>
     {
         private OperationContext context;
+        const String CallContextProperty = "AIWcfOperationContext";
 
         public String OperationId
         {
@@ -83,21 +84,43 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public static WcfOperationContext FindContext(OperationContext owner)
         {
-            if ( owner == null )
+            // don't retrieve a context for a client-side OperationContext
+            if ( owner != null && owner.IsClientSideContext() )
+            {
                 return null;
+            }
 
-            return owner.Extensions.Find<WcfOperationContext>();
+            WcfOperationContext context = null;
+            if ( owner != null )
+            {
+                context = owner.Extensions.Find<WcfOperationContext>();
+            }
+            if ( context == null )
+            {
+                context = CallContext.GetData(CallContextProperty) as WcfOperationContext;
+            }
+            return context;
         }
 
         private static IOperationContext GetContext()
         {
             var owner = OperationContext.Current;
+            if ( owner.IsClientSideContext() )
+            {
+                owner = null;
+            }
             WcfOperationContext context = FindContext(owner);
 
-            if ( context == null && owner != null )
+            if ( context == null )
             {
-                context = new WcfOperationContext(owner);
-                owner.Extensions.Add(context);
+                if ( owner != null )
+                {
+                    context = new WcfOperationContext(owner);
+                    owner.Extensions.Add(context);
+                    // backup in case we can't get to the server-side OperationContext later
+                    CallContext.SetData(CallContextProperty, context);
+                }
+                // no server-side OperationContext to attach to
             }
             return context;
         }

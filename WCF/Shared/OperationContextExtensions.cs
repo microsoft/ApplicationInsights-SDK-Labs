@@ -25,5 +25,22 @@ namespace Microsoft.ApplicationInsights.Wcf
 
             return icontext != null ? icontext.Request : null;
         }
+
+        /// <summary>
+        /// Returns true if the OperationContext object is associated with
+        /// a client-side channel
+        /// </summary>
+        /// <param name="context">The WCF operation context instance</param>
+        /// <returns>True for a client-side channel, false otherwise.</returns>
+        internal static bool IsClientSideContext(this OperationContext context)
+        {
+            if ( context == null )
+            {
+                throw new ArgumentNullException("context");
+            }
+            // OperationContext.IsUserContext probably does the same thing
+            // but exact semantics are not documented.
+            return context.Host == null;
+        }
     }
 }

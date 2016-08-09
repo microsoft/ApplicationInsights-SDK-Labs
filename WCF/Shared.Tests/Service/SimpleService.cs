@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
 {
@@ -62,6 +58,27 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
         {
             TelemetryClient client = new TelemetryClient();
             client.TrackEvent("MyCustomEvent");
+        }
+        public void CallAnotherServiceAndLeakOperationContext(String address)
+        {
+            var factory = new ChannelFactory<ISimpleService>(new NetTcpBinding(), new EndpointAddress(address));
+            var channel = factory.CreateChannel();
+            // THIS IS INCORRECT CODE
+            // The scope will be leaked, meaning that OperationContext.Current
+            // will return the wrong scope later on.
+            // We want to reproduce that behavior here so that it breaks
+            // and we can check that the problem is fixed.
+            var scope = new OperationContextScope((IContextChannel)channel);
+            //using ( scope )
+            {
+                channel.GetSimpleData();
+                ((IClientChannel)channel).Close();
+            }
+            factory.Close();
+        }
+        public bool CallIsClientSideContext()
+        {
+            return OperationContext.Current.IsClientSideContext();
         }
     }
 

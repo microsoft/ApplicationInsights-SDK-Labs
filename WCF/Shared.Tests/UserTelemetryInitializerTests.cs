@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Security.Principal;
 using System.ServiceModel;
-using System.ServiceModel.Channels;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
