@@ -23,7 +23,7 @@ namespace AggregateMetrics.Tests.AzureWebApp
             counterRetrieval.Wait();
 
             string json = counterRetrieval.Result;
-            int value = CacheHelper.GetInstance.PerformanceCounterValue(name, json);
+            int value = CacheHelper.Instance.PerformanceCounterValue(name, json);
 
             return value;
         }

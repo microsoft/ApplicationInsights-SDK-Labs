@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp.Implementation
 {
-    using System.ComponentModel;
+    using System;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
 
     /// <summary>
@@ -19,32 +19,32 @@
             {
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Request Execution Time":
                     return new PerformanceCounterFromJsonGauge(
-                        @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Request Execution Time",
+                        counterName,
                         "appRequestExecTime");
                 case @"\Process(??APP_WIN32_PROC??)\Private Bytes":
                     return new PerformanceCounterFromJsonGauge(
-                        @"\Process(??APP_WIN32_PROC??)\Private Bytes",
+                        counterName,
                         "privateBytes");
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests In Application Queue":
                     return new PerformanceCounterFromJsonGauge(
-                        @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests In Application Queue",
+                        counterName,
                         "requestsInApplicationQueue");
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests/Sec":
                     return new RateCounterGauge(
-                        @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests/Sec", 
+                        counterName, 
                         "requestsTotal");
                 case @"\.NET CLR Exceptions(??APP_CLR_PROC??)\# of Exceps Thrown / sec":
                     return new RateCounterGauge(
-                        @"\.NET CLR Exceptions(??APP_CLR_PROC??)\# of Exceps Thrown / sec",
+                        counterName,
                         "exceptionsThrown");
                 case @"\Processor(_Total)\% Processor Time":
                     return new SumUpGauge(
-                        @"\Processor(_Total)\% Processor Time",
+                        counterName,
                         new PerformanceCounterFromJsonGauge("kernelTime", "kernelTime"),
                         new PerformanceCounterFromJsonGauge("userTime", "userTime"));
                 case @"\Process(??APP_WIN32_PROC??)\IO Data Bytes/sec":
                     return new RateCounterGauge(
-                        @"\Process(??APP_WIN32_PROC??)\IO Data Bytes/sec", 
+                        counterName, 
                         "ioDataBytesRate",
                         new SumUpGauge(
                             "ioDataBytesRate",
@@ -58,7 +58,7 @@
                                 "otherIoBytes", 
                                 "otherIoBytes")));
                 default:
-                    throw new InvalidEnumArgumentException();
+                    throw new ArgumentException();
             }
         }
     }

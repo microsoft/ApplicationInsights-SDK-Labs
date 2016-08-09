@@ -26,7 +26,7 @@
         /// <param name="name">Name of counter variable.</param>
         /// <param name="jsonId">Json identifier of the counter variable.</param>
         public PerformanceCounterFromJsonGauge(string name, string jsonId)
-            : this(name, jsonId, CacheHelper.GetInstance)
+            : this(name, jsonId, CacheHelper.Instance)
         {
         }
 
