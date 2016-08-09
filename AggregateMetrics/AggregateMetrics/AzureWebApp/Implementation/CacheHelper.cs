@@ -13,7 +13,7 @@
         /// <summary>
         /// Only instance of CacheHelper.
         /// </summary>
-        private static readonly CacheHelper Instance = new CacheHelper();
+        private static readonly CacheHelper CacheHelperInstance = new CacheHelper();
 
         /// <summary>
         /// Prevents a default instance of the <see cref="CacheHelper"/> class from being created.
@@ -25,11 +25,11 @@
         /// <summary>
         /// Gets the only instance of CacheHelper.
         /// </summary>
-        public static CacheHelper GetInstance
+        public static CacheHelper Instance
         {
             get
             {
-                return Instance;
+                return CacheHelperInstance;
             }
         }
 

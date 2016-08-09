@@ -37,7 +37,7 @@
         /// <param name="jsonId">Json identifier of the counter variable.</param>
         /// <param name="counter">Dependant counter.</param>
         public RateCounterGauge(string name, string jsonId, ICounterValue counter = null)
-            : this(name, jsonId, counter, CacheHelper.GetInstance)
+            : this(name, jsonId, counter, CacheHelper.Instance)
         {
         }
 
