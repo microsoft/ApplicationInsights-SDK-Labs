@@ -1,17 +1,9 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Runtime.Caching;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp
+﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp
 {
-    class PerformanceCounterImplementation : IPerformanceCounter
+    using System;
+    using System.Collections.Generic;
+
+    internal class PerformanceCounterImplementation
     {
         /// <summary>
         /// Available Environment Variables in Azure Web Apps
@@ -31,7 +23,7 @@ namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebA
         /// <returns>Raw Json with</returns>
         public string GetAzureWebAppEnvironmentVariables(AzureWebApEnvironmentVariables environmentVariable)
         {
-            return Environment.GetEnvironmentVariable(listEnvironmentVariables[(int)environmentVariable]);
+            return Environment.GetEnvironmentVariable(this.listEnvironmentVariables[(int)environmentVariable]);
         }
     }
 }

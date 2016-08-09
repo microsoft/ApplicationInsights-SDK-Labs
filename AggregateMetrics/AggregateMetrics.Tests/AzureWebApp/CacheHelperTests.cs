@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace AggregateMetrics.Tests.AzureWebApp
 {
-    internal class CacheHelperTests : ICacheHelper
+    internal class CacheHelperTests : ICachedEnvironmentVariableAccess
     {
         /// <summary>
         /// Retrieves raw counter data from Environment Variables.
@@ -23,7 +23,7 @@ namespace AggregateMetrics.Tests.AzureWebApp
             counterRetrieval.Wait();
 
             string json = counterRetrieval.Result;
-            int value = CacheHelper.Instance.PerformanceCounterValue(name, json);
+            int value = CacheHelper.GetInstance.PerformanceCounterValue(name, json);
 
             return value;
         }
