@@ -1,5 +1,4 @@
 ﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
 using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
 using Microsoft.ApplicationInsights.Wcf.Tests.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

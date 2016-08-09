@@ -3,7 +3,6 @@ using System;
 using System.Runtime.Remoting.Messaging;
 using System.ServiceModel;
 using System.ServiceModel.Dispatcher;
-using System.ServiceModel.Web;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {

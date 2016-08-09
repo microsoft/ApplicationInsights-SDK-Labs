@@ -2,8 +2,6 @@
 using Microsoft.ApplicationInsights.Wcf.Tests.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 {
