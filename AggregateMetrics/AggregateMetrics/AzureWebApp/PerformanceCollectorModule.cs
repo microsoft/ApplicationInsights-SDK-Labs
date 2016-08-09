@@ -21,6 +21,8 @@
                                                                 @"\Processor(_Total)\% Processor Time"
                                                             };
 
+        public IList<PerformanceCounterCollectionRequest> Counters { get; private set; }
+
         /// <summary>
         /// Initializes the default performance counters.
         /// </summary>
@@ -35,13 +37,16 @@
         /// <summary>
         /// Get specific performance counters that are not in the default counters list.
         /// </summary>
-        /// <param name="counterName"> Counter name.</param>
-        public void AddCounter(params string[] counterName)
+        /// <param name="performanceCounterRequests"> Requested performance counters.</param>
+        public void AddCounter(params PerformanceCounterCollectionRequest[] performanceCounterRequests)
         {
             CounterFactory factory = new CounterFactory();
 
-            foreach (string counter in counterName)
-                factory.GetCounter(counter);
+            foreach (PerformanceCounterCollectionRequest counter in performanceCounterRequests)
+            {
+                Counters.Add(counter);
+                factory.GetCounter(counter.PerformanceCounter);
+            }
         }
     }
 }
