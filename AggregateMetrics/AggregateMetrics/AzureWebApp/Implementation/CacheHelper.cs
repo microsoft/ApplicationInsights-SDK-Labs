@@ -10,6 +10,8 @@
     /// </summary>
     internal class CacheHelper : ICachedEnvironmentVariableAccess
     {
+        const string JsonKey = "json";
+
         /// <summary>
         /// Only instance of CacheHelper.
         /// </summary>
@@ -76,8 +78,7 @@
         /// <returns>value from cache</returns>
         public int GetCounterValue(string name)
         {
-            const string JonKey = "json";
-            if (!CacheHelper.Instance.IsInCache(JonKey))
+            if (!CacheHelper.Instance.IsInCache(JsonKey))
             {
                 PerformanceCounterImplementation client = new PerformanceCounterImplementation();
                 string uncachedJson = client.GetAzureWebAppEnvironmentVariables(AzureWebApEnvironmentVariables.All);
@@ -87,10 +88,10 @@
                     return 0;
                 }
 
-                CacheHelper.Instance.SaveToCache(JonKey, uncachedJson, DateTimeOffset.Now.AddSeconds(5.0));
+                CacheHelper.Instance.SaveToCache(JsonKey, uncachedJson, DateTimeOffset.Now.AddSeconds(5.0));
             }
 
-            string json = this.GetFromCache(JonKey).ToString();
+            string json = this.GetFromCache(JsonKey).ToString();
             int value = this.PerformanceCounterValue(name, json);
 
             return value;
