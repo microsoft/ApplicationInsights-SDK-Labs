@@ -1,8 +1,11 @@
 ﻿namespace Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp
 {
+    using System;
     using System.Collections.Generic;
+    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp.Implementation;
     using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector;
-    using Implementation;
+    using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
+
     /// <summary>
     /// Telemetry module for collecting performance counters.
     /// </summary>
@@ -21,7 +24,7 @@
                                                                 @"\Processor(_Total)\% Processor Time"
                                                             };
 
-        public IList<PerformanceCounterCollectionRequest> Counters { get; private set; }
+        public List<PerformanceCounterCollectionRequest> Counters { get; private set; }
 
         /// <summary>
         /// Initializes the default performance counters.
@@ -31,21 +34,29 @@
             CounterFactory factory = new CounterFactory();
 
             foreach (string counter in defaultCounters)
-                factory.GetCounter(counter);
-        }
-
-        /// <summary>
-        /// Get specific performance counters that are not in the default counters list.
-        /// </summary>
-        /// <param name="performanceCounterRequests"> Requested performance counters.</param>
-        public void AddCounter(params PerformanceCounterCollectionRequest[] performanceCounterRequests)
-        {
-            CounterFactory factory = new CounterFactory();
-
-            foreach (PerformanceCounterCollectionRequest counter in performanceCounterRequests)
             {
-                Counters.Add(counter);
-                factory.GetCounter(counter.PerformanceCounter);
+                try
+                {
+                    ICounterValue c = factory.GetCounter(counter);
+                    configuration.RegisterCounter(c);
+                }
+                catch (ArgumentException e)
+                {
+                    throw e;
+                }
+            }
+
+            foreach (var counter in Counters)
+            {
+                try
+                {
+                    ICounterValue c = factory.GetCounter(counter.PerformanceCounter);
+                    configuration.RegisterCounter(c);
+                }
+                catch (ArgumentException e)
+                {
+                    throw e;
+                }
             }
         }
     }
