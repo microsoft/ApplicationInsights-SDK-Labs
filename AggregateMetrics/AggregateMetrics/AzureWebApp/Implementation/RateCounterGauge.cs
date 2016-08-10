@@ -65,22 +65,38 @@
         public MetricTelemetry GetValueAndReset()
         {
             MetricTelemetry metric = new MetricTelemetry();
-
-            metric.Name = this.name;
             DateTimeOffset currentTime = System.DateTimeOffset.Now;
+
+            var timeDifferenceInSeconds = currentTime.Subtract(this.dateTime).Seconds;
+            metric.Name = this.name;
 
             if (this.lastValue == null)
             {
-                this.lastValue = this.cacheHelper.GetCounterValue(this.jsonId);
+                if (this.counter == null)
+                {
+                    this.lastValue = this.cacheHelper.GetCounterValue(this.jsonId);
+                }
+                else
+                {
+                    this.lastValue = this.counter.GetValueAndReset().Value;
+                }
+
                 this.dateTime = currentTime;
 
                 return metric;
             }
 
-            var timeDifferenceInSeconds = currentTime.Subtract(this.dateTime).Seconds;
+            if (this.counter == null)
+            {
+                metric.Value = (timeDifferenceInSeconds != 0) ? (this.cacheHelper.GetCounterValue(this.jsonId) - (double)this.lastValue) / timeDifferenceInSeconds : 0;
+                this.lastValue = this.cacheHelper.GetCounterValue(this.jsonId);
+            }
+            else
+            {
+                metric.Value = (timeDifferenceInSeconds != 0) ? (this.counter.GetValueAndReset().Value - (double)this.lastValue) / timeDifferenceInSeconds : 0;
+                this.lastValue = this.counter.GetValueAndReset().Value;
+            }
 
-            metric.Value = (timeDifferenceInSeconds != 0) ? (this.cacheHelper.GetCounterValue(this.jsonId) - (double)this.lastValue) / timeDifferenceInSeconds : 0;
-            this.lastValue = this.cacheHelper.GetCounterValue(this.jsonId);
             this.dateTime = currentTime;
 
             return metric;

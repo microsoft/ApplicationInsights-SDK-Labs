@@ -57,16 +57,16 @@
                             new PerformanceCounterFromJsonGauge(
                                 "otherIoBytes", 
                                 "otherIoBytes")));
-                case @"\Process(w3wp)\Handle Count":
+                case @"\Process(??APP_WIN32_PROC??)\Handle Count":
                     return new PerformanceCounterFromJsonGauge(
                         counterName,
                         "handles");
-                case @"\Process(w3wp)\Thread Count":
+                case @"\Process(??APP_WIN32_PROC??)\Thread Count":
                     return new PerformanceCounterFromJsonGauge(
                         counterName,
                         "threads");
                 default:
-                    throw new ArgumentException();
+                    throw new ArgumentException("Performance counter was not found.", counterName);
             }
         }
     }
