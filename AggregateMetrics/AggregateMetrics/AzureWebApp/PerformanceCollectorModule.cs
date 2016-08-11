@@ -5,7 +5,7 @@
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp.Implementation;
     using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
-
+    
     /// <summary>
     /// Telemetry module for collecting performance counters.
     /// </summary>
@@ -14,7 +14,7 @@
         public PerformanceCollectorModule()
         {
             Counters = new List<PerformanceCounterCollectionRequest>();
-        } 
+        }
 
         private readonly List<string> defaultCounters = new List<string>()
                                                             {
@@ -31,11 +31,19 @@
 
         public IList<PerformanceCounterCollectionRequest> Counters { get; private set; }
 
+        private bool WebAppRunningInAzure()
+        {
+            return String.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME"));
+        }
+
         /// <summary>
         /// Initializes the default performance counters.
         /// </summary>
         public void Initialize(TelemetryConfiguration configuration)
         {
+            if (WebAppRunningInAzure())
+                return;
+
             CounterFactory factory = new CounterFactory();
 
             foreach (string counter in defaultCounters)
@@ -56,7 +64,7 @@
             {
                 try
                 {
-                    ICounterValue c = factory.GetCounter(counter.PerformanceCounter);
+                    ICounterValue c = factory.GetCounter(counter.PerformanceCounter,  counter.ReportAs);
                     configuration.RegisterCounter(c);
                 }
                 catch
