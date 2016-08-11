@@ -11,6 +11,11 @@
     /// </summary>
     public class PerformanceCollectorModule : ITelemetryModule
     {
+        public PerformanceCollectorModule()
+        {
+            Counters = new List<PerformanceCounterCollectionRequest>();
+        } 
+
         private readonly List<string> defaultCounters = new List<string>()
                                                             {
                                                                 @"\Process(??APP_WIN32_PROC??)\% Processor Time",
@@ -24,7 +29,7 @@
                                                                 @"\Processor(_Total)\% Processor Time"
                                                             };
 
-        public List<PerformanceCounterCollectionRequest> Counters { get; private set; }
+        public IList<PerformanceCounterCollectionRequest> Counters { get; private set; }
 
         /// <summary>
         /// Initializes the default performance counters.
@@ -40,11 +45,12 @@
                     ICounterValue c = factory.GetCounter(counter);
                     configuration.RegisterCounter(c);
                 }
-                catch (ArgumentException e)
+                catch
                 {
-                    throw e;
+                    // TODO: Add tracing.
                 }
             }
+
 
             foreach (var counter in Counters)
             {
@@ -53,9 +59,9 @@
                     ICounterValue c = factory.GetCounter(counter.PerformanceCounter);
                     configuration.RegisterCounter(c);
                 }
-                catch (ArgumentException e)
+                catch
                 {
-                    throw e;
+                    // TODO: Add tracing.
                 }
             }
         }
