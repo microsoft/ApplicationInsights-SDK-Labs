@@ -24,23 +24,14 @@
         {
             this.Counters = new List<PerformanceCounterCollectionRequest>()
             {
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\% Processor Time", ReportAs = "performanceCounters/processorPercentage" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Memory\Available Bytes", ReportAs = "performanceCounters/availableMemory" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests/Sec", ReportAs = "performanceCounters/requestRate" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\.NET CLR Exceptions(??APP_CLR_PROC??)\# of Exceps Thrown / sec", ReportAs = "performanceCounters/exceptionRate" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Request Execution Time", ReportAs = "performanceCounters/requestExecutionTime" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\Private Bytes", ReportAs = "performanceCounters/processPrivateBytes" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\IO Data Bytes/sec", ReportAs = "performanceCounters/processIORate" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests In Application Queue", ReportAs = "performanceCounters/requestQueueDepth" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Processor(_Total)\% Processor Time", ReportAs = string.Empty },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\% Processor Time", ReportAs = "processorPercentage" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Memory\Available Bytes", ReportAs = "availableMemory" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests/Sec", ReportAs = "requestRate" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\.NET CLR Exceptions(??APP_CLR_PROC??)\# of Exceps Thrown / sec", ReportAs = "exceptionRate" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Request Execution Time", ReportAs = "requestExecutionTime" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\Private Bytes", ReportAs = "processPrivateBytes" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\IO Data Bytes/sec", ReportAs = "processIORate" },
-                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests In Application Queue", ReportAs = "requestQueueDepth" },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\% Processor Time", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Memory\Available Bytes", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests/Sec", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\.NET CLR Exceptions(??APP_CLR_PROC??)\# of Exceps Thrown / sec", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Request Execution Time", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\Private Bytes", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\IO Data Bytes/sec", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests In Application Queue", ReportAs = string.Empty },
                 new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Processor(_Total)\% Processor Time", ReportAs = string.Empty }
             };
         }
