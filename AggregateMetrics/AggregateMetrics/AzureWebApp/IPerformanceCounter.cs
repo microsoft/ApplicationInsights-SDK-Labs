@@ -3,7 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
-    public interface IPerformanceCounter
+    internal interface IPerformanceCounter
     {
         /// <summary>
         /// Retrieves counter data from Azure Web App Environment Variables.

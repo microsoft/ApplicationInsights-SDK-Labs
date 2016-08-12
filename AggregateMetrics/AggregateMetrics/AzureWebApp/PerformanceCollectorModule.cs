@@ -20,6 +20,9 @@
             @"[  ]+",
             RegexOptions.Compiled);
 
+        /// <summary> 
+        /// Initializes a new instance of the <see cref="PerformanceCollectorModule" /> class. 
+        /// </summary> 
         public PerformanceCollectorModule()
         {
             this.Counters = new List<PerformanceCounterCollectionRequest>()

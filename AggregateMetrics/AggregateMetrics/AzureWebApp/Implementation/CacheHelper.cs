@@ -43,14 +43,14 @@
         /// <returns> Value of the performance counter.</returns>
         public int PerformanceCounterValue(string performanceCounterName, string json)
         {
-            if (json.IndexOf(performanceCounterName) == -1)
+            if (json.IndexOf(performanceCounterName, StringComparison.OrdinalIgnoreCase) == -1)
             {
                 throw new System.ArgumentException("Counter was not found.", performanceCounterName);
             }
 
-            string jsonSubstring = json.Substring(json.IndexOf(performanceCounterName), json.Length - json.IndexOf(performanceCounterName));
+            string jsonSubstring = json.Substring(json.IndexOf(performanceCounterName, StringComparison.OrdinalIgnoreCase), json.Length - json.IndexOf(performanceCounterName, StringComparison.OrdinalIgnoreCase));
 
-            int startingIndex = jsonSubstring.IndexOf(" ") + 1;
+            int startingIndex = jsonSubstring.IndexOf(" ", StringComparison.Ordinal) + 1;
             int value;
             string valueString = string.Empty;
 
