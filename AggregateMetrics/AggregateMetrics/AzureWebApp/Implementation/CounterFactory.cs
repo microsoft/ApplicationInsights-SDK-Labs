@@ -38,7 +38,7 @@
                     return new RateCounterGauge(
                         reportAs,
                         "exceptionsThrown");
-                case @"\Processor(_Total)\% Processor Time":
+                case @"\Process(?? APP_WIN32_PROC ??)\% Processor Time":
                     return new SumUpGauge(
                         reportAs,
                         new PerformanceCounterFromJsonGauge("kernelTime", "kernelTime"),

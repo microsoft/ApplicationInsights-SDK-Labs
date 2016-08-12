@@ -27,5 +27,9 @@
   </metadata>
   <files>
     <file src="$configuration$\AggregateMetrics\AggregateMetrics\Microsoft.ApplicationInsights.AggregateMetrics.dll" target="lib\net45" />
+
+    <file src="$configuration$\AggregateMetrics\NuGet\ApplicationInsights.config.transform" target="content" />
+    <file src="$configuration$\AggregateMetrics\NuGet\ApplicationInsights.config.install.xdt" target="content" />
+    <file src="$configuration$\AggregateMetrics\NuGet\ApplicationInsights.config.uninstall.xdt" target="content" />
   </files>
 </package>

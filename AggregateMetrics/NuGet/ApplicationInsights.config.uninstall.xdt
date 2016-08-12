@@ -1,0 +1,7 @@
+﻿<ApplicationInsights xmlns="http://schemas.microsoft.com/ApplicationInsights/2013/Settings" xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <TelemetryModules>
+    <Add xdt:Transform="Remove" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp.PerformanceCollectorModule, Microsoft.ApplicationInsights.AggregateMetrics" />
+    <Add xdt:Transform="Remove" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two.AggregateMetricsTelemetryModule, Microsoft.ApplicationInsights.AggregateMetrics" />
+  </TelemetryModules>
+  <TelemetryModules xdt:Transform="Remove" xdt:Locator="Condition(count(*)=0)"/>
+</ApplicationInsights>
