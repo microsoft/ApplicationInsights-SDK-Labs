@@ -9,12 +9,12 @@
     internal class CounterFactory
     {
         /// <summary>
-        /// Set metrics alias to be the value given by the user.
+        /// Gets metric alias to be the value given by the user.
         /// </summary>
         /// <param name="counterName">Name of the counter to retrieve.</param>
         /// <param name="reportAs">Alias to report the counter.</param>
         /// <returns>Alias that will be used for the counter.</returns>
-        private string SetCounterName(string counterName, string reportAs)
+        private string GetCounterReportAsName(string counterName, string reportAs)
         {
             if (reportAs == null)
                 return counterName;
@@ -34,32 +34,32 @@
             {
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Request Execution Time":
                     return new PerformanceCounterFromJsonGauge(
-                        SetCounterName(counterName, reportAs),
+                        GetCounterReportAsName(counterName, reportAs),
                         "appRequestExecTime");
                 case @"\Process(??APP_WIN32_PROC??)\Private Bytes":
                     return new PerformanceCounterFromJsonGauge(
-                        SetCounterName(counterName, reportAs),
+                        GetCounterReportAsName(counterName, reportAs),
                         "privateBytes");
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests In Application Queue":
                     return new PerformanceCounterFromJsonGauge(
-                        SetCounterName(counterName, reportAs),
+                        GetCounterReportAsName(counterName, reportAs),
                         "requestsInApplicationQueue");
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests/Sec":
                     return new RateCounterGauge(
-                        SetCounterName(counterName, reportAs), 
+                        GetCounterReportAsName(counterName, reportAs), 
                         "requestsTotal");
                 case @"\.NET CLR Exceptions(??APP_CLR_PROC??)\# of Exceps Thrown / sec":
                     return new RateCounterGauge(
-                        SetCounterName(counterName, reportAs),
+                        GetCounterReportAsName(counterName, reportAs),
                         "exceptionsThrown");
                 case @"\Processor(_Total)\% Processor Time":
                     return new SumUpGauge(
-                        SetCounterName(counterName, reportAs),
+                        GetCounterReportAsName(counterName, reportAs),
                         new PerformanceCounterFromJsonGauge("kernelTime", "kernelTime"),
                         new PerformanceCounterFromJsonGauge("userTime", "userTime"));
                 case @"\Process(??APP_WIN32_PROC??)\IO Data Bytes/sec":
                     return new RateCounterGauge(
-                        SetCounterName(counterName, reportAs), 
+                        GetCounterReportAsName(counterName, reportAs), 
                         "ioDataBytesRate",
                         new SumUpGauge(
                             "ioDataBytesRate",
@@ -74,11 +74,11 @@
                                 "otherIoBytes")));
                 case @"\Process(??APP_WIN32_PROC??)\Handle Count":
                     return new PerformanceCounterFromJsonGauge(
-                        SetCounterName(counterName, reportAs),
+                        GetCounterReportAsName(counterName, reportAs),
                         "handles");
                 case @"\Process(??APP_WIN32_PROC??)\Thread Count":
                     return new PerformanceCounterFromJsonGauge(
-                        SetCounterName(counterName, reportAs),
+                        GetCounterReportAsName(counterName, reportAs),
                         "threads");
                 default:
                     throw new ArgumentException("Performance counter was not found.", counterName);
