@@ -20,22 +20,20 @@
             @"[  ]+",
             RegexOptions.Compiled);
 
-        private readonly List<string> defaultCounters = new List<string>()
-                                                            {
-                                                                @"\Process(??APP_WIN32_PROC??)\% Processor Time",
-                                                                @"\Memory\Available Bytes",
-                                                                @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests/Sec",
-                                                                @"\.NET CLR Exceptions(??APP_CLR_PROC??)\# of Exceps Thrown / sec",
-                                                                @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Request Execution Time",
-                                                                @"\Process(??APP_WIN32_PROC??)\Private Bytes",
-                                                                @"\Process(??APP_WIN32_PROC??)\IO Data Bytes/sec",
-                                                                @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests In Application Queue",
-                                                                @"\Processor(_Total)\% Processor Time"
-                                                            };
-
         public PerformanceCollectorModule()
         {
-            this.Counters = new List<PerformanceCounterCollectionRequest>();
+            this.Counters = new List<PerformanceCounterCollectionRequest>()
+            {
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\% Processor Time", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Memory\Available Bytes", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests/Sec", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\.NET CLR Exceptions(??APP_CLR_PROC??)\# of Exceps Thrown / sec", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Request Execution Time", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\Private Bytes", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Process(??APP_WIN32_PROC??)\IO Data Bytes/sec", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests In Application Queue", ReportAs = string.Empty },
+                new PerformanceCounterCollectionRequest { PerformanceCounter = @"\Processor(_Total)\% Processor Time", ReportAs = string.Empty }
+            };
         }
 
         /// <summary>
@@ -48,6 +46,7 @@
         /// </summary>
         public void Initialize(TelemetryConfiguration configuration)
         {
+            // TODO: Add tracing.
             if (!this.WebAppRunningInAzure())
             {
                 return;
@@ -55,24 +54,14 @@
 
             CounterFactory factory = new CounterFactory();
 
-            foreach (string counter in this.defaultCounters)
-            {
-                try
-                {
-                    ICounterValue c = factory.GetCounter(counter);
-                    configuration.RegisterCounter(c);
-                }
-                catch
-                {
-                    // TODO: Add tracing.
-                }
-            }
-
             foreach (var counter in this.Counters)
             {
                 try
                 {
-                    ICounterValue c = counter.ReportAs == null ? factory.GetCounter(counter.PerformanceCounter) : factory.GetCounter(counter.PerformanceCounter, this.SanitizeReportAs(counter.ReportAs, counter.PerformanceCounter));
+                    string reportAs = this.SanitizeReportAs(counter.ReportAs, counter.PerformanceCounter);
+                    reportAs = GetCounterReportAsName(counter.PerformanceCounter, reportAs);
+
+                    ICounterValue c = factory.GetCounter(counter.PerformanceCounter, reportAs);
                     configuration.RegisterCounter(c);
                 }
                 catch
@@ -80,6 +69,20 @@
                     // TODO: Add tracing.
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets metric alias to be the value given by the user.
+        /// </summary>
+        /// <param name="counterName">Name of the counter to retrieve.</param>
+        /// <param name="reportAs">Alias to report the counter.</param>
+        /// <returns>Alias that will be used for the counter.</returns>
+        private string GetCounterReportAsName(string counterName, string reportAs)
+        {
+            if (reportAs == null)
+                return counterName;
+            else
+                return reportAs;
         }
 
         private bool WebAppRunningInAzure()

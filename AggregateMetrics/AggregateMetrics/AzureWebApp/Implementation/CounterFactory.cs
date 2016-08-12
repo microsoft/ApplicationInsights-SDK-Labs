@@ -9,57 +9,43 @@
     internal class CounterFactory
     {
         /// <summary>
-        /// Gets metric alias to be the value given by the user.
-        /// </summary>
-        /// <param name="counterName">Name of the counter to retrieve.</param>
-        /// <param name="reportAs">Alias to report the counter.</param>
-        /// <returns>Alias that will be used for the counter.</returns>
-        private string GetCounterReportAsName(string counterName, string reportAs)
-        {
-            if (reportAs == null)
-                return counterName;
-            else
-                return reportAs;
-        }
-
-        /// <summary>
         /// Gets a counter.
         /// </summary>
         /// <param name="counterName">Name of the counter to retrieve.</param>
         /// <param name="reportAs">Alias to report the counter under.</param>
         /// <returns>The counter identified by counterName</returns>
-        public ICounterValue GetCounter(string counterName, string reportAs = null)
+        public ICounterValue GetCounter(string counterName, string reportAs)
         {
             switch (counterName)
             {
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Request Execution Time":
                     return new PerformanceCounterFromJsonGauge(
-                        GetCounterReportAsName(counterName, reportAs),
+                        reportAs,
                         "appRequestExecTime");
                 case @"\Process(??APP_WIN32_PROC??)\Private Bytes":
                     return new PerformanceCounterFromJsonGauge(
-                        GetCounterReportAsName(counterName, reportAs),
+                        reportAs,
                         "privateBytes");
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests In Application Queue":
                     return new PerformanceCounterFromJsonGauge(
-                        GetCounterReportAsName(counterName, reportAs),
+                        reportAs,
                         "requestsInApplicationQueue");
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests/Sec":
                     return new RateCounterGauge(
-                        GetCounterReportAsName(counterName, reportAs), 
+                        reportAs, 
                         "requestsTotal");
                 case @"\.NET CLR Exceptions(??APP_CLR_PROC??)\# of Exceps Thrown / sec":
                     return new RateCounterGauge(
-                        GetCounterReportAsName(counterName, reportAs),
+                        reportAs,
                         "exceptionsThrown");
                 case @"\Processor(_Total)\% Processor Time":
                     return new SumUpGauge(
-                        GetCounterReportAsName(counterName, reportAs),
+                        reportAs,
                         new PerformanceCounterFromJsonGauge("kernelTime", "kernelTime"),
                         new PerformanceCounterFromJsonGauge("userTime", "userTime"));
                 case @"\Process(??APP_WIN32_PROC??)\IO Data Bytes/sec":
                     return new RateCounterGauge(
-                        GetCounterReportAsName(counterName, reportAs), 
+                        reportAs, 
                         "ioDataBytesRate",
                         new SumUpGauge(
                             "ioDataBytesRate",
@@ -74,11 +60,11 @@
                                 "otherIoBytes")));
                 case @"\Process(??APP_WIN32_PROC??)\Handle Count":
                     return new PerformanceCounterFromJsonGauge(
-                        GetCounterReportAsName(counterName, reportAs),
+                        reportAs,
                         "handles");
                 case @"\Process(??APP_WIN32_PROC??)\Thread Count":
                     return new PerformanceCounterFromJsonGauge(
-                        GetCounterReportAsName(counterName, reportAs),
+                        reportAs,
                         "threads");
                 default:
                     throw new ArgumentException("Performance counter was not found.", counterName);
