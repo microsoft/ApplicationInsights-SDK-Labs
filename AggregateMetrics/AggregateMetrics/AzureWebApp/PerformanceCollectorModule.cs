@@ -2,19 +2,23 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp.Implementation;
-    using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
-    
+    using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector;
+
     /// <summary>
     /// Telemetry module for collecting performance counters.
     /// </summary>
     public class PerformanceCollectorModule : ITelemetryModule
     {
-        public PerformanceCollectorModule()
-        {
-            Counters = new List<PerformanceCounterCollectionRequest>();
-        }
+        private static readonly Regex DisallowedCharsInReportAsRegex = new Regex(
+            @"[^a-zA-Z()/\\_. \t-]+",
+            RegexOptions.Compiled);
+
+        private static readonly Regex MultipleSpacesRegex = new Regex(
+            @"[  ]+",
+            RegexOptions.Compiled);
 
         private readonly List<string> defaultCounters = new List<string>()
                                                             {
@@ -29,24 +33,29 @@
                                                                 @"\Processor(_Total)\% Processor Time"
                                                             };
 
-        public IList<PerformanceCounterCollectionRequest> Counters { get; private set; }
-
-        private bool WebAppRunningInAzure()
+        public PerformanceCollectorModule()
         {
-            return String.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME"));
+            this.Counters = new List<PerformanceCounterCollectionRequest>();
         }
+
+        /// <summary>
+        /// Gets custom performance counters set by user.
+        /// </summary>
+        public IList<PerformanceCounterCollectionRequest> Counters { get; private set; }
 
         /// <summary>
         /// Initializes the default performance counters.
         /// </summary>
         public void Initialize(TelemetryConfiguration configuration)
         {
-            if (WebAppRunningInAzure())
+            if (!this.WebAppRunningInAzure())
+            {
                 return;
+            }
 
             CounterFactory factory = new CounterFactory();
 
-            foreach (string counter in defaultCounters)
+            foreach (string counter in this.defaultCounters)
             {
                 try
                 {
@@ -59,12 +68,11 @@
                 }
             }
 
-
-            foreach (var counter in Counters)
+            foreach (var counter in this.Counters)
             {
                 try
                 {
-                    ICounterValue c = factory.GetCounter(counter.PerformanceCounter,  counter.ReportAs);
+                    ICounterValue c = counter.ReportAs == null ? factory.GetCounter(counter.PerformanceCounter) : factory.GetCounter(counter.PerformanceCounter, this.SanitizeReportAs(counter.ReportAs, counter.PerformanceCounter));
                     configuration.RegisterCounter(c);
                 }
                 catch
@@ -72,6 +80,27 @@
                     // TODO: Add tracing.
                 }
             }
+        }
+
+        private bool WebAppRunningInAzure()
+        {
+            return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME"));
+        }
+
+        private string SanitizeReportAs(string reportAs, string performanceCounter)
+        {
+            // Strip off disallowed characters.
+            var newReportAs = DisallowedCharsInReportAsRegex.Replace(reportAs, string.Empty);
+            newReportAs = MultipleSpacesRegex.Replace(newReportAs, " ");
+            newReportAs = newReportAs.Trim();
+
+            // If nothing is left, use default performance counter name.
+            if (string.IsNullOrWhiteSpace(newReportAs))
+            {
+                return performanceCounter;
+            }
+
+            return newReportAs;
         }
     }
 }
