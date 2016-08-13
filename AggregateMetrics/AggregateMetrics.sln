@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AggregateMetrics", "AggregateMetrics\AggregateMetrics.csproj", "{90A9E1BC-2D9D-442B-A0CA-46CFF434A903}"
 EndProject
@@ -16,8 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		README.md = README.md
 		Version.props = Version.props
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{770D6C0A-193A-4496-9F96-F776E5A7C335}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +39,6 @@ Global
 		{5409E54F-708A-4C85-9C5A-9266AB36C1A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5409E54F-708A-4C85-9C5A-9266AB36C1A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5409E54F-708A-4C85-9C5A-9266AB36C1A7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{770D6C0A-193A-4496-9F96-F776E5A7C335}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{770D6C0A-193A-4496-9F96-F776E5A7C335}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{770D6C0A-193A-4496-9F96-F776E5A7C335}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{770D6C0A-193A-4496-9F96-F776E5A7C335}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
