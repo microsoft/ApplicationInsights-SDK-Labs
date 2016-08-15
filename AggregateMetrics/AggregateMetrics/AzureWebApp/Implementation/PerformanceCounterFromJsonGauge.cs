@@ -2,6 +2,7 @@
 {
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
+    using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
     /// <summary>
     /// Gauge that gives the user an aggregate of requested counters in a cache
@@ -47,6 +48,7 @@
 
             metric.Name = this.name;
             metric.Value = this.cacheHelper.GetCounterValue(this.jsonId);
+            metric.Context.GetInternalContext().SdkVersion = SdkVersionAzureWebApp.sdkVersionAzureWebApp;
 
             return metric;
         }
