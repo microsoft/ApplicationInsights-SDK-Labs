@@ -21,6 +21,21 @@ Instructions for getting started with MyGet can be found at http://docs.myget.or
 > Install-Package Microsoft.ApplicationInsights.AggregateMetrics -IncludePrerelease
 ```
 
+###Custom Counter Installation###
+Navigate to the ApplicationInsights.config file and add a Counters tag within the Add tag for Aggregate Metrics. The below code is an example that will give you custom performance counters Handle Count and Thread Count. 
+
+
+``` 
+<TelemetryModules> 
+  <Add Type="Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp.PerformanceCollectorModule,Microsoft.ApplicationInsights.AggregateMetrics"> 
+    <Counters> 
+      <Add PerformanceCounter="\Process(??APP_WIN32_PROC??)\Handle Count" ReportAs="Process handle count" /> 
+      <Add PerformanceCounter="\Process(??APP_WIN32_PROC??)\Thread Count" ReportAs="Process thread count" /> 
+    </Counters> 
+  </Add> 
+```
+
+
 ## Usage - first API ##
 
 Once installed, add a using for the `AggregateMetrics.One` namespace then you can use the `TrackAggregateMetric` extension method to track metrics you want automatically aggregated using your instance of `TelemetryClient`.
