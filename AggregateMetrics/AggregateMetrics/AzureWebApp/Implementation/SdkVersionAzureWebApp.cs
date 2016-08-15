@@ -2,7 +2,9 @@
 {
     internal class SdkVersionAzureWebApp
     {
-        internal const string VersionPrefix = "azwpac: ";
+        internal static string sdkVersionAzureWebApp = VersionPrefix + GetAssemblyVersion();
+
+        internal const string VersionPrefix = "azwapc: ";
 
         internal static string GetAssemblyVersion()
         {
