@@ -12,7 +12,7 @@
         [TestMethod]
         public void TestPerformanceCounterValuesAreCorrectlyRetrievedUsingPerformanceCounterFromJsonGauge()
         {
-            PerformanceCounterFromJsonGauge gauge = new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes", "privateBytes", new CacheHelperTests());
+            PerformanceCounterFromJsonGauge gauge = new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes", "privateBytes", AzureWebApEnvironmentVariables.App,new CacheHelperTests());
             MetricTelemetry metric = gauge.GetValueAndReset();
 
             Assert.IsTrue(metric.Value > 0);

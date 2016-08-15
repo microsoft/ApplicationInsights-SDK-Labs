@@ -11,10 +11,10 @@
         public void SumUpGaugeGetValueAndResetWorking()
         {
             SumUpGauge twoTimesPrivateBytes = new SumUpGauge("twoTimesPrivateBytes", 
-                new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes * 2", "privateBytes", new CacheHelperTests()), 
-                new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes", "privateBytes", new CacheHelperTests()));
+                new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes * 2", "privateBytes", AzureWebApEnvironmentVariables.App, new CacheHelperTests()), 
+                new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes", "privateBytes", AzureWebApEnvironmentVariables.App, new CacheHelperTests()));
 
-            PerformanceCounterFromJsonGauge privateBytes = new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes", "privateBytes", new CacheHelperTests());
+            PerformanceCounterFromJsonGauge privateBytes = new PerformanceCounterFromJsonGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes", "privateBytes", AzureWebApEnvironmentVariables.App, new CacheHelperTests());
 
             MetricTelemetry expectedTelemetry = privateBytes.GetValueAndReset();
             MetricTelemetry actualTelemetry = twoTimesPrivateBytes.GetValueAndReset();
