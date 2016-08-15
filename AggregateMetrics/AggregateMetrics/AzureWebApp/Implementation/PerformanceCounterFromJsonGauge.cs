@@ -48,7 +48,7 @@
 
             metric.Name = this.name;
             metric.Value = this.cacheHelper.GetCounterValue(this.jsonId);
-            metric.Context.GetInternalContext().SdkVersion = new PerformanceCollectorModule().sdkVersion;
+            metric.Context.GetInternalContext().SdkVersion = SdkVersionAzureWebApp.VersionPrefix + SdkVersionAzureWebApp.GetAssemblyVersion();
 
             return metric;
         }

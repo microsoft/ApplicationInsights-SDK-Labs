@@ -12,8 +12,6 @@
     /// </summary>
     public class PerformanceCollectorModule : ITelemetryModule
     {
-        internal string sdkVersion = SdkVersionUtils.VersionPrefix + SdkVersionUtils.GetAssemblyVersion();
-
         private static readonly Regex DisallowedCharsInReportAsRegex = new Regex(
             @"[^a-zA-Z()/\\_. \t-]+",
             RegexOptions.Compiled);

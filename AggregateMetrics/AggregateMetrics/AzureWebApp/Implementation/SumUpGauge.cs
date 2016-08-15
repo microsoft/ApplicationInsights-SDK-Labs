@@ -42,7 +42,7 @@
 
             metric.Name = this.name;
             metric.Value = this.gaugesToSum.Sum((g) => { return g.GetValueAndReset().Value; });
-            metric.Context.GetInternalContext().SdkVersion = new PerformanceCollectorModule().sdkVersion;
+            metric.Context.GetInternalContext().SdkVersion = SdkVersionAzureWebApp.VersionPrefix + SdkVersionAzureWebApp.GetAssemblyVersion();
 
             return metric;
         }

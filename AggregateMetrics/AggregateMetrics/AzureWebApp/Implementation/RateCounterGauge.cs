@@ -70,7 +70,7 @@
 
             var timeDifferenceInSeconds = currentTime.Subtract(this.dateTime).Seconds;
             metric.Name = this.name;
-            metric.Context.GetInternalContext().SdkVersion = new PerformanceCollectorModule().sdkVersion;
+            metric.Context.GetInternalContext().SdkVersion = SdkVersionAzureWebApp.VersionPrefix + SdkVersionAzureWebApp.GetAssemblyVersion();
 
             if (this.lastValue == null)
             {
