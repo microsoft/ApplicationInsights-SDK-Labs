@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateMetricsEventSource.cs" />
-    <Compile Include="AzureWebApp\AzureWebEnvironmentVariables.cs" />
+    <Compile Include="AzureWebApp\Implementation\AzureWebEnvironmentVariables.cs" />
     <Compile Include="AzureWebApp\ICachedEnvironmentVariableAccess.cs" />
     <Compile Include="AzureWebApp\Implementation\CounterFactory.cs" />
     <Compile Include="AzureWebApp\Implementation\SdkVersionAzureWebApp.cs" />

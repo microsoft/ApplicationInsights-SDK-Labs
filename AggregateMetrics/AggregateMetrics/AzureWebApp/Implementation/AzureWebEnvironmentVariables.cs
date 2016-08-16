@@ -3,7 +3,7 @@
     using System;
 
     [Flags]
-    internal enum AzureWebApEnvironmentVariables
+    public enum AzureWebApEnvironmentVariables
     {
         AspNet = 0,
 

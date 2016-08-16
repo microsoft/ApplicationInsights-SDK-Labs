@@ -2,7 +2,6 @@
 {
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
-    using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
     /// <summary>
     /// Gauge that gives the user an aggregate of requested counters in a cache
@@ -19,6 +18,11 @@
         /// </summary>
         private string jsonId;
 
+        /// <summary>
+        /// Identifier of the environment variable.
+        /// </summary>
+        private AzureWebApEnvironmentVariables environmentVariable;
+
         private ICachedEnvironmentVariableAccess cacheHelper;
 
         /// <summary>
@@ -26,15 +30,17 @@
         /// </summary>
         /// <param name="name">Name of counter variable.</param>
         /// <param name="jsonId">Json identifier of the counter variable.</param>
-        public PerformanceCounterFromJsonGauge(string name, string jsonId)
-            : this(name, jsonId, CacheHelper.Instance)
+        /// <param name="environmentVariable">Identifier of the environment variable.</param>
+        public PerformanceCounterFromJsonGauge(string name, string jsonId, AzureWebApEnvironmentVariables environmentVariable)
+            : this(name, jsonId, environmentVariable, CacheHelper.Instance)
         {
         }
 
-        internal PerformanceCounterFromJsonGauge(string name, string jsonId, ICachedEnvironmentVariableAccess cache)
+        internal PerformanceCounterFromJsonGauge(string name, string jsonId, AzureWebApEnvironmentVariables environmentVariable, ICachedEnvironmentVariableAccess cache)
         {
             this.name = name;
             this.jsonId = jsonId;
+            this.environmentVariable = environmentVariable;
             this.cacheHelper = cache;
         }
 
@@ -47,8 +53,7 @@
             var metric = new MetricTelemetry();
 
             metric.Name = this.name;
-            metric.Value = this.cacheHelper.GetCounterValue(this.jsonId);
-            metric.Context.GetInternalContext().SdkVersion = SdkVersionAzureWebApp.sdkVersionAzureWebApp;
+            metric.Value = this.cacheHelper.GetCounterValue(this.jsonId, this.environmentVariable);
 
             return metric;
         }
