@@ -3,6 +3,7 @@
     using System;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
+    using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
     /// <summary>
     /// Struct for metrics dependant on time.
@@ -75,6 +76,7 @@
 
             var timeDifferenceInSeconds = currentTime.Subtract(this.dateTime).Seconds;
             metric.Name = this.name;
+            metric.Context.GetInternalContext().SdkVersion = SdkVersionAzureWebApp.sdkVersionAzureWebApp;
 
             if (this.lastValue == null)
             {

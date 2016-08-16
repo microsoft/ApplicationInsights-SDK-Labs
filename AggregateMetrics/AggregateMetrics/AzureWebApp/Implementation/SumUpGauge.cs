@@ -4,6 +4,7 @@
     using System.Linq;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.Two;
+    using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
     /// <summary>
     /// Gauge that sums up the values of different gauges.
@@ -41,6 +42,7 @@
 
             metric.Name = this.name;
             metric.Value = this.gaugesToSum.Sum((g) => { return g.GetValueAndReset().Value; });
+            metric.Context.GetInternalContext().SdkVersion = SdkVersionAzureWebApp.sdkVersionAzureWebApp;
 
             return metric;
         }
