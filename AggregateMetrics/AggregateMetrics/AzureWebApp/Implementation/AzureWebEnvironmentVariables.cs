@@ -24,7 +24,7 @@
         CLR = 2,
 
         /// <summary>
-        /// All the above.
+        /// All of the above.
         /// </summary>
         All = 3
     };
