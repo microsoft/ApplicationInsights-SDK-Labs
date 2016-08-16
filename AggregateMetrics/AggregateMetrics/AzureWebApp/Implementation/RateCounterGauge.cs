@@ -41,6 +41,7 @@
         /// </summary>
         /// <param name="name"> Name of counter variable.</param>
         /// <param name="jsonId">Json identifier of the counter variable.</param>
+        /// <param name="environmentVariable"> Identifier of the corresponding environment variable.</param>
         /// <param name="counter">Dependant counter.</param>
         public RateCounterGauge(string name, string jsonId, AzureWebApEnvironmentVariables environmentVariable, ICounterValue counter = null)
             : this(name, jsonId, environmentVariable, counter, CacheHelper.Instance)
@@ -53,7 +54,8 @@
         /// This constructor is intended for Unit Tests.
         /// </summary>
         /// <param name="name"> Name of the counter variable.</param>
-        /// /// <param name="jsonId">Json identifier of the counter variable.</param>
+        /// <param name="jsonId">Json identifier of the counter variable.</param>
+        /// <param name="environmentVariable"> Identifier of the corresponding environment variable.</param>
         /// <param name="counter">Dependant counter.</param>
         /// <param name="cache"> Cache object.</param>
         internal RateCounterGauge(string name, string jsonId, AzureWebApEnvironmentVariables environmentVariable, ICounterValue counter, ICachedEnvironmentVariableAccess cache)
