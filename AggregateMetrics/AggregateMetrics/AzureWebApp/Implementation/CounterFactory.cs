@@ -27,7 +27,7 @@
                     return new PerformanceCounterFromJsonGauge(
                         reportAs,
                         "privateBytes",
-                        AzureWebApEnvironmentVariables.App);
+                        AzureWebApEnvironmentVariables.AspNet);
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests In Application Queue":
                     return new PerformanceCounterFromJsonGauge(
                         reportAs,
@@ -36,11 +36,13 @@
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests/Sec":
                     return new RateCounterGauge(
                         reportAs, 
-                        "requestsTotal");
+                        "requestsTotal",
+                        AzureWebApEnvironmentVariables.All);
                 case @"\.NET CLR Exceptions(??APP_CLR_PROC??)\# of Exceps Thrown / sec":
                     return new RateCounterGauge(
                         reportAs,
-                        "exceptionsThrown");
+                        "exceptionsThrown",
+                        AzureWebApEnvironmentVariables.CLR);
                 case @"\Process(?? APP_WIN32_PROC ??)\% Processor Time":
                     return new SumUpGauge(
                         reportAs,
@@ -50,6 +52,7 @@
                     return new RateCounterGauge(
                         reportAs, 
                         "ioDataBytesRate",
+                        AzureWebApEnvironmentVariables.App,
                         new SumUpGauge(
                             "ioDataBytesRate",
                             new PerformanceCounterFromJsonGauge(

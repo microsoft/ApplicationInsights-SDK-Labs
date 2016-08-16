@@ -75,13 +75,14 @@
         /// Creates value for caching
         /// </summary>
         /// <param name="name">Cache key and name of the counter to be selected from JSON</param>
+        /// <param name="environmentVariable">Identifier of the environment variable </param>
         /// <returns>value from cache</returns>
-        public int GetCounterValue(string name)
+        public int GetCounterValue(string name, AzureWebApEnvironmentVariables environmentVariable)
         {
             if (!CacheHelper.Instance.IsInCache(JsonKey))
             {
                 PerformanceCounterImplementation client = new PerformanceCounterImplementation();
-                string uncachedJson = client.GetAzureWebAppEnvironmentVariables(AzureWebApEnvironmentVariables.All);
+                string uncachedJson = client.GetAzureWebAppEnvironmentVariables(environmentVariable);
 
                 if (uncachedJson == null)
                 {

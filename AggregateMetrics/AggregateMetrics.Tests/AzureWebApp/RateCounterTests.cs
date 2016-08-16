@@ -10,7 +10,7 @@
         [TestMethod]
         public void RateCounterGaugeGetValueAndResetWorking()
         {
-            RateCounterGauge privateBytesRate = new RateCounterGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes", "privateBytes", null, new CacheHelperTests());
+            RateCounterGauge privateBytesRate = new RateCounterGauge(@"\Process(??APP_WIN32_PROC??)\Private Bytes", "privateBytes", AzureWebApEnvironmentVariables.App, null, new CacheHelperTests());
 
             MetricTelemetry metric = privateBytesRate.GetValueAndReset();
             Assert.IsTrue(metric.Value == 0);

@@ -10,6 +10,6 @@
         /// </summary>
         /// <param name="name"> Name of the counter.</param>
         /// <returns> Counter value.</returns>
-        int GetCounterValue(string name);
+        int GetCounterValue(string name, AzureWebApEnvironmentVariables environmentVariable);
     }
 }

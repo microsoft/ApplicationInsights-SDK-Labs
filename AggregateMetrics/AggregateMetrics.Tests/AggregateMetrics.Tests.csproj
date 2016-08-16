@@ -92,10 +92,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AzureWebApp\SampleFiles\RemoteEnvironmentVariablesSampleOne.txt">
+    <Content Include="AzureWebApp\SampleFiles\RemoteEnvironmentVariablesAllSampleOne.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="AzureWebApp\SampleFiles\RemoteEnvironmentVariablesSampleTwo.txt">
+    <Content Include="AzureWebApp\SampleFiles\RemoteEnvironmentVariablesAllSampleTwo.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

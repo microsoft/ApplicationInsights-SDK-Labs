@@ -19,6 +19,11 @@
         /// </summary>
         private string jsonId;
 
+        /// <summary>
+        /// Identifier of the environment variable.
+        /// </summary>
+        private AzureWebApEnvironmentVariables environmentVariable;
+
         private ICounterValue counter;
 
         private double? lastValue;
@@ -36,8 +41,8 @@
         /// <param name="name"> Name of counter variable.</param>
         /// <param name="jsonId">Json identifier of the counter variable.</param>
         /// <param name="counter">Dependant counter.</param>
-        public RateCounterGauge(string name, string jsonId, ICounterValue counter = null)
-            : this(name, jsonId, counter, CacheHelper.Instance)
+        public RateCounterGauge(string name, string jsonId, AzureWebApEnvironmentVariables environmentVariable, ICounterValue counter = null)
+            : this(name, jsonId, environmentVariable, counter, CacheHelper.Instance)
         {
         }
 
@@ -50,10 +55,11 @@
         /// /// <param name="jsonId">Json identifier of the counter variable.</param>
         /// <param name="counter">Dependant counter.</param>
         /// <param name="cache"> Cache object.</param>
-        internal RateCounterGauge(string name, string jsonId, ICounterValue counter, ICachedEnvironmentVariableAccess cache)
+        internal RateCounterGauge(string name, string jsonId, AzureWebApEnvironmentVariables environmentVariable, ICounterValue counter, ICachedEnvironmentVariableAccess cache)
         {
             this.name = name;
             this.jsonId = jsonId;
+            this.environmentVariable = environmentVariable;
             this.counter = counter;
             this.cacheHelper = cache;
         }
@@ -74,7 +80,7 @@
             {
                 if (this.counter == null)
                 {
-                    this.lastValue = this.cacheHelper.GetCounterValue(this.jsonId);
+                    this.lastValue = this.cacheHelper.GetCounterValue(this.jsonId, this.environmentVariable);
                 }
                 else
                 {
@@ -88,8 +94,8 @@
 
             if (this.counter == null)
             {
-                metric.Value = (timeDifferenceInSeconds != 0) ? (this.cacheHelper.GetCounterValue(this.jsonId) - (double)this.lastValue) / timeDifferenceInSeconds : 0;
-                this.lastValue = this.cacheHelper.GetCounterValue(this.jsonId);
+                metric.Value = (timeDifferenceInSeconds != 0) ? (this.cacheHelper.GetCounterValue(this.jsonId, this.environmentVariable) - (double)this.lastValue) / timeDifferenceInSeconds : 0;
+                this.lastValue = this.cacheHelper.GetCounterValue(this.jsonId, this.environmentVariable);
             }
             else
             {

@@ -53,7 +53,7 @@
             var metric = new MetricTelemetry();
 
             metric.Name = this.name;
-            metric.Value = this.cacheHelper.GetCounterValue(this.jsonId);
+            metric.Value = this.cacheHelper.GetCounterValue(this.jsonId, this.environmentVariable);
 
             return metric;
         }
