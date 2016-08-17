@@ -9,9 +9,9 @@ namespace AggregateMetrics.Tests.AzureWebApp
     {
         private bool returnJsonOne = true;
 
-        private string jsonOne = File.ReadAllText(@"AzureWebApp\SampleFiles\RemoteEnvironmentVariablesSampleOne.txt");
+        private string jsonOne = File.ReadAllText(@"AzureWebApp\SampleFiles\RemoteEnvironmentVariablesAllSampleOne.txt");
 
-        private string jsonTwo = File.ReadAllText(@"AzureWebApp\SampleFiles\RemoteEnvironmentVariablesSampleTwo.txt");
+        private string jsonTwo = File.ReadAllText(@"AzureWebApp\SampleFiles\RemoteEnvironmentVariablesAllSampleTwo.txt");
 
         /// <summary>
         /// Retrieves raw counter data from Environment Variables.
