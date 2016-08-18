@@ -18,15 +18,11 @@
         {
             switch (counterName)
             {
+                // Default performance counters
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Request Execution Time":
                     return new PerformanceCounterFromJsonGauge(
                         reportAs,
                         "appRequestExecTime",
-                        AzureWebApEnvironmentVariables.AspNet);
-                case @"\Process(??APP_WIN32_PROC??)\Private Bytes":
-                    return new PerformanceCounterFromJsonGauge(
-                        reportAs,
-                        "privateBytes",
                         AzureWebApEnvironmentVariables.AspNet);
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests In Application Queue":
                     return new PerformanceCounterFromJsonGauge(
@@ -35,7 +31,7 @@
                         AzureWebApEnvironmentVariables.AspNet);
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Requests/Sec":
                     return new RateCounterGauge(
-                        reportAs, 
+                        reportAs,
                         "requestsTotal",
                         AzureWebApEnvironmentVariables.All);
                 case @"\.NET CLR Exceptions(??APP_CLR_PROC??)\# of Exceps Thrown / sec":
@@ -43,6 +39,11 @@
                         reportAs,
                         "exceptionsThrown",
                         AzureWebApEnvironmentVariables.CLR);
+                case @"\Process(??APP_WIN32_PROC??)\Private Bytes":
+                    return new PerformanceCounterFromJsonGauge(
+                    reportAs,
+                    "privateBytes",
+                    AzureWebApEnvironmentVariables.App);
                 case @"\Process(?? APP_WIN32_PROC ??)\% Processor Time":
                     return new SumUpGauge(
                         reportAs,
@@ -50,32 +51,80 @@
                         new PerformanceCounterFromJsonGauge("userTime", "userTime", AzureWebApEnvironmentVariables.App));
                 case @"\Process(??APP_WIN32_PROC??)\IO Data Bytes/sec":
                     return new RateCounterGauge(
-                        reportAs, 
+                        reportAs,
                         "ioDataBytesRate",
                         AzureWebApEnvironmentVariables.App,
                         new SumUpGauge(
                             "ioDataBytesRate",
                             new PerformanceCounterFromJsonGauge(
-                                "readIoBytes", 
+                                "readIoBytes",
                                 "readIoBytes",
                                 AzureWebApEnvironmentVariables.App),
                             new PerformanceCounterFromJsonGauge(
-                                "writeIoBytes", 
+                                "writeIoBytes",
                                 "writeIoBytes",
                                 AzureWebApEnvironmentVariables.App),
                             new PerformanceCounterFromJsonGauge(
-                                "otherIoBytes", 
+                                "otherIoBytes",
                                 "otherIoBytes",
                                 AzureWebApEnvironmentVariables.App)));
-                case @"\Process(??APP_WIN32_PROC??)\Handle Count":
+
+                // $set = Get-Counter -ListSet Process
+                // $set.Paths
+                case @"\Process(??APP_WIN32_PROC??)\% Processor Time":
+                    return new SumUpGauge(
+                    reportAs,
+                    new PerformanceCounterFromJsonGauge("kernelTime", "kernelTime", AzureWebApEnvironmentVariables.App),
+                    new PerformanceCounterFromJsonGauge("userTime", "userTime", AzureWebApEnvironmentVariables.App));
+                case @"\Process(??APP_WIN32_PROC??)\% User Time":
                     return new PerformanceCounterFromJsonGauge(
                         reportAs,
-                        "handles",
+                        "userTime",
+                        AzureWebApEnvironmentVariables.App);
+                case @"\Process(??APP_WIN32_PROC??)\Page Faults/ sec":
+                    return new RateCounterGauge(
+                        reportAs,
+                        "pageFaults",
                         AzureWebApEnvironmentVariables.App);
                 case @"\Process(??APP_WIN32_PROC??)\Thread Count":
                     return new PerformanceCounterFromJsonGauge(
+                    reportAs,
+                    "threads",
+                    AzureWebApEnvironmentVariables.App);
+                case @"\Process(??APP_WIN32_PROC??)\Handle Count":
+                    return new PerformanceCounterFromJsonGauge(
+                    reportAs,
+                    "handles",
+                    AzureWebApEnvironmentVariables.App);
+                case @"\Process(??APP_WIN32_PROC??)\IO Read Operations / sec":
+                    return new RateCounterGauge(
                         reportAs,
-                        "threads",
+                        "readIoOperations",
+                        AzureWebApEnvironmentVariables.App);
+                case @"\Process(??APP_WIN32_PROC??)\IO Write Operations / sec":
+                    return new RateCounterGauge(
+                        reportAs,
+                        "writeIoOperations",
+                        AzureWebApEnvironmentVariables.App);
+                case @"\Process(??APP_WIN32_PROC??)\IO Other Operations / sec":
+                    return new RateCounterGauge(
+                        reportAs,
+                        "otherIoOperations",
+                        AzureWebApEnvironmentVariables.App);
+                case @"\Process(??APP_WIN32_PROC??)\IO Read Bytes / sec":
+                    return new RateCounterGauge(
+                        reportAs,
+                        "readIoBytes",
+                        AzureWebApEnvironmentVariables.App);
+                case @"\Process(??APP_WIN32_PROC??)\IO Write Bytes / sec":
+                    return new RateCounterGauge(
+                        reportAs,
+                        "writeIoBytes",
+                        AzureWebApEnvironmentVariables.App);
+                case @"\Process(??APP_WIN32_PROC??)\IO Other Bytes / sec":
+                    return new RateCounterGauge(
+                        reportAs,
+                        "otherIoBytes",
                         AzureWebApEnvironmentVariables.App);
                 default:
                     throw new ArgumentException("Performance counter was not found.", counterName);
