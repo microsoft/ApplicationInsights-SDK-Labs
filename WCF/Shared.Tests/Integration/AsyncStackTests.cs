@@ -123,6 +123,29 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
                          select item;
             Assert.IsTrue(errors.Count() > 0);
         }
+
+        [TestMethod]
+        [TestCategory("Integration"), TestCategory("Async")]
+        public void TelemetryContextIsFlowedAccrossAsyncCalls()
+        {
+            TestTelemetryChannel.Clear();
+            using ( var host = new HostingContext<AsyncService, IAsyncService>() )
+            {
+                host.Open();
+                IAsyncService client = host.GetChannel();
+                client.WriteDependencyEventAsync().Wait();
+            }
+            var data = TestTelemetryChannel.CollectedData();
+            var request = data
+                         .OfType<RequestTelemetry>()
+                         .First();
+            var dependency = data
+                            .OfType<DependencyTelemetry>()
+                            .FirstOrDefault();
+            Assert.AreEqual(request.Context.Operation.Id, dependency.Context.Operation.Id);
+            Assert.AreEqual(request.Context.Operation.Name, dependency.Context.Operation.Name);
+
+        }
     }
 #endif // NET45
 }
