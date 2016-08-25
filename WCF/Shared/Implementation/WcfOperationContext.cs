@@ -105,7 +105,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         private static IOperationContext GetContext()
         {
             var owner = OperationContext.Current;
-            if ( owner.IsClientSideContext() )
+            if ( owner != null && owner.IsClientSideContext() )
             {
                 owner = null;
             }
