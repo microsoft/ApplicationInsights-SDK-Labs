@@ -91,13 +91,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
 
             WcfOperationContext context = null;
-            if ( owner != null )
+            if ( context == null && owner != null )
             {
                 context = owner.Extensions.Find<WcfOperationContext>();
             }
             if ( context == null )
             {
-                context = CallContext.GetData(CallContextProperty) as WcfOperationContext;
+                context = CallContext.LogicalGetData(CallContextProperty) as WcfOperationContext;
             }
             return context;
         }
@@ -118,7 +118,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                     context = new WcfOperationContext(owner);
                     owner.Extensions.Add(context);
                     // backup in case we can't get to the server-side OperationContext later
-                    CallContext.SetData(CallContextProperty, context);
+                    CallContext.LogicalSetData(CallContextProperty, context);
                 }
                 // no server-side OperationContext to attach to
             }
