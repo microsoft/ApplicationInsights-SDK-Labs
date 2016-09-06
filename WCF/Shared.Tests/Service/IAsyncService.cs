@@ -13,5 +13,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
         Task<String> FailWithFaultAsync();
         [OperationContract]
         Task<String> FailWithExceptionAsync();
+        [OperationContract]
+        Task<String> WriteDependencyEventAsync();
     }
 }
