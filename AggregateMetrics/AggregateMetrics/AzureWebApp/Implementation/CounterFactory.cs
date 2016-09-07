@@ -45,10 +45,11 @@
                     "privateBytes",
                     AzureWebApEnvironmentVariables.App);
                 case @"\Process(?? APP_WIN32_PROC ??)\% Processor Time":
-                    return new SumUpGauge(
-                        reportAs,
-                        new PerformanceCounterFromJsonGauge("kernelTime", "kernelTime", AzureWebApEnvironmentVariables.App),
-                        new PerformanceCounterFromJsonGauge("userTime", "userTime", AzureWebApEnvironmentVariables.App));
+                    return new CPUPercenageGauge(reportAs, 
+                        new SumUpGauge(
+                            reportAs,
+                            new PerformanceCounterFromJsonGauge("kernelTime", "kernelTime", AzureWebApEnvironmentVariables.App),
+                            new PerformanceCounterFromJsonGauge("userTime", "userTime", AzureWebApEnvironmentVariables.App)));
                 case @"\Process(??APP_WIN32_PROC??)\IO Data Bytes/sec":
                     return new RateCounterGauge(
                         reportAs,
@@ -422,10 +423,8 @@
                         "cacheOutputTrims",
                         AzureWebApEnvironmentVariables.AspNet);
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\% Managed Processor Time(estimated)":
-                    return new PerformanceCounterFromJsonGauge(
-                        reportAs,
-                        "",
-                        AzureWebApEnvironmentVariables.AspNet);
+                    // maybe appCpuUsed and appCpuUsedBase
+                    throw new ArgumentException("Performance counter was not found.", counterName);
                 case @"\ASP.NET Applications(??APP_W3SVC_PROC??)\Managed Memory Used(estimated)":
                     return new PerformanceCounterFromJsonGauge(
                         reportAs,
@@ -466,10 +465,11 @@
                 // $set = Get-Counter -ListSet Process
                 // $set.Paths
                 case @"\Process(??APP_WIN32_PROC??)\% Processor Time":
-                    return new SumUpGauge(
-                    reportAs,
-                    new PerformanceCounterFromJsonGauge("kernelTime", "kernelTime", AzureWebApEnvironmentVariables.App),
-                    new PerformanceCounterFromJsonGauge("userTime", "userTime", AzureWebApEnvironmentVariables.App));
+                    return new CPUPercenageGauge(reportAs, 
+                        new SumUpGauge(
+                            reportAs,
+                            new PerformanceCounterFromJsonGauge("kernelTime", "kernelTime", AzureWebApEnvironmentVariables.App),
+                            new PerformanceCounterFromJsonGauge("userTime", "userTime", AzureWebApEnvironmentVariables.App)));
                 case @"\Process(??APP_WIN32_PROC??)\% User Time":
                     return new PerformanceCounterFromJsonGauge(
                         reportAs,
