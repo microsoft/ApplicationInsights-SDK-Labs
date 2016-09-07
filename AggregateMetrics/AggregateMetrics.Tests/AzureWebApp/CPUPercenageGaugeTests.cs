@@ -4,6 +4,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.ApplicationInsights.Extensibility.AggregateMetrics.AzureWebApp;
     using System.Threading;
+    using System.Globalization;
 
     [TestClass]
     public class CPUPercenageGaugeTests
@@ -23,7 +24,7 @@
 
             var value2 = gauge.GetValueAndReset();
             Assert.IsTrue(Math.Abs(value2.Value - ((24843750 - 24062500.0) / TimeSpan.FromSeconds(10).Ticks * 100.0)) < 0.0001, 
-                string.Format("Actual: {0}, Expected: {1}", value2.Value, (24843750 - 24062500.0) / TimeSpan.FromSeconds(10).Ticks));
+                string.Format(CultureInfo.InvariantCulture, "Actual: {0}, Expected: {1}", value2.Value, (24843750 - 24062500.0) / TimeSpan.FromSeconds(10).Ticks));
         }
     }
 }
