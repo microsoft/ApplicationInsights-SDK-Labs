@@ -60,8 +60,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 Request = new RequestTelemetry();
                 Request.GenerateOperationId();
                 OwnsRequest = true;
-            }
-            else
+            } else
             {
                 OwnsRequest = false;
             }
