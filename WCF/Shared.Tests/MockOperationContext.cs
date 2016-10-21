@@ -16,6 +16,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public IDictionary<String, object> IncomingHeaders { get; private set; }
         public String OperationId { get { return Request.Id; } }
         public RequestTelemetry Request { get; private set; }
+        public bool OwnsRequest { get; private set; }
         public Uri EndpointUri { get; set; }
         public Uri ToHeader { get; set; }
         public String OperationName { get; set; }
@@ -32,6 +33,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             this.ContractNamespace = "urn:fake";
             this.Request = new RequestTelemetry();
             this.Request.GenerateOperationId();
+            this.OwnsRequest = true;
         }
 
         public bool HasIncomingMessageProperty(string propertyName)

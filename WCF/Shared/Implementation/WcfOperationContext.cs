@@ -3,6 +3,7 @@ using System;
 using System.Runtime.Remoting.Messaging;
 using System.ServiceModel;
 using System.ServiceModel.Dispatcher;
+using System.Web;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
@@ -17,6 +18,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         }
         public String OperationName { get; private set; }
         public RequestTelemetry Request { get; private set; }
+        public bool OwnsRequest { get; private set; }
 
         public String ContractName
         {
@@ -44,12 +46,24 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             get { return GetContext();  }
         }
 
-        private WcfOperationContext(OperationContext operationContext)
+        private WcfOperationContext(OperationContext operationContext, HttpContext httpContext)
         {
             context = operationContext;
             OperationName = DiscoverOperationName(operationContext);
-            Request = new RequestTelemetry();
-            Request.GenerateOperationId();
+            if ( httpContext != null )
+            {
+                Request = httpContext.Items[RequestTrackingConstants.HttpContextRequestTelemetryName]
+                    as RequestTelemetry;
+            }
+            if ( Request == null )
+            {
+                Request = new RequestTelemetry();
+                Request.GenerateOperationId();
+                OwnsRequest = true;
+            } else
+            {
+                OwnsRequest = false;
+            }
         }
 
         public bool HasIncomingMessageProperty(string propertyName)
@@ -115,7 +129,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 if ( owner != null )
                 {
-                    context = new WcfOperationContext(owner);
+                    context = new WcfOperationContext(owner, HttpContext.Current);
                     owner.Extensions.Add(context);
                     // backup in case we can't get to the server-side OperationContext later
                     CallContext.LogicalSetData(CallContextProperty, context);
