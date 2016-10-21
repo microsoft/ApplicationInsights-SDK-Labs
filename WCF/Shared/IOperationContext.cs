@@ -28,6 +28,10 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// </summary>
         RequestTelemetry Request { get; }
         /// <summary>
+        /// True if WCF owns the Request telemetry object
+        /// </summary>
+        bool OwnsRequest { get; }
+        /// <summary>
         /// Name of the service contract being invoked
         /// </summary>
         String ContractName { get; }

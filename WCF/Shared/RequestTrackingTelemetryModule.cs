@@ -93,7 +93,14 @@ namespace Microsoft.ApplicationInsights.Wcf
             }
             telemetry.ResponseCode = responseCode.ToString("d");
             telemetry.Properties.Add("Protocol", telemetry.Url.Scheme);
-            telemetryClient.TrackRequest(telemetry);
+            // if the Microsoft.ApplicationInsights.Web package started
+            // tracking this request before WCF handled it, we
+            // don't want to track it because it would duplicate the event.
+            // Let the HttpModule instead write it later on.
+            if ( operation.OwnsRequest )
+            {
+                telemetryClient.TrackRequest(telemetry);
+            }
         }
 
         void IWcfTelemetryModule.OnError(IOperationContext operation, Exception error)
