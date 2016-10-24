@@ -129,7 +129,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 if ( owner != null )
                 {
-                    context = new WcfOperationContext(owner, HttpContext.Current);
+                    context = new WcfOperationContext(owner, PlatformContext.GetContext());
                     owner.Extensions.Add(context);
                     // backup in case we can't get to the server-side OperationContext later
                     CallContext.LogicalSetData(CallContextProperty, context);

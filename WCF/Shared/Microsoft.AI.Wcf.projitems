@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ContractFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\Executor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\OperationFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\PlatformContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\RequestTrackingConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\SdkVersionUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfOperationContext.cs" />
