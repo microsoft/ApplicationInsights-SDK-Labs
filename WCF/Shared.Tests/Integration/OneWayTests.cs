@@ -33,7 +33,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         {
             TestTelemetryChannel.Clear();
             var host = new HostingContext<OneWayService, IOneWayService>()
-                      .ExpectFailure();
+                      .ExpectFailure().ShouldWaitForCompletion();
             using ( host )
             {
                 host.Open();
