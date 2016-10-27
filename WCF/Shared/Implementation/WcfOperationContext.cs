@@ -3,7 +3,6 @@ using System;
 using System.Runtime.Remoting.Messaging;
 using System.ServiceModel;
 using System.ServiceModel.Dispatcher;
-using System.Web;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
@@ -46,23 +45,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             get { return GetContext();  }
         }
 
-        private WcfOperationContext(OperationContext operationContext, HttpContext httpContext)
+        private WcfOperationContext(OperationContext operationContext, RequestTelemetry httpCtxTelemetry)
         {
             context = operationContext;
             OperationName = DiscoverOperationName(operationContext);
-            if ( httpContext != null )
+            if ( httpCtxTelemetry != null )
             {
-                Request = httpContext.Items[RequestTrackingConstants.HttpContextRequestTelemetryName]
-                    as RequestTelemetry;
-            }
-            if ( Request == null )
+                Request = httpCtxTelemetry;
+                OwnsRequest = false;
+            } else
             {
                 Request = new RequestTelemetry();
                 Request.GenerateOperationId();
                 OwnsRequest = true;
-            } else
-            {
-                OwnsRequest = false;
             }
         }
 
@@ -129,7 +124,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 if ( owner != null )
                 {
-                    context = new WcfOperationContext(owner, PlatformContext.GetContext());
+                    context = new WcfOperationContext(owner, PlatformContext.RequestFromHttpContext());
                     owner.Extensions.Add(context);
                     // backup in case we can't get to the server-side OperationContext later
                     CallContext.LogicalSetData(CallContextProperty, context);
