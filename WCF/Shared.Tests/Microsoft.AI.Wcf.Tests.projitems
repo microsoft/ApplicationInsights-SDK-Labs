@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ContractFilterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\MultipleServiceCallsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\OperationContextExtensionsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Integration\TracingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationFilterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\OneWayTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
@@ -26,6 +27,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Service\OneWayService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\SelectiveTelemetryService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimpleAuthorizationContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TraceTelemetryModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserAgentTelemetryInitializerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserTelemetryInitializerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Channels\TestTelemetryChannel.cs" />
