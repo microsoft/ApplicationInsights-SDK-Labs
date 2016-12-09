@@ -14,10 +14,10 @@
     <tags>Analytics ApplicationInsights Telemetry AppInsights</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.0">
-        <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.1.0" />
+        <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.2.0" />
       </group>
       <group targetFramework=".NETFramework4.5">
-        <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.1.0" />
+        <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.2.0" />
       </group>
     </dependencies>
   </metadata>
