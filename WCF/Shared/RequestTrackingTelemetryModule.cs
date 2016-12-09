@@ -44,7 +44,7 @@ namespace Microsoft.ApplicationInsights.Wcf
             var httpHeaders = operation.GetHttpRequestHeaders();
             if ( httpHeaders != null )
             {
-                telemetry.HttpMethod = httpHeaders.Method;
+                telemetry.Properties["httpMethod"] = httpHeaders.Method;
                 if ( operation.ToHeader != null )
                 {
                     // overwrite it for WebHttpBinding requests
