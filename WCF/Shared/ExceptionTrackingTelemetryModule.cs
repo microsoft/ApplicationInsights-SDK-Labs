@@ -49,11 +49,9 @@ namespace Microsoft.ApplicationInsights.Wcf
             if ( error is FaultException )
             {
                 telemetry.SeverityLevel = SeverityLevel.Error;
-                telemetry.HandledAt = ExceptionHandledAt.UserCode;
             } else
             {
                 telemetry.SeverityLevel = SeverityLevel.Critical;
-                telemetry.HandledAt = ExceptionHandledAt.Platform;
             }
             telemetryClient.TrackException(error);
         }
