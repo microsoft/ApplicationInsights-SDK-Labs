@@ -46,6 +46,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                         context
                     );
                 }
+                foreach ( var mod in GetModules() )
+                {
+                    var tracer = mod as IWcfMessageTrace;
+                    if ( tracer != null )
+                    {
+                        Executor.ExceptionSafe(
+                            mod.GetType().Name,
+                            "OnTraceRequest",
+                            tracer.OnTraceRequest,
+                            context, ref request
+                        );
+                    }
+                }
             } else
             {
                 WcfEventSource.Log.NoOperationContextFound();
@@ -58,6 +71,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             var context = WcfOperationContext.Current;
             if ( context != null )
             {
+                foreach ( var mod in GetModules() )
+                {
+                    var tracer = mod as IWcfMessageTrace;
+                    if ( tracer != null )
+                    {
+                        Executor.ExceptionSafe(
+                            mod.GetType().Name,
+                            "OnTraceResponse",
+                            tracer.OnTraceResponse,
+                            context, ref reply
+                        );
+                    }
+                }
                 foreach ( var mod in GetModules() )
                 {
                     Executor.ExceptionSafe(
