@@ -43,5 +43,22 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
             Assert.AreEqual("myuser", telemetry.Context.User.Id);
         }
+
+        [TestMethod]
+        public void UserIdCopiedFromRequestIfPresent()
+        {
+            const String userName = "MyUserName";
+            var context = new MockOperationContext();
+            context.EndpointUri = new Uri("http://localhost/Service1.svc");
+            context.OperationName = "GetData";
+
+            context.Request.Context.User.Id = userName;
+
+            var initializer = new UserTelemetryInitializer();
+            var telemetry = new EventTelemetry();
+            initializer.Initialize(telemetry, context);
+
+            Assert.AreEqual(userName, telemetry.Context.User.Id);
+        }
     }
 }

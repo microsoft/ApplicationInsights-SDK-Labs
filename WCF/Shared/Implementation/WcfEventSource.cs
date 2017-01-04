@@ -16,6 +16,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             public const EventKeywords WcfModule = (EventKeywords)0x10;
             public const EventKeywords RequestTelemetry = (EventKeywords)0x20;
             public const EventKeywords ExceptionTelemetry = (EventKeywords)0x40;
+            public const EventKeywords OperationContext = (EventKeywords)0x80;
         }
 
         public static readonly WcfEventSource Log = new WcfEventSource();
@@ -74,6 +75,24 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public void LocationIdSet(String ip, String appDomainName = "Invalid")
         {
             this.WriteEvent(15, ip ?? "NULL", this.ApplicationName);
+        }
+
+        [Event(30, Keywords = Keywords.OperationContext, Message = "WcfOperationContext created. OpId={0}; OwnRequest={1}", Level = EventLevel.Verbose)]
+        public void OperationContextCreated(String operationId, bool ownsRequest, String appDomainName = "Invalid")
+        {
+            this.WriteEvent(30, operationId ?? "NULL", ownsRequest, this.ApplicationName);
+        }
+
+        [Event(35, Keywords = Keywords.OperationContext, Message = "Request message closed while reading property {0}", Level = EventLevel.Warning)]
+        public void RequestMessageClosed(String property, String appDomainName = "Invalid")
+        {
+            this.WriteEvent(35, property, this.ApplicationName);
+        }
+
+        [Event(36, Keywords = Keywords.OperationContext, Message = "Response message closed while reading property {0}", Level = EventLevel.Warning)]
+        public void ResponseMessageClosed(String property, String appDomainName = "Invalid")
+        {
+            this.WriteEvent(36, property, this.ApplicationName);
         }
 
         [NonEvent]

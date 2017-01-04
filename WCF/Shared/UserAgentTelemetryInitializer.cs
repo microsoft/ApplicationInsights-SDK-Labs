@@ -19,12 +19,13 @@ namespace Microsoft.ApplicationInsights.Wcf
         {
             if ( String.IsNullOrEmpty(telemetry.Context.User.UserAgent) )
             {
-                var userContext = telemetry.Context.User;
-                if ( String.IsNullOrEmpty(userContext.UserAgent) )
+                var requestContext = operation.Request.Context.User;
+                if ( String.IsNullOrEmpty(requestContext.UserAgent) )
                 {
-                    UpdateUserAgent(operation, userContext);
+                    UpdateUserAgent(operation, requestContext);
                 }
-                telemetry.Context.User.UserAgent = userContext.UserAgent;
+                var userContext = telemetry.Context.User;
+                telemetry.Context.User.UserAgent = requestContext.UserAgent;
             }
         }
 

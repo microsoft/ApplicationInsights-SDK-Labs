@@ -55,5 +55,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
             Assert.AreEqual(originalIp, telemetry.Context.Location.Ip);
         }
+
+        [TestMethod]
+        public void ClientIpIsCopiedFromRequestIfPresent()
+        {
+            const String clientIp = "10.12.32.12";
+            var context = new MockOperationContext();
+            context.Request.Context.Location.Ip = clientIp;
+
+            var initializer = new ClientIpTelemetryInitializer();
+            var telemetry = new EventTelemetry();
+            initializer.Initialize(telemetry, context);
+
+            Assert.AreEqual(clientIp, telemetry.Context.Location.Ip);
+        }
     }
 }

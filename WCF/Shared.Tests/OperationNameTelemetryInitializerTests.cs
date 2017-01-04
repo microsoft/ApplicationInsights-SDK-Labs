@@ -56,5 +56,22 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             String name = telemetry.Context.Operation.Name;
             Assert.AreEqual(name, "IFakeService.GetData");
         }
+
+        [TestMethod]
+        public void OperationNameIsCopiedFromRequestIfPresent()
+        {
+            const String name = "MyOperationName";
+            var context = new MockOperationContext();
+            context.EndpointUri = new Uri("net.tcp://localhost/Service1.svc");
+            context.OperationName = "GetData";
+
+            context.Request.Context.Operation.Name = name;
+
+            var initializer = new OperationNameTelemetryInitializer();
+            var telemetry = new EventTelemetry();
+            initializer.Initialize(telemetry, context);
+
+            Assert.AreEqual(name, telemetry.Context.Operation.Name);
+        }
     }
 }

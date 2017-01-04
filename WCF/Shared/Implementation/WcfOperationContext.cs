@@ -37,7 +37,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         }
         public ServiceSecurityContext SecurityContext
         {
-            get { return context.ServiceSecurityContext; }
+            get { return GetSecurityContext(); }
         }
 
         public static IOperationContext Current
@@ -59,34 +59,98 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 Request.GenerateOperationId();
                 OwnsRequest = true;
             }
+            WcfEventSource.Log.OperationContextCreated(Request.Id, OwnsRequest);
         }
 
         public bool HasIncomingMessageProperty(string propertyName)
         {
-            return context.IncomingMessageProperties.ContainsKey(propertyName);
+            if ( String.IsNullOrEmpty(propertyName) )
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
+            try
+            {
+                return context.IncomingMessageProperties.ContainsKey(propertyName);
+            } catch ( ObjectDisposedException )
+            {
+                // WCF message has been closed already
+                WcfEventSource.Log.RequestMessageClosed(propertyName);
+                return false;
+            }
         }
 
         public object GetIncomingMessageProperty(string propertyName)
         {
-            return context.IncomingMessageProperties[propertyName];
+            if ( String.IsNullOrEmpty(propertyName) )
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
+            try
+            {
+                return context.IncomingMessageProperties[propertyName];
+            } catch ( ObjectDisposedException )
+            {
+                // WCF message has been closed already
+                WcfEventSource.Log.RequestMessageClosed(propertyName);
+                return null;
+            }
         }
 
         public bool HasOutgoingMessageProperty(String propertyName)
         {
-            return context.OutgoingMessageProperties.ContainsKey(propertyName);
+            if ( String.IsNullOrEmpty(propertyName) )
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
+            try
+            {
+                return context.OutgoingMessageProperties.ContainsKey(propertyName);
+            } catch ( ObjectDisposedException )
+            {
+                // WCF message has been closed already
+                WcfEventSource.Log.ResponseMessageClosed(propertyName);
+                return false;
+            }
         }
 
         public object GetOutgoingMessageProperty(String propertyName)
         {
-            return context.OutgoingMessageProperties[propertyName];
+            if ( String.IsNullOrEmpty(propertyName) )
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
+            try
+            {
+                return context.OutgoingMessageProperties[propertyName];
+            } catch ( ObjectDisposedException )
+            {
+                // WCF message has been closed already
+                WcfEventSource.Log.ResponseMessageClosed(propertyName);
+                return null;
+            }
         }
 
         public T GetIncomingMessageHeader<T>(String name, String ns)
         {
-            int index = context.IncomingMessageHeaders.FindHeader(name, ns);
-            if ( index >= 0 )
+            if ( String.IsNullOrEmpty(name) )
             {
-                return context.IncomingMessageHeaders.GetHeader<T>(index);
+                throw new ArgumentNullException(nameof(name));
+            }
+            if ( String.IsNullOrEmpty(ns) )
+            {
+                throw new ArgumentNullException(nameof(ns));
+            }
+            try
+            {
+                int index = context.IncomingMessageHeaders.FindHeader(name, ns);
+                if ( index >= 0 )
+                {
+                    return context.IncomingMessageHeaders.GetHeader<T>(index);
+                }
+            } catch ( ObjectDisposedException )
+            {
+                // WCF message has been closed already
+                WcfEventSource.Log.RequestMessageClosed(ns + "#" + name);
             }
             return default(T);
         }
@@ -109,6 +173,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 context = CallContext.LogicalGetData(CallContextProperty) as WcfOperationContext;
             }
             return context;
+        }
+
+        private ServiceSecurityContext GetSecurityContext()
+        {
+            try
+            {
+                return this.context.ServiceSecurityContext;
+            } catch ( ObjectDisposedException )
+            {
+                // WCF message has been closed already
+                WcfEventSource.Log.RequestMessageClosed("ServiceSecurityContext");
+                return null;
+            }
         }
 
         private static IOperationContext GetContext()
