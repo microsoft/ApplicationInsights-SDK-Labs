@@ -7,29 +7,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
     {
         public static HttpRequestMessageProperty GetHttpRequestHeaders(this IOperationContext operation)
         {
-            try
+            if ( operation.HasIncomingMessageProperty(HttpRequestMessageProperty.Name) )
             {
-                if ( operation.HasIncomingMessageProperty(HttpRequestMessageProperty.Name) )
-                {
-                    return (HttpRequestMessageProperty)operation.GetIncomingMessageProperty(HttpRequestMessageProperty.Name);
-                }
-            } catch ( ObjectDisposedException )
-            {
-                // WCF message is already disposed, just avoid it
+                return (HttpRequestMessageProperty)operation.GetIncomingMessageProperty(HttpRequestMessageProperty.Name);
             }
             return null;
         }
         public static HttpResponseMessageProperty GetHttpResponseHeaders(this IOperationContext operation)
         {
-            try
+            if ( operation.HasOutgoingMessageProperty(HttpResponseMessageProperty.Name) )
             {
-                if ( operation.HasOutgoingMessageProperty(HttpResponseMessageProperty.Name) )
-                {
-                    return (HttpResponseMessageProperty)operation.GetOutgoingMessageProperty(HttpResponseMessageProperty.Name);
-                }
-            } catch ( ObjectDisposedException )
-            {
-                // WCF message is already disposed, just avoid it
+                return (HttpResponseMessageProperty)operation.GetOutgoingMessageProperty(HttpResponseMessageProperty.Name);
             }
             return null;
         }
