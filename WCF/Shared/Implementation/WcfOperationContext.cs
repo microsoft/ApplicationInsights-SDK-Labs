@@ -64,6 +64,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public bool HasIncomingMessageProperty(string propertyName)
         {
+            if ( String.IsNullOrEmpty(propertyName) )
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
             try
             {
                 return context.IncomingMessageProperties.ContainsKey(propertyName);
@@ -77,6 +81,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public object GetIncomingMessageProperty(string propertyName)
         {
+            if ( String.IsNullOrEmpty(propertyName) )
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
             try
             {
                 return context.IncomingMessageProperties[propertyName];
@@ -90,6 +98,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public bool HasOutgoingMessageProperty(String propertyName)
         {
+            if ( String.IsNullOrEmpty(propertyName) )
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
             try
             {
                 return context.OutgoingMessageProperties.ContainsKey(propertyName);
@@ -103,6 +115,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public object GetOutgoingMessageProperty(String propertyName)
         {
+            if ( String.IsNullOrEmpty(propertyName) )
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
             try
             {
                 return context.OutgoingMessageProperties[propertyName];
@@ -116,6 +132,14 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public T GetIncomingMessageHeader<T>(String name, String ns)
         {
+            if ( String.IsNullOrEmpty(name) )
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+            if ( String.IsNullOrEmpty(ns) )
+            {
+                throw new ArgumentNullException(nameof(ns));
+            }
             try
             {
                 int index = context.IncomingMessageHeaders.FindHeader(name, ns);
