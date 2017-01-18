@@ -10,6 +10,7 @@ This provides a better telemetry experience than with the SDK for Web Applicatio
 * Support adding telemetry for WCF services exposed over non-HTTP bindings, such as Net.TCP
 * Supports tracking service errors through an IErrorHandler extension
 * Selective control of which services are monitored
+* Now supports WCF REST services using webHttpBinding
 
 
 Requirements
