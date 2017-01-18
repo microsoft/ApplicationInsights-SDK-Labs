@@ -23,7 +23,7 @@ Installation
  - If you're using the Manage NuGet Packages GUI, remember to include prerelease packages.
 - Instrument your WCF service using one of the two following methods:
   - Mark your service class with the `[ServiceTelemetry]` attribute
-  - Add the `<serviceTelemetry/>` service behavior through configuration to your service
+  - Add the `<serviceTelemetry/>` service behavior through configuration to your service. By default, this behavior will be added to the unnamed `<serviceBehavior>` element when the NuGet package is added to the project.
 - Add [the Instrumentation Key of your Application Insights resource](https://azure.microsoft.com/documentation/articles/app-insights-create-new-resource/) to ApplicationInsights.config
   - Or you can also provide the instrumentation key [through code or web config](https://azure.microsoft.com/documentation/articles/app-insights-api-custom-events-metrics/#ikey).
 - That's it!
@@ -65,5 +65,5 @@ var request = OperationContext.Current.GetRequestTelemetry();
 
 Current Limitations
 ---------------------
-- Tracking WCF services in a single application where you're already using the Web Applications SDK is not supported.
+- Operation duration will not track how long the call was throttled by WCF due to the `<serviceThrottling>` configuration.
 
