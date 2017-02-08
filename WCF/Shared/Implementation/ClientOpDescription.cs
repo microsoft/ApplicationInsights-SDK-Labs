@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ServiceModel.Description;
-using System.Text;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    struct ClientOperation
+    struct ClientOpDescription
     {
         public String Action { get; set; }
         public String Name { get; set; }
         public bool IsOneWay { get; set; }
 
-        public static ClientOperation FromDescription(OperationDescription description)
+        public static ClientOpDescription FromDescription(OperationDescription description)
         {
-            return new ClientOperation
+            return new ClientOpDescription
             {
                 Action = description.Messages[0].Action,
                 IsOneWay = description.IsOneWay,

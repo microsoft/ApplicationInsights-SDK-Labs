@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.ApplicationInsights.DataContracts;
+using System;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
@@ -8,19 +9,54 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
     class ClientCallMessageInspector : IClientMessageInspector
     {
         private TelemetryClient telemetryClient;
+        private ClientOperationMap operationMap;
 
-        public ClientCallMessageInspector(TelemetryClient client)
+        public ClientCallMessageInspector(TelemetryClient client, ClientOperationMap clientOperations)
         {
             telemetryClient = client;
+            operationMap = clientOperations;
         }
 
+        // TODO:
+        // - Add exception handling
+        // - add guard if operation not found
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
-            return null;
+            var soapAction = request.Headers.Action;
+            ClientOpDescription operation;
+            if ( !this.operationMap.TryLookupByAction(soapAction, out operation) )
+            {
+                return null;
+            }
+
+            var telemetry = new DependencyTelemetry();
+            telemetry.Start();
+            telemetry.Name = channel.RemoteAddress.Uri.ToString();
+            telemetry.Target = channel.RemoteAddress.Uri.Host;
+            telemetry.Data = operation.Name;
+            telemetry.Properties["soapAction"] = soapAction;
+
+            // For One-Way operations, AfterReceiveReply will
+            // never get called, so we need to write the event now
+            // This means that duration will be zero.
+            if ( operation.IsOneWay )
+            {
+                telemetry.Properties["isOneWay"] = "True";
+                telemetry.Stop();
+                telemetryClient.TrackDependency(telemetry);
+            }
+
+            return telemetry;
         }
 
         public void AfterReceiveReply(ref Message reply, object correlationState)
         {
+            var telemetry = (DependencyTelemetry)correlationState;
+            if ( telemetry != null )
+            {
+                telemetry.Stop();
+                telemetryClient.TrackDependency(telemetry);
+            }
         }
     }
 }

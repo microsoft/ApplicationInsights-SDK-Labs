@@ -22,7 +22,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
         {
-            clientRuntime.MessageInspectors.Add(new ClientCallMessageInspector(telemetryClient));
+            var description = BuildDescription(endpoint);
+            clientRuntime.MessageInspectors.Add(new ClientCallMessageInspector(telemetryClient, description));
 
         }
 
@@ -36,10 +37,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public static ClientOperationMap BuildDescription(ServiceEndpoint endpoint)
         {
-            ClientOperation[] op = new ClientOperation[endpoint.Contract.Operations.Count];
+            ClientOpDescription[] op = new ClientOpDescription[endpoint.Contract.Operations.Count];
             for ( int i=0; i < op.Length; i++ )
             {
-                op[i] = ClientOperation.FromDescription(endpoint.Contract.Operations[i]);
+                op[i] = ClientOpDescription.FromDescription(endpoint.Contract.Operations[i]);
             }
             return new ClientOperationMap(op);
         }

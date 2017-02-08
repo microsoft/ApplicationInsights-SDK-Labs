@@ -70,7 +70,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                     factory.Close();
 
                     Assert.IsNotNull(desc);
-                    var op = desc.LookupByAction("http://tempuri.org/ISimpleService/GetSimpleData");
+                    ClientOpDescription op;
+                    var found = desc.TryLookupByAction("http://tempuri.org/ISimpleService/GetSimpleData", out op);
+                    Assert.IsTrue(found);
                     Assert.AreEqual(false, op.IsOneWay);
                     Assert.AreEqual("GetSimpleData", op.Name);
                 } catch
