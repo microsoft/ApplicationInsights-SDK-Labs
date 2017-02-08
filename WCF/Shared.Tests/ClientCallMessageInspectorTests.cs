@@ -60,6 +60,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
             var dependency = TestTelemetryChannel.CollectedData().OfType<DependencyTelemetry>().FirstOrDefault();
             Assert.IsNotNull(dependency);
+            Assert.AreEqual(DependencyConstants.WcfClientCall, dependency.Type);
             Assert.AreEqual(SvcUrl, dependency.Name);
             Assert.AreEqual(HostName, dependency.Target);
             Assert.AreEqual("SuccessfullOneWayCall", dependency.Data);
@@ -86,6 +87,27 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.IsNull(dependency);
         }
 
+        [TestMethod]
+        public void WhenServiceReturnsErrorDependencySuccessIsFalse()
+        {
+            TestTelemetryChannel.Clear();
+            var client = new TelemetryClient();
+            var operationMap = BuildOperationMap();
+            var channel = GetMockChannel();
+            var inspector = new ClientCallMessageInspector(client, operationMap);
+
+            var request = BuildMessage(TwoWayOp1);
+            var response = BuildFaultMessage(TwoWayOp1);
+
+            var state = inspector.BeforeSendRequest(ref request, channel);
+            inspector.AfterReceiveReply(ref response, state);
+
+            var dependency = TestTelemetryChannel.CollectedData().OfType<DependencyTelemetry>().FirstOrDefault();
+            Assert.IsNotNull(dependency);
+            Assert.AreEqual(SvcUrl, dependency.Name);
+            Assert.IsFalse(dependency.Success.Value);
+        }
+
         private ClientOperationMap BuildOperationMap()
         {
             ClientOpDescription[] ops = new ClientOpDescription[]
@@ -105,6 +127,16 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         private Message BuildMessage(String action)
         {
             return Message.CreateMessage(MessageVersion.Default, action, "<text/>");
+        }
+        private Message BuildFaultMessage(String action)
+        {
+            return Message.CreateMessage(
+                MessageVersion.Default,
+                MessageFault.CreateFault(
+                    FaultCode.CreateReceiverFaultCode("e1", "http://tempuri.org"),
+                    "There was an error processing the message"
+                    ),
+                action);
         }
 
 

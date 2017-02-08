@@ -17,9 +17,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             operationMap = clientOperations;
         }
 
-        // TODO:
-        // - Add exception handling
-        // - add guard if operation not found
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
             var soapAction = request.Headers.Action;
@@ -29,24 +26,32 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 return null;
             }
 
-            var telemetry = new DependencyTelemetry();
-            telemetry.Start();
-            telemetry.Name = channel.RemoteAddress.Uri.ToString();
-            telemetry.Target = channel.RemoteAddress.Uri.Host;
-            telemetry.Data = operation.Name;
-            telemetry.Properties["soapAction"] = soapAction;
-
-            // For One-Way operations, AfterReceiveReply will
-            // never get called, so we need to write the event now
-            // This means that duration will be zero.
-            if ( operation.IsOneWay )
+            try
             {
-                telemetry.Properties["isOneWay"] = "True";
-                telemetry.Stop();
-                telemetryClient.TrackDependency(telemetry);
-            }
+                var telemetry = new DependencyTelemetry();
+                telemetry.Start();
+                telemetry.Name = channel.RemoteAddress.Uri.ToString();
+                telemetry.Target = channel.RemoteAddress.Uri.Host;
+                telemetry.Data = operation.Name;
+                telemetry.Type = DependencyConstants.WcfClientCall;
+                telemetry.Properties["soapAction"] = soapAction;
 
-            return telemetry;
+                // For One-Way operations, AfterReceiveReply will
+                // never get called, so we need to write the event now
+                // This means that duration will be zero.
+                if ( operation.IsOneWay )
+                {
+                    telemetry.Properties["isOneWay"] = "True";
+                    telemetry.Stop();
+                    telemetryClient.TrackDependency(telemetry);
+                }
+
+                return telemetry;
+            } catch ( Exception ex )
+            {
+                WcfEventSource.Log.ClientInspectorError(nameof(BeforeSendRequest), ex.ToString());
+                throw;
+            }
         }
 
         public void AfterReceiveReply(ref Message reply, object correlationState)
@@ -54,8 +59,16 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             var telemetry = (DependencyTelemetry)correlationState;
             if ( telemetry != null )
             {
-                telemetry.Stop();
-                telemetryClient.TrackDependency(telemetry);
+                try
+                {
+                    telemetry.Success = !reply.IsFault;
+                    telemetry.Stop();
+                    telemetryClient.TrackDependency(telemetry);
+                } catch ( Exception ex )
+                {
+                    WcfEventSource.Log.ClientInspectorError(nameof(AfterReceiveReply), ex.ToString());
+                    throw;
+                }
             }
         }
     }

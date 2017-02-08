@@ -17,6 +17,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             public const EventKeywords RequestTelemetry = (EventKeywords)0x20;
             public const EventKeywords ExceptionTelemetry = (EventKeywords)0x40;
             public const EventKeywords OperationContext = (EventKeywords)0x80;
+            public const EventKeywords DependencyTracking = (EventKeywords)0x100;
         }
 
         public static readonly WcfEventSource Log = new WcfEventSource();
@@ -93,6 +94,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public void ResponseMessageClosed(String property, String appDomainName = "Invalid")
         {
             this.WriteEvent(36, property, this.ApplicationName);
+        }
+
+        [Event(50, Keywords = Keywords.DependencyTracking, Message = "Exception while processing {0}: {1}", Level = EventLevel.Error)]
+        public void ClientInspectorError(String method, String exception, String appDomainName = "Invalid")
+        {
+            this.WriteEvent(50, method, exception, this.ApplicationName);
         }
 
         [NonEvent]
