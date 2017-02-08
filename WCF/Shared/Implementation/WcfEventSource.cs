@@ -102,6 +102,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             this.WriteEvent(50, method, exception, this.ApplicationName);
         }
 
+        [Event(51, Keywords = Keywords.DependencyTracking, Message = "Channel Tracker failed in callback {0}: {1}", Level = EventLevel.Error)]
+        public void ChannelTrackerError(String callback, String exception, String appDomainName = "Invalid")
+        {
+            this.WriteEvent(51, callback, exception, this.ApplicationName);
+        }
+
+        [Event(52, Keywords = Keywords.DependencyTracking, Message = "Client Telemetry applied to contract: {0}", Level = EventLevel.Informational)]
+        public void ClientTelemetryApplied(String contract, String appDomainName = "Invalid")
+        {
+            this.WriteEvent(52, contract, this.ApplicationName);
+        }
+
+
         [NonEvent]
         private String GetApplicationName()
         {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Wcf.Implementation;
 using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
+using Microsoft.ApplicationInsights.Wcf.Tests.Integration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -121,7 +122,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
         private IClientChannel GetMockChannel()
         {
-            return new MockChannel(SvcUrl);
+            return new MockClientChannel(SvcUrl);
         }
 
         private Message BuildMessage(String action)
@@ -140,123 +141,5 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
 
-        class MockChannel : IClientChannel
-        {
-            public bool AllowInitializationUI { get; set; }
-
-            public bool AllowOutputBatching { get; set; }
-
-            public bool DidInteractiveInitialization { get; private set; }
-
-            public IExtensionCollection<IContextChannel> Extensions { get; private set; }
-
-            public IInputSession InputSession { get; private set; }
-
-            public EndpointAddress LocalAddress { get; private set; }
-
-            public TimeSpan OperationTimeout { get; set; }
-
-            public IOutputSession OutputSession { get; private set; }
-
-            public EndpointAddress RemoteAddress { get; private set; }
-
-            public string SessionId { get; private set; }
-
-            public CommunicationState State { get; private set; }
-
-            public Uri Via { get; private set; }
-
-            public event EventHandler Closed { add { } remove { } }
-            public event EventHandler Closing { add { } remove { } }
-            public event EventHandler Faulted { add { } remove { } }
-            public event EventHandler Opened { add { } remove { } }
-            public event EventHandler Opening { add { } remove { } }
-            public event EventHandler<UnknownMessageReceivedEventArgs> UnknownMessageReceived { add { } remove { } }
-
-
-            public MockChannel(String remoteUrl)
-            {
-                this.RemoteAddress = new EndpointAddress(remoteUrl);
-            }
-
-            public void Abort()
-            {
-            }
-
-            public IAsyncResult BeginClose(AsyncCallback callback, object state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public IAsyncResult BeginClose(TimeSpan timeout, AsyncCallback callback, object state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public IAsyncResult BeginDisplayInitializationUI(AsyncCallback callback, object state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public IAsyncResult BeginOpen(AsyncCallback callback, object state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public IAsyncResult BeginOpen(TimeSpan timeout, AsyncCallback callback, object state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Close()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Close(TimeSpan timeout)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void DisplayInitializationUI()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Dispose()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void EndClose(IAsyncResult result)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void EndDisplayInitializationUI(IAsyncResult result)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void EndOpen(IAsyncResult result)
-            {
-                throw new NotImplementedException();
-            }
-
-            public T GetProperty<T>() where T : class
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Open()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Open(TimeSpan timeout)
-            {
-                throw new NotImplementedException();
-            }
-        }
     }
 }

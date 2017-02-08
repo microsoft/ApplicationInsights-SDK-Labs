@@ -33,6 +33,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(clientRuntime));
             }
+
+            WcfEventSource.Log.ClientTelemetryApplied(endpoint.Contract.ContractType.FullName);
+
             var description = BuildDescription(endpoint);
             clientRuntime.MessageInspectors.Add(new ClientCallMessageInspector(telemetryClient, description));
             clientRuntime.ChannelInitializers.Add(new ClientChannelOpenTracker(telemetryClient, endpoint.Contract.ContractType));

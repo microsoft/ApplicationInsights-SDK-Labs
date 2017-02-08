@@ -10,10 +10,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ClientCallMessageInspectorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientChannelOpenTrackerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientIpTelemetryInitializerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryEndpointBehaviorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContractDescriptionBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContractFilterTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Integration\MockClientChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\MultipleServiceCallsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\OperationContextExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\TracingTests.cs" />
