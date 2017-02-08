@@ -9,7 +9,9 @@
     <Import_RootNamespace>Microsoft.ApplicationInsights.Wcf.Tests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ClientCallMessageInspectorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientIpTelemetryInitializerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryEndpointBehaviorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContractDescriptionBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContractFilterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\MultipleServiceCallsTests.cs" />

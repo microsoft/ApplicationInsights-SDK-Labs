@@ -10,10 +10,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ClientIpTelemetryInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientCallMessageInspector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOperation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryEndpointBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ContractFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\Executor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\OperationFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\PlatformContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOperationMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\RequestTrackingConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\SdkVersionUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfOperationContext.cs" />
