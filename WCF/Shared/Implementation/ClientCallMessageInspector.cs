@@ -13,6 +13,15 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public ClientCallMessageInspector(TelemetryClient client, ClientOperationMap clientOperations)
         {
+            if ( client == null )
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+            if ( clientOperations == null )
+            {
+                throw new ArgumentNullException(nameof(clientOperations));
+            }
+
             telemetryClient = client;
             operationMap = clientOperations;
         }

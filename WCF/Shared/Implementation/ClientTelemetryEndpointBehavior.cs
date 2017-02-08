@@ -1,6 +1,5 @@
 ﻿using Microsoft.ApplicationInsights.Extensibility;
 using System;
-using System.Collections.Generic;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
@@ -13,6 +12,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public ClientTelemetryEndpointBehavior(TelemetryConfiguration configuration)
         {
+            if ( configuration == null )
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
             telemetryClient = new TelemetryClient(configuration);
         }
 
@@ -22,9 +25,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
         {
+            if ( endpoint == null )
+            {
+                throw new ArgumentNullException(nameof(endpoint));
+            }
+            if ( clientRuntime == null )
+            {
+                throw new ArgumentNullException(nameof(clientRuntime));
+            }
             var description = BuildDescription(endpoint);
             clientRuntime.MessageInspectors.Add(new ClientCallMessageInspector(telemetryClient, description));
-
+            clientRuntime.ChannelInitializers.Add(new ClientChannelOpenTracker(telemetryClient, endpoint.Contract.ContractType));
         }
 
         public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
