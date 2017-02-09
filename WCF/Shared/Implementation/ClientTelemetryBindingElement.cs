@@ -68,7 +68,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         private bool IsSupportedChannelShape(Type type)
         {
-            if ( type == typeof(IRequestChannel) )
+            if ( type == typeof(IRequestChannel) || type == typeof(IRequestSessionChannel) )
             {
                 return true;
             }

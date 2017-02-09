@@ -21,31 +21,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
+            var contract = endpoint.Contract.ContractType;
+
+            WcfEventSource.Log.ClientTelemetryApplied(contract.FullName);
+
             var description = BuildDescription(endpoint);
-            var element = new ClientTelemetryBindingElement(telemetryClient, endpoint.Contract.ContractType, description);
-            CustomBinding custom = new CustomBinding(endpoint.Binding);
-            custom.Elements.Insert(0, element);
-            endpoint.Binding = custom;
+            var element = new ClientTelemetryBindingElement(telemetryClient, contract, description);
+            var collection = endpoint.Binding.CreateBindingElements();
+            collection.Insert(0, element);
+            endpoint.Binding = new CustomBinding(collection);
         }
 
         public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
         {
-            if ( endpoint == null )
-            {
-                throw new ArgumentNullException(nameof(endpoint));
-            }
-            if ( clientRuntime == null )
-            {
-                throw new ArgumentNullException(nameof(clientRuntime));
-            }
-
-            WcfEventSource.Log.ClientTelemetryApplied(endpoint.Contract.ContractType.FullName);
-
-            /*
-            var description = BuildDescription(endpoint);
-            clientRuntime.MessageInspectors.Add(new ClientCallMessageInspector(telemetryClient, description));
-            clientRuntime.ChannelInitializers.Add(new ClientChannelOpenTracker(telemetryClient, endpoint.Contract.ContractType));
-            */
         }
 
         public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)

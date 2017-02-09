@@ -73,7 +73,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         protected override TChannel OnCreateChannel(EndpointAddress address, Uri via)
         {
             var channel = this.innerFactory.CreateChannel(address, via);
-            var newChannel = new ClientTelemetryRequestChannel(telemetryClient, (IRequestChannel)channel, contractType, operationMap);
+            var newChannel = new ClientTelemetryRequestChannel(telemetryClient, (IChannel)channel, contractType, operationMap);
             return (TChannel)(object)newChannel;
         }
 

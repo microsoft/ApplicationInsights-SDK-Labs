@@ -4,11 +4,10 @@ using Microsoft.ApplicationInsights.Wcf.Tests.Integration;
 using Microsoft.ApplicationInsights.Wcf.Tests.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Remoting;
+using System.Runtime.Remoting.Channels;
 using System.ServiceModel;
-using System.ServiceModel.Dispatcher;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
@@ -47,12 +46,14 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
-        public void BehaviorAddsRuntimeExtensions()
+        public void BehaviorAddsCustomBinding()
         {
             using ( var host = new HostingContext<SimpleService, ISimpleService>() )
             {
+                var binding = new NetTcpBinding();
+                binding.TransferMode = TransferMode.Streamed;
                 var configuration = new TelemetryConfiguration();
-                var factory = new ChannelFactory<ISimpleService>(new NetTcpBinding(), host.GetServiceAddress());
+                var factory = new ChannelFactory<ISimpleService>(binding, host.GetServiceAddress());
                 ISimpleService channel = null;
                 try
                 {
@@ -64,16 +65,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 #endif
 
                     channel = factory.CreateChannel();
-                    var runtime = GetClientRuntime(channel);
+                    var innerChannel = GetInnerChannel(channel);
                     ((IClientChannel)channel).Close();
                     factory.Close();
 
-                    var inspector = runtime.MessageInspectors.OfType<ClientCallMessageInspector>().FirstOrDefault();
-                    Assert.IsNotNull(inspector, "Message inspector is missing");
-
-                    var channelTracker = runtime.ChannelInitializers.OfType<ClientChannelOpenTracker>().FirstOrDefault();
-                    Assert.IsNotNull(channelTracker, "Channel Tracker is missing");
-
+                    Assert.IsInstanceOfType(innerChannel, typeof(ClientTelemetryRequestChannel), "Telemetry channel is is missing");
                 } catch
                 {
                     factory.Abort();
@@ -86,7 +82,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             }
         }
 
-        private ClientRuntime GetClientRuntime(object proxy)
+        private System.ServiceModel.Channels.IChannel GetInnerChannel(object proxy)
         {
             // TransparentProxy -> ServiceChannelProxy -> ServiceChannel
             var realProxy = RemotingServices.GetRealProxy(proxy);
@@ -94,8 +90,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var field = proxyType.GetField("serviceChannel", BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance);
             object serviceChannel = field.GetValue(realProxy);
 
-            var prop = serviceChannel.GetType().GetProperty("ClientRuntime", BindingFlags.GetProperty | BindingFlags.NonPublic | BindingFlags.Instance);
-            return prop.GetValue(serviceChannel, null) as ClientRuntime;
+            var prop = serviceChannel.GetType().GetProperty("InnerChannel", BindingFlags.GetProperty | BindingFlags.NonPublic | BindingFlags.Instance);
+            return prop.GetValue(serviceChannel, null) as System.ServiceModel.Channels.IChannel;
         }
     }
 }

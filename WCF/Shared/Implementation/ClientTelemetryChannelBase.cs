@@ -6,9 +6,9 @@ using System.Threading;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    abstract class ClientTelemetryChannelBase<TChannel> where TChannel : IChannel
+    abstract class ClientTelemetryChannelBase
     {
-        protected TChannel InnerChannel { get; private set; }
+        protected IChannel InnerChannel { get; private set; }
         private TelemetryClient telemetryClient;
         private Type contractType;
         private ClientOperationMap operationMap;
@@ -27,7 +27,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public event EventHandler Opened;
         public event EventHandler Opening;
 
-        public ClientTelemetryChannelBase(TelemetryClient client, TChannel channel, Type contractType, ClientOperationMap map)
+        public ClientTelemetryChannelBase(TelemetryClient client, IChannel channel, Type contractType, ClientOperationMap map)
         {
             if ( client == null )
             {

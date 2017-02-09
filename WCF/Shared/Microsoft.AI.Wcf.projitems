@@ -11,8 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ClientIpTelemetryInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryExtensionElement.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientCallMessageInspector.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientChannelOpenTracker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOpDescription.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelFactory.cs" />
