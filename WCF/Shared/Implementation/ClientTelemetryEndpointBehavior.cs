@@ -8,7 +8,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
     class ClientTelemetryEndpointBehavior : IEndpointBehavior
     {
-        private TelemetryClient telemetryClient;
+        public TelemetryClient telemetryClient;
 
         public ClientTelemetryEndpointBehavior(TelemetryConfiguration configuration)
         {
@@ -21,6 +21,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
+            CustomBinding custom = new CustomBinding(endpoint.Binding);
+            //custom.Elements.Insert(0, )
+            //endpoint.Binding;
         }
 
         public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
