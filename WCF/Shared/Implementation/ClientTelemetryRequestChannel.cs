@@ -4,7 +4,7 @@ using System.ServiceModel.Channels;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    sealed class ClientTelemetryRequestChannel : ClientTelemetryChannelBase<IRequestChannel>
+    sealed class ClientTelemetryRequestChannel : ClientTelemetryChannelBase<IRequestChannel>, IRequestChannel
     {
         private IRequestChannel RequestChannel
         {
@@ -20,7 +20,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             get { return RequestChannel.Via; }
         }
 
-        public ClientTelemetryRequestChannel(TelemetryClient client, IChannel channel, Type contractType, ClientOperationMap map)
+        public ClientTelemetryRequestChannel(TelemetryClient client, IRequestChannel channel, Type contractType, ClientOperationMap map)
             : base(client, channel, contractType, map)
         {
         }
