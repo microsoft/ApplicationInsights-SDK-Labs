@@ -11,7 +11,7 @@ using System.ServiceModel.Channels;
 namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
     [TestClass]
-    public class ClientTelemetryChannelTests
+    public class ClientTelemetryRequestChannelTests
     {
         const String TwoWayOp1 = "http://tempuri.org/ISimpleService/GetSimpleData";
         const String TwoWayOp2 = "http://tempuri.org/ISimpleService/CallFailsWithFault";
@@ -26,7 +26,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             Assert.AreEqual(innerChannel.RemoteAddress, channel.RemoteAddress);
         }
 
@@ -40,7 +40,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             channel.Open();
 
             Assert.IsTrue(innerChannel.OpeningIsHooked(), "Opening event is not hooked");
@@ -56,7 +56,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             channel.Open(TimeSpan.FromSeconds(10));
 
             Assert.IsTrue(innerChannel.OpeningIsHooked(), "Opening event is not hooked");
@@ -73,7 +73,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             var result = channel.BeginOpen(null, null);
             channel.EndOpen(result);
 
@@ -90,7 +90,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             var result = channel.BeginOpen(TimeSpan.FromSeconds(10), null, null);
             channel.EndOpen(result);
 
@@ -107,7 +107,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             channel.Open();
             channel.Close();
 
@@ -124,7 +124,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             channel.Open();
             channel.Close(TimeSpan.FromSeconds(1));
 
@@ -141,7 +141,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             channel.Open();
             var result = channel.BeginClose(null, null);
             channel.EndClose(result);
@@ -159,7 +159,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             channel.Open();
             var result = channel.BeginClose(TimeSpan.FromSeconds(10), null, null);
             channel.EndClose(result);
@@ -177,7 +177,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             channel.Open();
             channel.Abort();
 
@@ -199,7 +199,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             channel.Open();
 
             CheckDependencyWritten(DependencyConstants.WcfChannelOpen, typeof(ISimpleService), true);
@@ -211,7 +211,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             channel.Open(TimeSpan.FromSeconds(10));
 
             CheckDependencyWritten(DependencyConstants.WcfChannelOpen, typeof(ISimpleService), true);
@@ -223,7 +223,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             var result = channel.BeginOpen(null, null);
             channel.EndOpen(result);
 
@@ -236,7 +236,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             var result = channel.BeginOpen(TimeSpan.FromSeconds(10), null, null);
             channel.EndOpen(result);
 
@@ -251,7 +251,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             bool failed = false;
             try
             {
@@ -273,7 +273,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             bool failed = false;
             try
             {
@@ -295,7 +295,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             bool failed = false;
             try
             {
@@ -317,7 +317,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
             bool failed = false;
             try
             {
@@ -342,7 +342,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
 
             var response = channel.Request(BuildMessage(TwoWayOp1));
 
@@ -355,7 +355,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
 
             var response = channel.Request(BuildMessage(TwoWayOp1), TimeSpan.FromSeconds(10));
 
@@ -368,7 +368,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
 
             innerChannel.ReturnSoapFault = true;
 
@@ -383,7 +383,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
 
             innerChannel.FailRequest = true;
 
@@ -404,7 +404,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
 
             innerChannel.FailRequest = true;
 
@@ -425,7 +425,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
 
             var result = channel.BeginRequest(BuildMessage(TwoWayOp1), null, null);
             var response = channel.EndRequest(result);
@@ -439,7 +439,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
 
             var result = channel.BeginRequest(BuildMessage(TwoWayOp1), TimeSpan.FromSeconds(10), null, null);
             var response = channel.EndRequest(result);
@@ -453,7 +453,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
 
             innerChannel.FailRequest = true;
 
@@ -477,7 +477,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
 
             innerChannel.FailRequest = true;
 
@@ -501,7 +501,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
             var client = new TelemetryClient();
-            var channel = new ClientTelemetryChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
+            var channel = new ClientTelemetryRequestChannel(client, innerChannel, typeof(ISimpleService), BuildOperationMap());
 
             innerChannel.FailEndRequest = true;
 

@@ -14,10 +14,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientCallMessageInspector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientChannelOpenTracker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOpDescription.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryEndpointBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryBindingElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryRequestChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ContractFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\DependencyConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\Executor.cs" />

@@ -6,18 +6,20 @@ using System.Threading;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    class ClientTelemetryChannel : IRequestChannel
+    abstract class ClientTelemetryChannelBase<TChannel> where TChannel : IChannel
     {
-        private IRequestChannel innerChannel;
+        protected IChannel InnerChannel { get; private set; }
         private TelemetryClient telemetryClient;
         private Type contractType;
         private ClientOperationMap operationMap;
 
-        public EndpointAddress RemoteAddress { get { return innerChannel.RemoteAddress; } }
 
-        public CommunicationState State { get { return innerChannel.State; } }
+        public CommunicationState State
+        {
+            get { return InnerChannel.State; }
+        }
 
-        public Uri Via { get { return innerChannel.Via; } }
+        public abstract EndpointAddress RemoteAddress { get; }
 
         public event EventHandler Closed;
         public event EventHandler Closing;
@@ -25,7 +27,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public event EventHandler Opened;
         public event EventHandler Opening;
 
-        public ClientTelemetryChannel(TelemetryClient client, IRequestChannel channel, Type contractType, ClientOperationMap map)
+        public ClientTelemetryChannelBase(TelemetryClient client, IChannel channel, Type contractType, ClientOperationMap map)
         {
             if ( client == null )
             {
@@ -44,7 +46,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 throw new ArgumentNullException(nameof(map));
             }
             this.telemetryClient = client;
-            this.innerChannel = channel;
+            this.InnerChannel = channel;
             this.contractType = contractType;
             this.operationMap = map;
         }
@@ -55,7 +57,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             var telemetry = this.StartOpenTelemetry(nameof(Open));
             try
             {
-                innerChannel.Open();
+                InnerChannel.Open();
                 this.StopOpenTelemetry(telemetry, null, nameof(Open));
             } catch ( Exception ex )
             {
@@ -70,7 +72,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             var telemetry = this.StartOpenTelemetry(nameof(Open));
             try
             {
-                innerChannel.Open(timeout);
+                InnerChannel.Open(timeout);
                 this.StopOpenTelemetry(telemetry, null, nameof(Open));
             } catch ( Exception ex )
             {
@@ -83,7 +85,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             try
             {
-                innerChannel.Close();
+                InnerChannel.Close();
             } finally
             {
                 UnhookChannelEvents();
@@ -94,7 +96,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             try
             {
-                innerChannel.Close(timeout);
+                InnerChannel.Close(timeout);
             } finally
             {
                 UnhookChannelEvents();
@@ -105,7 +107,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             try
             {
-                innerChannel.Abort();
+                InnerChannel.Abort();
             } finally
             {
                 UnhookChannelEvents();
@@ -114,39 +116,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public T GetProperty<T>() where T : class
         {
-            return innerChannel.GetProperty<T>();
+            return InnerChannel.GetProperty<T>();
         }
-
-        public Message Request(Message message)
-        {
-            var telemetry = StartSendTelemetry(message, nameof(Request));
-            try
-            {
-                var response = innerChannel.Request(message);
-                StopSendTelemetry(telemetry, response, null, nameof(message));
-                return response;
-            } catch ( Exception ex )
-            {
-                StopSendTelemetry(telemetry, null, ex, nameof(message));
-                throw;
-            }
-        }
-
-        public Message Request(Message message, TimeSpan timeout)
-        {
-            var telemetry = StartSendTelemetry(message, nameof(Request));
-            try
-            {
-                var response = innerChannel.Request(message, timeout);
-                StopSendTelemetry(telemetry, response, null, nameof(message));
-                return response;
-            } catch ( Exception ex )
-            {
-                StopSendTelemetry(telemetry, null, ex, nameof(message));
-                throw;
-            }
-        }
-
 
         //
         // Async Methods
@@ -157,7 +128,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             var telemetry = StartOpenTelemetry(nameof(BeginOpen));
             try
             {
-                var result = innerChannel.BeginOpen(callback, state);
+                var result = InnerChannel.BeginOpen(callback, state);
                 return new NestedAsyncResult(result, telemetry);
             } catch ( Exception ex )
             {
@@ -172,7 +143,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             var telemetry = StartOpenTelemetry(nameof(BeginOpen));
             try
             {
-                var result = innerChannel.BeginOpen(timeout, callback, state);
+                var result = InnerChannel.BeginOpen(timeout, callback, state);
                 return new NestedAsyncResult(result, telemetry);
             } catch ( Exception ex )
             {
@@ -186,7 +157,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             NestedAsyncResult nar = (NestedAsyncResult)result;
             try
             {
-                innerChannel.EndOpen(nar.Inner);
+                InnerChannel.EndOpen(nar.Inner);
                 StopOpenTelemetry(nar.Telemetry, null, nameof(EndOpen));
             } catch ( Exception ex )
             {
@@ -197,84 +168,41 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginClose(AsyncCallback callback, object state)
         {
-            return innerChannel.BeginClose(callback, state);
+            return InnerChannel.BeginClose(callback, state);
         }
 
         public IAsyncResult BeginClose(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            return innerChannel.BeginClose(timeout, callback, state);
+            return InnerChannel.BeginClose(timeout, callback, state);
         }
 
         public void EndClose(IAsyncResult result)
         {
             try
             {
-                innerChannel.EndClose(result);
+                InnerChannel.EndClose(result);
             } finally
             {
                 UnhookChannelEvents();
             }
         }
 
-        public IAsyncResult BeginRequest(Message message, AsyncCallback callback, object state)
-        {
-            var telemetry = StartSendTelemetry(message, nameof(BeginRequest));
-            try
-            {
-                var result = innerChannel.BeginRequest(message, callback, state);
-                return new NestedAsyncResult(result, telemetry);
-            } catch ( Exception ex )
-            {
-                StopSendTelemetry(telemetry, null, ex, nameof(BeginRequest));
-                throw;
-            }
-        }
-
-        public IAsyncResult BeginRequest(Message message, TimeSpan timeout, AsyncCallback callback, object state)
-        {
-            var telemetry = StartSendTelemetry(message, nameof(BeginRequest));
-            try
-            {
-                var result = innerChannel.BeginRequest(message, timeout, callback, state);
-                return new NestedAsyncResult(result, telemetry);
-            } catch ( Exception ex )
-            {
-                StopSendTelemetry(telemetry, null, ex, nameof(BeginRequest));
-                throw;
-            }
-        }
-
-        public Message EndRequest(IAsyncResult result)
-        {
-            var nar = (NestedAsyncResult)result;
-            try
-            {
-                var response = innerChannel.EndRequest(nar.Inner);
-                StopSendTelemetry(nar.Telemetry, response, null, nameof(EndRequest));
-                return response;
-            } catch ( Exception ex )
-            {
-                StopSendTelemetry(nar.Telemetry, null, ex, nameof(EndRequest));
-                throw;
-            }
-        }
-
 
         private void HookChannelEvents()
         {
-            innerChannel.Closed += OnChannelClosed;
-            innerChannel.Closing += OnChannelClosing;
-            innerChannel.Opened += OnChannelOpened;
-            innerChannel.Opening += OnChannelOpening;
-            innerChannel.Faulted += OnChannelFaulted;
+            InnerChannel.Closed += OnChannelClosed;
+            InnerChannel.Closing += OnChannelClosing;
+            InnerChannel.Opened += OnChannelOpened;
+            InnerChannel.Opening += OnChannelOpening;
+            InnerChannel.Faulted += OnChannelFaulted;
         }
         private void UnhookChannelEvents()
         {
-            innerChannel.Closed -= OnChannelClosed;
-            innerChannel.Closing -= OnChannelClosing;
-            innerChannel.Opened -= OnChannelOpened;
-            innerChannel.Opening -= OnChannelOpening;
-            innerChannel.Faulted -= OnChannelFaulted;
+            InnerChannel.Closed -= OnChannelClosed;
+            InnerChannel.Closing -= OnChannelClosing;
+            InnerChannel.Opened -= OnChannelOpened;
+            InnerChannel.Opening -= OnChannelOpening;
+            InnerChannel.Faulted -= OnChannelFaulted;
         }
         private void OnChannelOpened(object sender, EventArgs e)
         {
@@ -333,7 +261,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
         }
 
-        private DependencyTelemetry StartSendTelemetry(Message request, String method)
+        protected DependencyTelemetry StartSendTelemetry(Message request, String method)
         {
             var soapAction = request.Headers.Action;
             ClientOpDescription operation;
@@ -358,7 +286,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 return null;
             }
         }
-        private void StopSendTelemetry(DependencyTelemetry telemetry, Message response, Exception error, String method)
+        protected void StopSendTelemetry(DependencyTelemetry telemetry, Message response, Exception error, String method)
         {
             if ( telemetry == null )
             {
@@ -382,7 +310,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
         }
 
-        class NestedAsyncResult : IAsyncResult
+        protected class NestedAsyncResult : IAsyncResult
         {
 
             public object AsyncState { get { return Inner.AsyncState; } }
