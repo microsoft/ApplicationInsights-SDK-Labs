@@ -63,7 +63,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 throw new InvalidOperationException("Unsupported channel shape: " + typeof(TChannel));
             }
             var innerFactory = context.BuildInnerChannelFactory<TChannel>();
-            return new ClientTelemetryChannelFactory<TChannel>(innerFactory, telemetryClient, contractType, operationMap);
+            return new ClientTelemetryChannelFactory<TChannel>(context.Binding, innerFactory, telemetryClient, contractType, operationMap);
         }
 
         private bool IsSupportedChannelShape(Type type)

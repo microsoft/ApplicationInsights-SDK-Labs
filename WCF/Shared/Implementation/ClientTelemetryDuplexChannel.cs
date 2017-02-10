@@ -55,49 +55,34 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         //
         public void Send(Message message)
         {
-            DoSend(message, () => DuplexChannel.Send(message));
+            Send(message, ChannelManager.SendTimeout);
         }
 
         public void Send(Message message, TimeSpan timeout)
         {
-            DoSend(message, () => DuplexChannel.Send(message, timeout));
-        }
-
-        private void DoSend(Message message, Action sendCall)
-        {
-            var telemetry = StartSendTelemetry(message, nameof(DoSend));
+            var telemetry = StartSendTelemetry(message, nameof(Send));
             try
             {
                 bool isOneWay = IsOneWay(telemetry);
-                sendCall();
+                Send(message, timeout);
                 if ( isOneWay )
                 {
                     // no matching receive
-                    StopSendTelemetry(telemetry, null, null, nameof(DoSend));
+                    StopSendTelemetry(telemetry, null, null, nameof(Send));
                 } else
                 {
                     correlator.Add(message.Headers.MessageId, telemetry);
                 }
             } catch ( Exception ex )
             {
-                StopSendTelemetry(telemetry, null, ex, nameof(DoSend));
+                StopSendTelemetry(telemetry, null, ex, nameof(Send));
                 throw;
             }
         }
 
         public IAsyncResult BeginSend(Message message, AsyncCallback callback, object state)
         {
-            var telemetry = StartSendTelemetry(message, nameof(BeginSend));
-            try
-            {
-                var result = DuplexChannel.BeginSend(message, callback, state);
-                correlator.Add(message.Headers.MessageId, telemetry);
-                return new NestedAsyncResult(result, telemetry, message.Headers.MessageId);
-            } catch ( Exception ex )
-            {
-                StopSendTelemetry(telemetry, null, ex, nameof(BeginSend));
-                throw;
-            }
+            return BeginSend(message, ChannelManager.SendTimeout, callback, state);
         }
 
         public IAsyncResult BeginSend(Message message, TimeSpan timeout, AsyncCallback callback, object state)
@@ -145,12 +130,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         // outstanding message it closed :(
         public Message Receive()
         {
-            var response = DuplexChannel.Receive();
-            if ( response != null )
-            {
-                HandleReply(response);
-            }
-            return response;
+            return Receive(ChannelManager.ReceiveTimeout);
         }
 
         public Message Receive(TimeSpan timeout)

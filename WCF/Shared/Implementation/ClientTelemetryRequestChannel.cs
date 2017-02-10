@@ -32,17 +32,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public Message Request(Message message)
         {
-            var telemetry = StartSendTelemetry(message, nameof(Request));
-            try
-            {
-                var response = RequestChannel.Request(message);
-                StopSendTelemetry(telemetry, response, null, nameof(Request));
-                return response;
-            } catch ( Exception ex )
-            {
-                StopSendTelemetry(telemetry, null, ex, nameof(Request));
-                throw;
-            }
+            return Request(message, ChannelManager.SendTimeout);
         }
 
         public Message Request(Message message, TimeSpan timeout)
@@ -62,16 +52,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginRequest(Message message, AsyncCallback callback, object state)
         {
-            var telemetry = StartSendTelemetry(message, nameof(BeginRequest));
-            try
-            {
-                var result = RequestChannel.BeginRequest(message, callback, state);
-                return new NestedAsyncResult(result, telemetry);
-            } catch ( Exception ex )
-            {
-                StopSendTelemetry(telemetry, null, ex, nameof(BeginRequest));
-                throw;
-            }
+            return BeginRequest(message, ChannelManager.SendTimeout, callback, state);
         }
 
         public IAsyncResult BeginRequest(Message message, TimeSpan timeout, AsyncCallback callback, object state)

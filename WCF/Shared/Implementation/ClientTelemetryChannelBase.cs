@@ -9,7 +9,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
     internal abstract class ClientTelemetryChannelBase
     {
         protected IChannel InnerChannel { get; private set; }
-        private IChannelManager channelManager;
+        protected IChannelManager ChannelManager { get; private set; }
 
         public CommunicationState State
         {
@@ -34,7 +34,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(channel));
             }
-            this.channelManager = channelManager;
+            this.ChannelManager = channelManager;
             this.InnerChannel = channel;
         }
 
@@ -227,7 +227,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 telemetry.Type = DependencyConstants.WcfChannelOpen;
                 telemetry.Target = RemoteAddress.Uri.Host;
                 telemetry.Name = RemoteAddress.Uri.ToString();
-                telemetry.Data = channelManager.ContractType.FullName;
+                telemetry.Data = ChannelManager.ContractType.FullName;
                 return telemetry;
             } catch ( Exception ex )
             {
@@ -245,7 +245,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 telemetry.Success = error == null;
                 telemetry.Stop();
-                channelManager.TelemetryClient.TrackDependency(telemetry);
+                ChannelManager.TelemetryClient.TrackDependency(telemetry);
             } catch ( Exception ex )
             {
                 WcfEventSource.Log.ClientInspectorError(method, ex.ToString());
@@ -256,7 +256,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             var soapAction = request.Headers.Action;
             ClientOpDescription operation;
-            if ( !channelManager.OperationMap.TryLookupByAction(soapAction, out operation) )
+            if ( !ChannelManager.OperationMap.TryLookupByAction(soapAction, out operation) )
             {
                 return null;
             }
@@ -268,7 +268,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 telemetry.Type = DependencyConstants.WcfClientCall;
                 telemetry.Target = RemoteAddress.Uri.Host;
                 telemetry.Name = RemoteAddress.Uri.ToString();
-                telemetry.Data = channelManager.ContractType.Name + "." + operation.Name;
+                telemetry.Data = ChannelManager.ContractType.Name + "." + operation.Name;
                 telemetry.Properties[DependencyConstants.SoapActionProperty] = soapAction;
                 if ( operation.IsOneWay )
                 {
@@ -298,7 +298,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                     telemetry.Success = false;
                 }
                 telemetry.Stop();
-                channelManager.TelemetryClient.TrackDependency(telemetry);
+                ChannelManager.TelemetryClient.TrackDependency(telemetry);
             } catch ( Exception ex )
             {
                 WcfEventSource.Log.ClientInspectorError(method, ex.ToString());

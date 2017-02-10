@@ -32,16 +32,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void Send(Message message)
         {
-            var telemetry = StartSendTelemetry(message, nameof(Send));
-            try
-            {
-                OutputChannel.Send(message);
-                StopSendTelemetry(telemetry, null, null, nameof(Send));
-            } catch ( Exception ex )
-            {
-                StopSendTelemetry(telemetry, null, ex, nameof(Send));
-                throw;
-            }
+            Send(message, ChannelManager.SendTimeout);
         }
 
         public void Send(Message message, TimeSpan timeout)
@@ -60,16 +51,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginSend(Message message, AsyncCallback callback, object state)
         {
-            var telemetry = StartSendTelemetry(message, nameof(BeginSend));
-            try
-            {
-                var result = OutputChannel.BeginSend(message, callback, state);
-                return new NestedAsyncResult(result, telemetry);
-            } catch ( Exception ex )
-            {
-                StopSendTelemetry(telemetry, null, ex, nameof(BeginSend));
-                throw;
-            }
+            return BeginSend(message, ChannelManager.SendTimeout, callback, state);
         }
 
         public IAsyncResult BeginSend(Message message, TimeSpan timeout, AsyncCallback callback, object state)

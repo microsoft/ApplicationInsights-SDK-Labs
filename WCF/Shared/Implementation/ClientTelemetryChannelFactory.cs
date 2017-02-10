@@ -11,7 +11,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public Type ContractType { get; private set; }
         public ClientOperationMap OperationMap { get; private set; }
 
-        public ClientTelemetryChannelFactory(IChannelFactory<TChannel> factory, TelemetryClient client, Type contractType, ClientOperationMap map)
+        public ClientTelemetryChannelFactory(Binding binding, IChannelFactory<TChannel> factory, TelemetryClient client, Type contractType, ClientOperationMap map)
+            : base(binding)
         {
             if ( factory == null )
             {
