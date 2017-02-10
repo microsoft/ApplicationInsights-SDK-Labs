@@ -73,7 +73,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         protected override TChannel OnCreateChannel(EndpointAddress address, Uri via)
         {
             var channel = this.innerFactory.CreateChannel(address, via);
-            var newChannel = new ClientTelemetryRequestChannel(telemetryClient, (IChannel)channel, contractType, operationMap);
+            IChannel newChannel = null;
+            if ( typeof(TChannel) == typeof(IRequestChannel) || typeof(TChannel) == typeof(IRequestSessionChannel) )
+            {
+                newChannel = new ClientTelemetryRequestChannel(telemetryClient, (IChannel)channel, contractType, operationMap);
+            } else if ( typeof(TChannel) == typeof(IOutputChannel) || typeof(TChannel) == typeof(IOutputSessionChannel) )
+            {
+                newChannel = new ClientTelemetryOutputChannel(telemetryClient, (IChannel)channel, contractType, operationMap);
+            } else
+            {
+                throw new NotSupportedException("Channel shape is not supported: " + typeof(TChannel));
+            }
             return (TChannel)(object)newChannel;
         }
 

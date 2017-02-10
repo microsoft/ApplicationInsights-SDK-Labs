@@ -72,6 +72,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 return true;
             }
+            if ( type == typeof(IOutputChannel) || type == typeof(IOutputSessionChannel) )
+            {
+                return true;
+            }
             return false;
         }
 
