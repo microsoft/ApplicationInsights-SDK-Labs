@@ -31,7 +31,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 
         public String GetServiceAddress()
         {
-            return endpoint.Address.Uri.ToString();
+            return new Uri(baseAddress, new Uri("svc", UriKind.Relative)).ToString(); // endpoint.Address.Uri.ToString();
         }
 
         public HostingContext<TServiceImpl, TServiceIFace> IncludeDetailsInFaults()
@@ -63,7 +63,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         {
             host.Open();
 
-            channelFactory = new ChannelFactory<TServiceIFace>(binding, new Uri(baseAddress, new Uri("svc", UriKind.Relative)).ToString());
+            channelFactory = new ChannelFactory<TServiceIFace>(binding, GetServiceAddress());
             channelFactory.Open();
         }
 

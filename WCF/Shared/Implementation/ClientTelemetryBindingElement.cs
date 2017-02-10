@@ -3,7 +3,7 @@ using System.ServiceModel.Channels;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    class ClientTelemetryBindingElement : BindingElement
+    internal sealed class ClientTelemetryBindingElement : BindingElement
     {
         private TelemetryClient telemetryClient;
         private Type contractType;
@@ -73,6 +73,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 return true;
             }
             if ( type == typeof(IOutputChannel) || type == typeof(IOutputSessionChannel) )
+            {
+                return true;
+            }
+            if ( type == typeof(IDuplexChannel) || type == typeof(IDuplexSessionChannel) )
             {
                 return true;
             }

@@ -3,7 +3,7 @@ using System.ServiceModel.Description;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    struct ClientOpDescription
+    internal struct ClientOpDescription
     {
         public String Action { get; set; }
         public String Name { get; set; }

@@ -21,6 +21,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         const String SvcUrl = "http://localhost/MyService.svc";
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsCreated_InnerChannelRemoteAddressIsReturned()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -35,6 +36,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         //
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpened_InnerChannelEventsAreHooked()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -51,6 +53,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpenedWithTimeout_InnerChannelEventsAreHooked()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -68,6 +71,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpenedAsync_InnerChannelEventsAreHooked()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -85,6 +89,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpenedAsyncWithTimeout_InnerChannelEventsAreHooked()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -119,6 +124,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsClosedWithTimeout_InnerChannelEventsAreUnhooked()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -136,6 +142,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsClosedAsync_InnerChannelEventsAreUnhooked()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -154,6 +161,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsClosedAsyncWithTimeout_InnerChannelEventsAreUnhooked()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -172,6 +180,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsAborted_InnerChannelEventsAreUnhooked()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -194,6 +203,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         //
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpened_TelemetryIsWritten()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -206,6 +216,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpenedWithTimeout_TelemetryIsWritten()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -218,6 +229,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpenedAsync_TelemetryIsWritten()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -231,6 +243,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpenedAsyncWithTimeout_TelemetryIsWritten()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -244,6 +257,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpened_TelemetryIsWritten_Failure()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -266,6 +280,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpenedWithTimeout_TelemetryIsWritten_Failure()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -288,6 +303,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpenedAsync_TelemetryIsWritten_FailureInBegin()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -310,6 +326,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpenedAsyncWithTimeout_TelemetryIsWritten_FailureInBegin()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -337,6 +354,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         // Request Telemetry
         //
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenRequestIsSent_TelemetryIsWritten()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -350,6 +368,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenRequestIsSentWithTimeout_TelemetryIsWritten()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -363,6 +382,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenRequestIsSent_TelemetryIsWritten_SoapFault()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -378,6 +398,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenRequestIsSent_TelemetryIsWritten_Exception()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -399,6 +420,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenRequestIsSentWithTimeout_TelemetryIsWritten_Exception()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -420,6 +442,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenRequestIsSent_Async_TelemetryIsWritten()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -434,6 +457,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenRequestIsSent_AsyncWithTimeout_TelemetryIsWritten()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -448,6 +472,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenRequestIsSent_Async_TelemetryIsWritten_Exception()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -472,6 +497,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenRequestIsSent_AsyncWithTimeout_TelemetryIsWritten_Exception()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -496,6 +522,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         }
 
         [TestMethod]
+        [TestCategory("Client")]
         public void WhenRequestIsSent_Async_TelemetryIsWritten_ExceptionOnEnd()
         {
             var innerChannel = new MockClientChannel(SvcUrl);

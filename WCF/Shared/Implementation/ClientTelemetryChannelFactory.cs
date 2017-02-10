@@ -4,7 +4,7 @@ using System.ServiceModel.Channels;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    class ClientTelemetryChannelFactory<TChannel> : ChannelFactoryBase<TChannel>
+    internal sealed class ClientTelemetryChannelFactory<TChannel> : ChannelFactoryBase<TChannel>
     {
         private IChannelFactory<TChannel> innerFactory;
         private TelemetryClient telemetryClient;
@@ -80,6 +80,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             } else if ( typeof(TChannel) == typeof(IOutputChannel) || typeof(TChannel) == typeof(IOutputSessionChannel) )
             {
                 newChannel = new ClientTelemetryOutputChannel(telemetryClient, (IChannel)channel, contractType, operationMap);
+            } else if ( typeof(TChannel) == typeof(IDuplexChannel) || typeof(TChannel) == typeof(IDuplexSessionChannel) )
+            {
+                newChannel = new ClientTelemetryDuplexChannel(telemetryClient, (IChannel)channel, contractType, operationMap);
             } else
             {
                 throw new NotSupportedException("Channel shape is not supported: " + typeof(TChannel));

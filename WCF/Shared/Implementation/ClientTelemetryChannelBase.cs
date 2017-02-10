@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    abstract class ClientTelemetryChannelBase
+    internal abstract class ClientTelemetryChannelBase
     {
         protected IChannel InnerChannel { get; private set; }
         private TelemetryClient telemetryClient;
@@ -89,6 +89,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             } finally
             {
                 UnhookChannelEvents();
+                OnClose();
             }
         }
 
@@ -100,6 +101,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             } finally
             {
                 UnhookChannelEvents();
+                OnClose();
             }
         }
 
@@ -111,6 +113,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             } finally
             {
                 UnhookChannelEvents();
+                OnClose();
             }
         }
 
@@ -184,6 +187,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             } finally
             {
                 UnhookChannelEvents();
+                OnClose();
             }
         }
 
@@ -278,10 +282,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 telemetry.Target = RemoteAddress.Uri.Host;
                 telemetry.Name = RemoteAddress.Uri.ToString();
                 telemetry.Data = contractType.Name + "." + operation.Name;
-                telemetry.Properties["soapAction"] = soapAction;
+                telemetry.Properties[DependencyConstants.SoapActionProperty] = soapAction;
                 if ( operation.IsOneWay )
                 {
-                    telemetry.Properties["isOneWay"] = "True";
+                    telemetry.Properties[DependencyConstants.IsOneWayProperty] = Boolean.TrueString;
                 }
                 return telemetry;
             } catch ( Exception ex )
@@ -313,6 +317,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 WcfEventSource.Log.ClientInspectorError(method, ex.ToString());
             }
         }
+        protected bool IsOneWay(DependencyTelemetry telemetry)
+        {
+            String value;
+            if ( telemetry.Properties.TryGetValue(DependencyConstants.IsOneWayProperty, out value) )
+            {
+                return Boolean.Parse(value);
+            }
+            return false;
+        }
+
+        protected virtual void OnClose()
+        {
+        }
 
         protected class NestedAsyncResult : IAsyncResult
         {
@@ -327,11 +344,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
             public IAsyncResult Inner { get; private set; }
             public DependencyTelemetry Telemetry { get; private set; }
+            public object OtherState { get; private set; }
 
             public NestedAsyncResult(IAsyncResult innerResult, DependencyTelemetry telemetry)
+                : this(innerResult, telemetry, null)
+            {
+            }
+            public NestedAsyncResult(IAsyncResult innerResult, DependencyTelemetry telemetry, object otherState)
             {
                 this.Inner = innerResult;
                 this.Telemetry = telemetry;
+                this.OtherState = otherState;
             }
         }
     }

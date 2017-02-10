@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOpDescription.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryDuplexChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryEndpointBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryBindingElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryOutputChannel.cs" />
@@ -21,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ContractFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\DependencyConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\Executor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\MessageCorrelator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\OperationFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\PlatformContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOperationMap.cs" />
