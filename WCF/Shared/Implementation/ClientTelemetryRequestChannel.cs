@@ -25,8 +25,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             get { return ((IRequestSessionChannel)InnerChannel).Session; }
         }
 
-        public ClientTelemetryRequestChannel(TelemetryClient client, IChannel channel, Type contractType, ClientOperationMap map)
-            : base(client, channel, contractType, map)
+        public ClientTelemetryRequestChannel(IChannelManager channelManager, IChannel channel)
+            : base(channelManager, channel)
         {
         }
 

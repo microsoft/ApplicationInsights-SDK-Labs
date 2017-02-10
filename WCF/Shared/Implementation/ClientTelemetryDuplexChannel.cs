@@ -44,8 +44,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             get { return DuplexChannel.RemoteAddress; }
         }
 
-        public ClientTelemetryDuplexChannel(TelemetryClient client, IChannel channel, Type contractType, ClientOperationMap map)
-            : base(client, channel, contractType, map)
+        public ClientTelemetryDuplexChannel(IChannelManager channelManager, IChannel channel)
+            : base(channelManager, channel)
         {
             correlator = new MessageCorrelator();
         }

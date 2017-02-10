@@ -4,12 +4,12 @@ using System.ServiceModel.Channels;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    internal sealed class ClientTelemetryChannelFactory<TChannel> : ChannelFactoryBase<TChannel>
+    internal sealed class ClientTelemetryChannelFactory<TChannel> : ChannelFactoryBase<TChannel>, IChannelManager
     {
         private IChannelFactory<TChannel> innerFactory;
-        private TelemetryClient telemetryClient;
-        private Type contractType;
-        private ClientOperationMap operationMap;
+        public TelemetryClient TelemetryClient { get; private set; }
+        public Type ContractType { get; private set; }
+        public ClientOperationMap OperationMap { get; private set; }
 
         public ClientTelemetryChannelFactory(IChannelFactory<TChannel> factory, TelemetryClient client, Type contractType, ClientOperationMap map)
         {
@@ -30,9 +30,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 throw new ArgumentNullException(nameof(map));
             }
             this.innerFactory = factory;
-            this.telemetryClient = client;
-            this.contractType = contractType;
-            this.operationMap = map;
+            this.TelemetryClient = client;
+            this.ContractType = contractType;
+            this.OperationMap = map;
         }
 
         public override T GetProperty<T>()
@@ -76,13 +76,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             IChannel newChannel = null;
             if ( typeof(TChannel) == typeof(IRequestChannel) || typeof(TChannel) == typeof(IRequestSessionChannel) )
             {
-                newChannel = new ClientTelemetryRequestChannel(telemetryClient, (IChannel)channel, contractType, operationMap);
+                newChannel = new ClientTelemetryRequestChannel(this, (IChannel)channel);
             } else if ( typeof(TChannel) == typeof(IOutputChannel) || typeof(TChannel) == typeof(IOutputSessionChannel) )
             {
-                newChannel = new ClientTelemetryOutputChannel(telemetryClient, (IChannel)channel, contractType, operationMap);
+                newChannel = new ClientTelemetryOutputChannel(this, (IChannel)channel);
             } else if ( typeof(TChannel) == typeof(IDuplexChannel) || typeof(TChannel) == typeof(IDuplexSessionChannel) )
             {
-                newChannel = new ClientTelemetryDuplexChannel(telemetryClient, (IChannel)channel, contractType, operationMap);
+                newChannel = new ClientTelemetryDuplexChannel(this, (IChannel)channel);
             } else
             {
                 throw new NotSupportedException("Channel shape is not supported: " + typeof(TChannel));

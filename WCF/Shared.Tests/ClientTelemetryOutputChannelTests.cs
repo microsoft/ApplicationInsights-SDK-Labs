@@ -18,6 +18,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         const String HostName = "localhost";
         const String SvcUrl = "http://localhost/MyService.svc";
 
+        private ClientTelemetryOutputChannel GetChannel(IChannel innerChannel, Type contract)
+        {
+            return new ClientTelemetryOutputChannel(
+                new ClientChannelManager(new TelemetryClient(), contract, BuildOperationMap()),
+                innerChannel
+                );
+        }
 
         [TestMethod]
         [TestCategory("Client")]
@@ -25,8 +32,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var client = new TelemetryClient();
-            var channel = new ClientTelemetryOutputChannel(client, innerChannel, typeof(IOneWayService), BuildOperationMap());
+            var channel = GetChannel(innerChannel, typeof(IOneWayService));
 
             channel.Send(BuildMessage(OneWayOp1));
 
@@ -39,8 +45,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var client = new TelemetryClient();
-            var channel = new ClientTelemetryOutputChannel(client, innerChannel, typeof(IOneWayService), BuildOperationMap());
+            var channel = GetChannel(innerChannel, typeof(IOneWayService));
 
             channel.Send(BuildMessage(OneWayOp1), TimeSpan.FromSeconds(10));
 
@@ -53,8 +58,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var client = new TelemetryClient();
-            var channel = new ClientTelemetryOutputChannel(client, innerChannel, typeof(IOneWayService), BuildOperationMap());
+            var channel = GetChannel(innerChannel, typeof(IOneWayService));
 
             innerChannel.FailRequest = true;
 
@@ -77,8 +81,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var client = new TelemetryClient();
-            var channel = new ClientTelemetryOutputChannel(client, innerChannel, typeof(IOneWayService), BuildOperationMap());
+            var channel = GetChannel(innerChannel, typeof(IOneWayService));
 
             var result = channel.BeginSend(BuildMessage(OneWayOp1), null, null);
             channel.EndSend(result);
@@ -92,8 +95,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var client = new TelemetryClient();
-            var channel = new ClientTelemetryOutputChannel(client, innerChannel, typeof(IOneWayService), BuildOperationMap());
+            var channel = GetChannel(innerChannel, typeof(IOneWayService));
 
             var result = channel.BeginSend(BuildMessage(OneWayOp1), TimeSpan.FromSeconds(10), null, null);
             channel.EndSend(result);
@@ -107,8 +109,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var client = new TelemetryClient();
-            var channel = new ClientTelemetryOutputChannel(client, innerChannel, typeof(IOneWayService), BuildOperationMap());
+            var channel = GetChannel(innerChannel, typeof(IOneWayService));
 
             innerChannel.FailEndRequest = true;
 

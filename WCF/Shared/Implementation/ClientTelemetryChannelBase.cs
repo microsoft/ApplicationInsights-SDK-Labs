@@ -9,10 +9,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
     internal abstract class ClientTelemetryChannelBase
     {
         protected IChannel InnerChannel { get; private set; }
-        private TelemetryClient telemetryClient;
-        private Type contractType;
-        private ClientOperationMap operationMap;
-
+        private IChannelManager channelManager;
 
         public CommunicationState State
         {
@@ -27,28 +24,18 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public event EventHandler Opened;
         public event EventHandler Opening;
 
-        public ClientTelemetryChannelBase(TelemetryClient client, IChannel channel, Type contractType, ClientOperationMap map)
+        public ClientTelemetryChannelBase(IChannelManager channelManager, IChannel channel)
         {
-            if ( client == null )
+            if ( channelManager == null )
             {
-                throw new ArgumentNullException(nameof(client));
+                throw new ArgumentNullException(nameof(channelManager));
             }
             if ( channel == null )
             {
                 throw new ArgumentNullException(nameof(channel));
             }
-            if ( contractType == null )
-            {
-                throw new ArgumentNullException(nameof(contractType));
-            }
-            if ( map == null )
-            {
-                throw new ArgumentNullException(nameof(map));
-            }
-            this.telemetryClient = client;
+            this.channelManager = channelManager;
             this.InnerChannel = channel;
-            this.contractType = contractType;
-            this.operationMap = map;
         }
 
         public void Open()
@@ -240,7 +227,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 telemetry.Type = DependencyConstants.WcfChannelOpen;
                 telemetry.Target = RemoteAddress.Uri.Host;
                 telemetry.Name = RemoteAddress.Uri.ToString();
-                telemetry.Data = contractType.FullName;
+                telemetry.Data = channelManager.ContractType.FullName;
                 return telemetry;
             } catch ( Exception ex )
             {
@@ -258,7 +245,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 telemetry.Success = error == null;
                 telemetry.Stop();
-                telemetryClient.TrackDependency(telemetry);
+                channelManager.TelemetryClient.TrackDependency(telemetry);
             } catch ( Exception ex )
             {
                 WcfEventSource.Log.ClientInspectorError(method, ex.ToString());
@@ -269,7 +256,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             var soapAction = request.Headers.Action;
             ClientOpDescription operation;
-            if ( !this.operationMap.TryLookupByAction(soapAction, out operation) )
+            if ( !channelManager.OperationMap.TryLookupByAction(soapAction, out operation) )
             {
                 return null;
             }
@@ -281,7 +268,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 telemetry.Type = DependencyConstants.WcfClientCall;
                 telemetry.Target = RemoteAddress.Uri.Host;
                 telemetry.Name = RemoteAddress.Uri.ToString();
-                telemetry.Data = contractType.Name + "." + operation.Name;
+                telemetry.Data = channelManager.ContractType.Name + "." + operation.Name;
                 telemetry.Properties[DependencyConstants.SoapActionProperty] = soapAction;
                 if ( operation.IsOneWay )
                 {
@@ -311,7 +298,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                     telemetry.Success = false;
                 }
                 telemetry.Stop();
-                telemetryClient.TrackDependency(telemetry);
+                channelManager.TelemetryClient.TrackDependency(telemetry);
             } catch ( Exception ex )
             {
                 WcfEventSource.Log.ClientInspectorError(method, ex.ToString());
