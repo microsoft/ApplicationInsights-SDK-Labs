@@ -64,7 +64,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             try
             {
                 bool isOneWay = IsOneWay(telemetry);
-                Send(message, timeout);
+                DuplexChannel.Send(message, timeout);
                 if ( isOneWay )
                 {
                     // no matching receive
