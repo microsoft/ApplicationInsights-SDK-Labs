@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ClientIpTelemetryInitializerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryOutputChannelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryRequestChannelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryEndpointBehaviorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContractDescriptionBuilder.cs" />

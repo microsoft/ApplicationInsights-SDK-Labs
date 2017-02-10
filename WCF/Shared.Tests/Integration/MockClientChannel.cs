@@ -8,18 +8,8 @@ using System.Threading.Tasks;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 {
-    class MockClientChannel : IClientChannel, IRequestChannel
+    class MockClientChannel : IRequestChannel, IOutputChannel
     {
-        public bool AllowInitializationUI { get; set; }
-
-        public bool AllowOutputBatching { get; set; }
-
-        public bool DidInteractiveInitialization { get; private set; }
-
-        public IExtensionCollection<IContextChannel> Extensions { get; private set; }
-
-        public IInputSession InputSession { get; private set; }
-
         public EndpointAddress LocalAddress { get; private set; }
 
         public TimeSpan OperationTimeout { get; set; }
@@ -27,8 +17,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public IOutputSession OutputSession { get; private set; }
 
         public EndpointAddress RemoteAddress { get; private set; }
-
-        public string SessionId { get; private set; }
 
         public CommunicationState State { get; private set; }
 
@@ -189,25 +177,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             result.AsyncWaitHandle.WaitOne();
         }
 
-        public IAsyncResult BeginDisplayInitializationUI(AsyncCallback callback, object state)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public void DisplayInitializationUI()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void EndDisplayInitializationUI(IAsyncResult result)
-        {
-            throw new NotImplementedException();
-        }
-
         public T GetProperty<T>() where T : class
         {
-            throw new NotImplementedException();
+            return default(T);
         }
 
         // request channel methods
@@ -258,6 +230,53 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         }
 
 
+        //
+        // Output Channel Impl
+        //
+        public void Send(Message message)
+        {
+            if ( FailRequest )
+            {
+                throw new TimeoutException();
+            }
+        }
+
+        public void Send(Message message, TimeSpan timeout)
+        {
+            if ( FailRequest )
+            {
+                throw new TimeoutException();
+            }
+        }
+
+        public IAsyncResult BeginSend(Message message, AsyncCallback callback, object state)
+        {
+            if ( FailRequest )
+            {
+                throw new TimeoutException();
+            }
+            return new SyncAsyncResult(state);
+        }
+
+        public IAsyncResult BeginSend(Message message, TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            if ( FailRequest )
+            {
+                throw new TimeoutException();
+            }
+            return new SyncAsyncResult(state);
+        }
+
+        public void EndSend(IAsyncResult result)
+        {
+            if ( FailEndRequest )
+            {
+                throw new TimeoutException();
+            }
+            result.AsyncWaitHandle.WaitOne();
+        }
+
+
         private Message BuildMessage(String action)
         {
             if ( ReturnSoapFault )
@@ -276,7 +295,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
                     ),
                 action);
         }
-
 
         class SyncAsyncResult : IAsyncResult
         {

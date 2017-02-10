@@ -279,6 +279,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 telemetry.Name = RemoteAddress.Uri.ToString();
                 telemetry.Data = contractType.Name + "." + operation.Name;
                 telemetry.Properties["soapAction"] = soapAction;
+                if ( operation.IsOneWay )
+                {
+                    telemetry.Properties["isOneWay"] = "True";
+                }
                 return telemetry;
             } catch ( Exception ex )
             {

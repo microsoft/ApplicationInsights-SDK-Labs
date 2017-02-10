@@ -36,11 +36,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             try
             {
                 var response = RequestChannel.Request(message);
-                StopSendTelemetry(telemetry, response, null, nameof(message));
+                StopSendTelemetry(telemetry, response, null, nameof(Request));
                 return response;
             } catch ( Exception ex )
             {
-                StopSendTelemetry(telemetry, null, ex, nameof(message));
+                StopSendTelemetry(telemetry, null, ex, nameof(Request));
                 throw;
             }
         }
@@ -51,11 +51,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             try
             {
                 var response = RequestChannel.Request(message, timeout);
-                StopSendTelemetry(telemetry, response, null, nameof(message));
+                StopSendTelemetry(telemetry, response, null, nameof(Request));
                 return response;
             } catch ( Exception ex )
             {
-                StopSendTelemetry(telemetry, null, ex, nameof(message));
+                StopSendTelemetry(telemetry, null, ex, nameof(Request));
                 throw;
             }
         }

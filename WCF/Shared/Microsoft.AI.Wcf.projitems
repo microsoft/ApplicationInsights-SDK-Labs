@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryEndpointBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryBindingElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryOutputChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryRequestChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ContractFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\DependencyConstants.cs" />
