@@ -1,5 +1,6 @@
 ﻿using Microsoft.ApplicationInsights.DataContracts;
 using System;
+using System.Runtime.Remoting;
 using System.Runtime.Remoting.Messaging;
 using System.ServiceModel;
 using System.ServiceModel.Dispatcher;
@@ -155,6 +156,16 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             return default(T);
         }
 
+        //
+        // In the normal case, we'll use the OperationContext
+        // found in the local thread. However, there are cases this won't work:
+        // - When async calls have been done and .NET < 4.6
+        // - Within a *client* side OperationContextScope
+        // To work around this, we store a copy of our context on the
+        // thread's LogicalCallContext, so that it gets moved from thread to thread
+        // Because this field is not serializable, we store an
+        // ObjectHandle instead.
+        //
         public static WcfOperationContext FindContext(OperationContext owner)
         {
             // don't retrieve a context for a client-side OperationContext
@@ -170,7 +181,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
             if ( context == null )
             {
-                context = CallContext.LogicalGetData(CallContextProperty) as WcfOperationContext;
+                var handle = CallContext.LogicalGetData(CallContextProperty) as ObjectHandle;
+                if ( handle != null )
+                {
+                    context = handle.Unwrap() as WcfOperationContext;
+                }
             }
             return context;
         }
@@ -204,7 +219,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                     context = new WcfOperationContext(owner, PlatformContext.RequestFromHttpContext());
                     owner.Extensions.Add(context);
                     // backup in case we can't get to the server-side OperationContext later
-                    CallContext.LogicalSetData(CallContextProperty, context);
+                    CallContext.LogicalSetData(CallContextProperty, new ObjectHandle(context));
                 }
                 // no server-side OperationContext to attach to
             }
