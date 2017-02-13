@@ -144,6 +144,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void EndOpen(IAsyncResult result)
         {
+            if ( result == null )
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
             NestedAsyncResult nar = (NestedAsyncResult)result;
             try
             {
@@ -168,6 +172,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void EndClose(IAsyncResult result)
         {
+            if ( result == null )
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
             try
             {
                 InnerChannel.EndClose(result);

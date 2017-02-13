@@ -37,6 +37,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public Message Request(Message message, TimeSpan timeout)
         {
+            if ( message == null )
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
             var telemetry = StartSendTelemetry(message, nameof(Request));
             try
             {
@@ -57,6 +61,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginRequest(Message message, TimeSpan timeout, AsyncCallback callback, object state)
         {
+            if ( message == null )
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
             var telemetry = StartSendTelemetry(message, nameof(BeginRequest));
             try
             {
@@ -71,6 +79,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public Message EndRequest(IAsyncResult result)
         {
+            if ( result == null )
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
             var nar = (NestedAsyncResult)result;
             try
             {

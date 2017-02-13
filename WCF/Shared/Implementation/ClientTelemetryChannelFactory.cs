@@ -51,6 +51,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         }
         protected override void OnEndOpen(IAsyncResult result)
         {
+            if ( result == null )
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
             this.innerFactory.EndOpen(result);
         }
 
@@ -64,6 +68,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         }
         protected override void OnEndClose(IAsyncResult result)
         {
+            if ( result == null )
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
             this.innerFactory.EndClose(result);
         }
         protected override void OnAbort()
@@ -73,6 +81,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         protected override TChannel OnCreateChannel(EndpointAddress address, Uri via)
         {
+            if ( address == null )
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
             var channel = this.innerFactory.CreateChannel(address, via);
             IChannel newChannel = null;
             if ( typeof(TChannel) == typeof(IRequestChannel) || typeof(TChannel) == typeof(IRequestSessionChannel) )

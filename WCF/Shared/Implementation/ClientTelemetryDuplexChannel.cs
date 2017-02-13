@@ -60,6 +60,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void Send(Message message, TimeSpan timeout)
         {
+            if ( message == null )
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
             var telemetry = StartSendTelemetry(message, nameof(Send));
             try
             {
@@ -87,6 +91,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginSend(Message message, TimeSpan timeout, AsyncCallback callback, object state)
         {
+            if ( message == null )
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
             var telemetry = StartSendTelemetry(message, nameof(BeginSend));
             try
             {
@@ -102,6 +110,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void EndSend(IAsyncResult result)
         {
+            if ( result == null )
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
             var nar = (NestedAsyncResult)result;
             try
             {
@@ -169,6 +181,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         }
         public Message EndReceive(IAsyncResult result)
         {
+            if ( result == null )
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
             var reply = DuplexChannel.EndReceive(result);
             if ( reply != null )
             {
@@ -184,6 +200,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         }
         public bool EndTryReceive(IAsyncResult result, out Message message)
         {
+            if ( result == null )
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
             bool success = DuplexChannel.EndTryReceive(result, out message);
             if ( success && message != null )
             {
@@ -199,6 +219,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         }
         public bool EndWaitForMessage(IAsyncResult result)
         {
+            if ( result == null )
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
             return DuplexChannel.EndWaitForMessage(result);
         }
 
