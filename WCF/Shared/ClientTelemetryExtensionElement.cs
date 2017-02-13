@@ -24,15 +24,56 @@ namespace Microsoft.ApplicationInsights.Wcf
         }
 
         /// <summary>
+        /// Gets or sets the name of the HTTP header to get root operation Id from.
+        /// </summary>
+        public String RootOperationIdHeaderName
+        {
+            get { return (String)base["rootOperationIdHeaderName"]; }
+            set { base["rootOperationIdHeaderName"] = value; }
+        }
+        /// <summary>
+        /// Gets or sets the name of the HTTP header to get parent operation Id from.
+        /// </summary>
+        public String ParentOperationIdHeaderName
+        {
+            get { return (String)base["parentOperationIdHeaderName"]; }
+            set { base["parentOperationIdHeaderName"] = value; }
+        }
+        /// <summary>
+        /// Gets or sets the name of the SOAP header to get root operation Id from.
+        /// </summary>
+        public String SoapRootOperationIdHeaderName
+        {
+            get { return (String)base["soapRootOperationIdHeaderName"]; }
+            set { base["soapRootOperationIdHeaderName"] = value; }
+        }
+        /// <summary>
+        /// Gets or sets the name of the SOAP header to get parent operation Id from.
+        /// </summary>
+        public String SoapParentOperationIdHeaderName
+        {
+            get { return (String)base["soapParentOperationIdHeaderName"]; }
+            set { base["soapParentOperationIdHeaderName"] = value; }
+        }
+        /// <summary>
+        /// Gets or sets the XML Namespace for the root/parent operation ID SOAP headers.
+        /// </summary>
+        public String SoapHeaderNamespace
+        {
+            get { return (String)base["soapHeaderNamespace"]; }
+            set { base["soapHeaderNamespace"] = value; }
+        }
+
+        /// <summary>
         /// The list of properties supported by this behavior
         /// </summary>
-        protected override System.Configuration.ConfigurationPropertyCollection Properties
+        protected override ConfigurationPropertyCollection Properties
         {
             get
             {
                 if ( properties == null )
                 {
-                    properties = new ConfigurationPropertyCollection();
+                    properties = CreateProperties();
                 }
                 return properties;
             }
@@ -44,7 +85,24 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// <returns>A new Endpoint Behavior that will track client-side calls</returns>
         protected override object CreateBehavior()
         {
-            return new ClientTelemetryEndpointBehavior(TelemetryConfiguration.Active);
+            var behavior = new ClientTelemetryEndpointBehavior(TelemetryConfiguration.Active);
+            behavior.ParentOperationIdHeaderName = ParentOperationIdHeaderName;
+            behavior.RootOperationIdHeaderName = RootOperationIdHeaderName;
+            behavior.SoapParentOperationIdHeaderName = SoapParentOperationIdHeaderName;
+            behavior.SoapRootOperationIdHeaderName = SoapRootOperationIdHeaderName;
+            behavior.SoapHeaderNamespace = SoapHeaderNamespace;
+            return behavior;
+        }
+
+        private ConfigurationPropertyCollection CreateProperties()
+        {
+            var props = new ConfigurationPropertyCollection();
+            props.Add(new ConfigurationProperty("parentOperationIdHeaderName", typeof(String), CorrelationHeaders.HttpStandardParentIdHeader));
+            props.Add(new ConfigurationProperty("rootOperationIdHeaderName", typeof(String), CorrelationHeaders.HttpStandardRootIdHeader));
+            props.Add(new ConfigurationProperty("soapParentOperationIdHeaderName", typeof(String), CorrelationHeaders.SoapStandardParentIdHeader));
+            props.Add(new ConfigurationProperty("soapRootOperationIdHeaderName", typeof(String), CorrelationHeaders.SoapStandardRootIdHeader));
+            props.Add(new ConfigurationProperty("soapHeaderNamespace", typeof(String), CorrelationHeaders.SoapStandardNamespace));
+            return props;
         }
     }
 }

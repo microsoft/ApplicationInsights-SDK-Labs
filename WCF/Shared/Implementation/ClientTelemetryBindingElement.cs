@@ -9,6 +9,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         private Type contractType;
         private ClientOperationMap operationMap;
 
+        public String RootOperationIdHeaderName { get; set; }
+        public String ParentOperationIdHeaderName { get; set; }
+        public String SoapRootOperationIdHeaderName { get; set; }
+        public String SoapParentOperationIdHeaderName { get; set; }
+        public String SoapHeaderNamespace { get; set; }
+
         public ClientTelemetryBindingElement(TelemetryClient client, Type contract, ClientOperationMap map)
         {
             if ( client == null )
@@ -63,7 +69,14 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 throw new InvalidOperationException("Unsupported channel shape: " + typeof(TChannel));
             }
             var innerFactory = context.BuildInnerChannelFactory<TChannel>();
-            return new ClientTelemetryChannelFactory<TChannel>(context.Binding, innerFactory, telemetryClient, contractType, operationMap);
+            var factory = new ClientTelemetryChannelFactory<TChannel>(context.Binding, innerFactory, telemetryClient, contractType, operationMap);
+            factory.RootOperationIdHeaderName = RootOperationIdHeaderName;
+            factory.ParentOperationIdHeaderName = ParentOperationIdHeaderName;
+            factory.SoapRootOperationIdHeaderName = SoapRootOperationIdHeaderName;
+            factory.SoapParentOperationIdHeaderName = SoapParentOperationIdHeaderName;
+            factory.SoapHeaderNamespace = SoapHeaderNamespace;
+
+            return factory;
         }
 
         private bool IsSupportedChannelShape(Type type)

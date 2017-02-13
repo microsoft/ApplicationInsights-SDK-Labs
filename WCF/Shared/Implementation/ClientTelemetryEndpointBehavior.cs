@@ -8,7 +8,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
     class ClientTelemetryEndpointBehavior : IEndpointBehavior
     {
-        public TelemetryClient telemetryClient;
+        private TelemetryClient telemetryClient;
+
+        public String RootOperationIdHeaderName { get; set; }
+        public String ParentOperationIdHeaderName { get; set; }
+        public String SoapRootOperationIdHeaderName { get; set; }
+        public String SoapParentOperationIdHeaderName { get; set; }
+        public String SoapHeaderNamespace { get; set; }
 
         public ClientTelemetryEndpointBehavior(TelemetryConfiguration configuration)
         {
@@ -27,6 +33,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
             var description = BuildDescription(endpoint);
             var element = new ClientTelemetryBindingElement(telemetryClient, contract, description);
+            element.RootOperationIdHeaderName = RootOperationIdHeaderName;
+            element.ParentOperationIdHeaderName = ParentOperationIdHeaderName;
+            element.SoapRootOperationIdHeaderName = SoapRootOperationIdHeaderName;
+            element.SoapParentOperationIdHeaderName = SoapParentOperationIdHeaderName;
+            element.SoapHeaderNamespace = SoapHeaderNamespace;
+
             var collection = endpoint.Binding.CreateBindingElements();
             collection.Insert(0, element);
             endpoint.Binding = new CustomBinding(collection);

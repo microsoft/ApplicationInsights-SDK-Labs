@@ -18,10 +18,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         const String HostName = "localhost";
         const String SvcUrl = "http://localhost/MyService.svc";
 
-        private ClientTelemetryOutputChannel GetChannel(IChannel innerChannel, Type contract)
+        private ClientTelemetryOutputChannel GetChannel(IChannel innerChannel, Type contract, TelemetryClient client = null)
         {
             return new ClientTelemetryOutputChannel(
-                new ClientChannelManager(new TelemetryClient(), contract, BuildOperationMap()),
+                new ClientChannelManager(client ?? new TelemetryClient(), contract, BuildOperationMap()),
                 innerChannel
                 );
         }
@@ -125,6 +125,42 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.IsTrue(failed, "EndSend did not throw an exception");
 
             CheckOpDependencyWritten(DependencyConstants.WcfClientCall, typeof(IOneWayService), OneWayOp1, "SuccessfullOneWayCall", false);
+        }
+
+
+        //
+        // Other tests
+        //
+        [TestMethod]
+        [TestCategory("Client")]
+        public void WhenMessageIsSent_CorrelationHeadersAreSet()
+        {
+            var client = new TelemetryClient();
+            client.Context.Operation.Id = "12345"; // parentId
+
+            var innerChannel = new MockClientChannel(SvcUrl);
+            TestTelemetryChannel.Clear();
+            var channel = GetChannel(innerChannel, typeof(IOneWayService), client);
+
+            channel.Send(BuildMessage(OneWayOp1));
+
+            var message = innerChannel.LastMessageSent;
+
+            Assert.AreEqual(client.Context.Operation.Id, GetHttpHeader(message, CorrelationHeaders.HttpStandardRootIdHeader));
+            Assert.IsNotNull(GetHttpHeader(message, CorrelationHeaders.HttpStandardParentIdHeader));
+            Assert.AreEqual(client.Context.Operation.Id, GetSoapHeader(message, CorrelationHeaders.SoapStandardNamespace, CorrelationHeaders.SoapStandardRootIdHeader));
+            Assert.IsNotNull(GetSoapHeader(message, CorrelationHeaders.SoapStandardNamespace, CorrelationHeaders.SoapStandardParentIdHeader));
+        }
+
+        private String GetSoapHeader(Message message, String ns, String headerName)
+        {
+            return message.Headers.GetHeader<String>(headerName, ns);
+        }
+
+        private String GetHttpHeader(Message message, String headerName)
+        {
+            var httpHeaders = message.GetHttpRequestHeaders();
+            return httpHeaders.Headers[headerName];
         }
 
         private Message BuildMessage(String action)

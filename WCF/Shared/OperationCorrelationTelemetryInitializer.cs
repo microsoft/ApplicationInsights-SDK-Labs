@@ -9,12 +9,6 @@ namespace Microsoft.ApplicationInsights.Wcf
     /// </summary>
     public sealed class OperationCorrelationTelemetryInitializer : WcfTelemetryInitializer
     {
-        private const String HttpStandardParentIdHeader = "x-ms-request-id";
-        private const String HttpStandardRootIdHeader = "x-ms-request-root-id";
-        private const String SoapStandardParentIdHeader = "requestId";
-        private const String SoapStandardRootIdHeader = "requestRootId";
-        private const String SoapStandardNamespace = "http://schemas.microsoft.com/application-insights";
-
         /// <summary>
         /// Gets or sets the name of the HTTP header to get root operation Id from.
         /// </summary>
@@ -41,11 +35,11 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// </summary>
         public OperationCorrelationTelemetryInitializer()
         {
-            this.RootOperationIdHeaderName = HttpStandardRootIdHeader;
-            this.ParentOperationIdHeaderName = HttpStandardParentIdHeader;
-            this.SoapHeaderNamespace = SoapStandardNamespace;
-            this.SoapParentOperationIdHeaderName = SoapStandardParentIdHeader;
-            this.SoapRootOperationIdHeaderName = SoapStandardRootIdHeader;
+            this.RootOperationIdHeaderName = CorrelationHeaders.HttpStandardRootIdHeader;
+            this.ParentOperationIdHeaderName = CorrelationHeaders.HttpStandardParentIdHeader;
+            this.SoapHeaderNamespace = CorrelationHeaders.SoapStandardNamespace;
+            this.SoapParentOperationIdHeaderName = CorrelationHeaders.SoapStandardParentIdHeader;
+            this.SoapRootOperationIdHeaderName = CorrelationHeaders.SoapStandardRootIdHeader;
         }
 
         /// <summary>

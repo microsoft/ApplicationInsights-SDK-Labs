@@ -18,6 +18,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public TimeSpan SendTimeout { get; private set; }
 
         public TelemetryClient TelemetryClient { get; private set; }
+        public String RootOperationIdHeaderName { get; set; }
+        public String ParentOperationIdHeaderName { get; set; }
+        public String SoapRootOperationIdHeaderName { get; set; }
+        public String SoapParentOperationIdHeaderName { get; set; }
+        public String SoapHeaderNamespace { get; set; }
 
         public ClientChannelManager(TelemetryClient client, Type contractType, ClientOperationMap map)
         {

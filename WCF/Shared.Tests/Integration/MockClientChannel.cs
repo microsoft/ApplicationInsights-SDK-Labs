@@ -34,6 +34,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public bool ReturnSoapFault { get; set; }
         public bool FailRequest { get; set; }
         public bool FailEndRequest { get; set; }
+        public Message LastMessageSent { get; private set; }
 
 
         public MockClientChannel(String remoteUrl)
@@ -185,11 +186,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         // request channel methods
         public Message Request(Message message)
         {
-            if ( FailRequest)
-            {
-                throw new TimeoutException();
-            }
-            return BuildMessage(message.Headers.Action);
+            return Request(message, TimeSpan.FromSeconds(10));
         }
 
         public Message Request(Message message, TimeSpan timeout)
@@ -203,15 +200,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 
         public IAsyncResult BeginRequest(Message message, AsyncCallback callback, object state)
         {
-            if ( FailRequest )
-            {
-                throw new TimeoutException();
-            }
-            return new SyncAsyncResult(state);
+            return BeginRequest(message, TimeSpan.FromSeconds(10), callback, state);
         }
 
         public IAsyncResult BeginRequest(Message message, TimeSpan timeout, AsyncCallback callback, object state)
         {
+            LastMessageSent = message;
             if ( FailRequest )
             {
                 throw new TimeoutException();
@@ -235,14 +229,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         //
         public void Send(Message message)
         {
-            if ( FailRequest )
-            {
-                throw new TimeoutException();
-            }
+            Send(message, TimeSpan.FromSeconds(10));
         }
 
         public void Send(Message message, TimeSpan timeout)
         {
+            LastMessageSent = message;
             if ( FailRequest )
             {
                 throw new TimeoutException();
@@ -251,15 +243,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 
         public IAsyncResult BeginSend(Message message, AsyncCallback callback, object state)
         {
-            if ( FailRequest )
-            {
-                throw new TimeoutException();
-            }
-            return new SyncAsyncResult(state);
+            return BeginSend(message, TimeSpan.FromSeconds(10), callback, state);
         }
 
         public IAsyncResult BeginSend(Message message, TimeSpan timeout, AsyncCallback callback, object state)
         {
+            LastMessageSent = message;
             if ( FailRequest )
             {
                 throw new TimeoutException();

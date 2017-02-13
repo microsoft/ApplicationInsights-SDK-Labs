@@ -272,6 +272,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             try
             {
                 var telemetry = new DependencyTelemetry();
+                ChannelManager.TelemetryClient.Initialize(telemetry);
                 telemetry.Start();
                 telemetry.Type = DependencyConstants.WcfClientCall;
                 telemetry.Target = RemoteAddress.Uri.Host;
@@ -282,6 +283,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 {
                     telemetry.Properties[DependencyConstants.IsOneWayProperty] = Boolean.TrueString;
                 }
+                SetCorrelationHeaders(telemetry, request);
                 return telemetry;
             } catch ( Exception ex )
             {
@@ -324,6 +326,48 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         protected virtual void OnClose()
         {
+        }
+
+
+        private void SetCorrelationHeaders(DependencyTelemetry telemetry, Message message)
+        {
+            var httpHeaders = message.GetHttpRequestHeaders();
+
+            var rootIdHttpHeader = ValueOrDefault(ChannelManager.RootOperationIdHeaderName, CorrelationHeaders.HttpStandardRootIdHeader);
+            var rootIdSoapHeader = ValueOrDefault(ChannelManager.SoapRootOperationIdHeaderName, CorrelationHeaders.SoapStandardRootIdHeader);
+            var parentIdHttpHeader = ValueOrDefault(ChannelManager.ParentOperationIdHeaderName, CorrelationHeaders.HttpStandardParentIdHeader);
+            var parentIdSoapHeader = ValueOrDefault(ChannelManager.SoapParentOperationIdHeaderName, CorrelationHeaders.SoapStandardParentIdHeader);
+            // "" is a valid value for the namespace
+            var soapNS = ChannelManager.SoapHeaderNamespace != null ? ChannelManager.SoapHeaderNamespace : CorrelationHeaders.SoapStandardNamespace;
+
+            var rootId = telemetry.Context.Operation.Id;
+            if ( !String.IsNullOrEmpty(rootId) )
+            {
+                httpHeaders.Headers[rootIdHttpHeader] = rootId;
+                SetSoapHeader(message, soapNS, rootIdSoapHeader, rootId);
+            }
+
+            var parentId = telemetry.Id;
+            if ( !String.IsNullOrEmpty(parentId) )
+            {
+                httpHeaders.Headers[parentIdHttpHeader] = parentId;
+                SetSoapHeader(message, soapNS, parentIdSoapHeader, parentId);
+            }
+        }
+
+        private void SetSoapHeader(Message message, String soapNS, String header, String value)
+        {
+            int currentHeader = message.Headers.FindHeader(header, soapNS);
+            if ( currentHeader < 0 ) 
+            {
+                var soapHeader = MessageHeader.CreateHeader(header, soapNS, value);
+                message.Headers.Add(soapHeader);
+            }
+        }
+
+        private String ValueOrDefault(String value, String defaultValue)
+        {
+            return String.IsNullOrEmpty(value) ? defaultValue : value;
         }
 
         protected class NestedAsyncResult : IAsyncResult

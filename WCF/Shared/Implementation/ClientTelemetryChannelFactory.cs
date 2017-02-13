@@ -9,7 +9,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         private IChannelFactory<TChannel> innerFactory;
         public TelemetryClient TelemetryClient { get; private set; }
         public Type ContractType { get; private set; }
-        public ClientOperationMap OperationMap { get; private set; }
+        public ClientOperationMap OperationMap { get; set; }
+        public String RootOperationIdHeaderName { get; set; }
+        public String ParentOperationIdHeaderName { get; set; }
+        public String SoapRootOperationIdHeaderName { get; set; }
+        public String SoapParentOperationIdHeaderName { get; set; }
+        public String SoapHeaderNamespace { get; set; }
 
         public ClientTelemetryChannelFactory(Binding binding, IChannelFactory<TChannel> factory, TelemetryClient client, Type contractType, ClientOperationMap map)
             : base(binding)
