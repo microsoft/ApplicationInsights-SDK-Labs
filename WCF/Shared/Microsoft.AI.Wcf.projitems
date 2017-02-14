@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\OperationFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\PlatformContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOperationMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ProfilerWcfClientProcessing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\RequestTrackingConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\SdkVersionUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfOperationContext.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)RequestTrackingTelemetryModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserAgentTelemetryInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserTelemetryInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WcfDependencyTrackingTelemetryModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WcfTelemetryInitializer.cs" />
   </ItemGroup>
 </Project>

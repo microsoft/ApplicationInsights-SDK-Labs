@@ -42,6 +42,7 @@
     <Content Include="common\web.config.uninstall.xdt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="app.config" />
     <None Include="Package.nuspec" />
   </ItemGroup>
   <ItemGroup>

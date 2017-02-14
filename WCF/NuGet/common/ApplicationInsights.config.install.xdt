@@ -3,6 +3,7 @@
   <TelemetryModules xdt:Transform="InsertIfMissing">
     <Add xdt:Transform="InsertIfMissing" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.RequestTrackingTelemetryModule, Microsoft.AI.Wcf" />
     <Add xdt:Transform="InsertIfMissing" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.ExceptionTrackingTelemetryModule, Microsoft.AI.Wcf" />
+    <Add xdt:Transform="InsertIfMissing" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.WcfDependencyTrackingTelemetryModule, Microsoft.AI.Wcf" />
   </TelemetryModules>
 
   <TelemetryInitializers xdt:Transform="InsertIfMissing">

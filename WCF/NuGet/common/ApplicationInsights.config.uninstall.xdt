@@ -3,6 +3,7 @@
   <TelemetryModules>
     <Add xdt:Transform="Remove" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.RequestTrackingTelemetryModule, Microsoft.AI.Wcf" />
     <Add xdt:Transform="Remove" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.ExceptionTrackingTelemetryModule, Microsoft.AI.Wcf" />
+    <Add xdt:Transform="Remove" xdt:Locator="Match(Type)" Type="Microsoft.ApplicationInsights.Wcf.WcfDependencyTrackingTelemetryModule, Microsoft.AI.Wcf" />
   </TelemetryModules>
   <TelemetryModules xdt:Transform="Remove" xdt:Locator="Condition(count(*)=0)"/>
 

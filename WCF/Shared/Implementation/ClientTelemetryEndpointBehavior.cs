@@ -1,4 +1,5 @@
 ﻿using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using System;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
@@ -17,12 +18,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public String SoapHeaderNamespace { get; set; }
 
         public ClientTelemetryEndpointBehavior(TelemetryConfiguration configuration)
+            : this(configuration != null ? new TelemetryClient(configuration) : null)
         {
-            if ( configuration == null )
+        }
+        public ClientTelemetryEndpointBehavior(TelemetryClient client)
+        {
+            if ( client == null )
             {
-                throw new ArgumentNullException(nameof(configuration));
+                throw new ArgumentNullException(nameof(client));
             }
-            telemetryClient = new TelemetryClient(configuration);
+            this.telemetryClient = client;
+            this.telemetryClient.Context.GetInternalContext().SdkVersion = "wcf: " + SdkVersionUtils.GetAssemblyVersion();
         }
 
         public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)

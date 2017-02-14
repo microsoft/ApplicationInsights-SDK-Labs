@@ -114,6 +114,18 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             this.WriteEvent(52, contract, this.ApplicationName);
         }
 
+        [Event(53, Keywords = Keywords.DependencyTracking, Message = "{0}", Level = EventLevel.Informational)]
+        public void ClientDependencyTrackingInfo(String info, String appDomainName = "Invalid")
+        {
+            this.WriteEvent(53, info, this.ApplicationName);
+        }
+
+        [Event(54, Keywords = Keywords.DependencyTracking, Message = "Callback '{1}' will not run for id = '{0}'. Reason: {2}", Level = EventLevel.Warning)]
+        public void NotExpectedCallback(long id, string callbackName, string reason, string appDomainName = "Incorrect")
+        {
+            this.WriteEvent(54, id, callbackName ?? string.Empty, reason ?? string.Empty, this.ApplicationName);
+        }
+
 
         [NonEvent]
         private String GetApplicationName()

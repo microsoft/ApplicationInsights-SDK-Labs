@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Integration\TracingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationFilterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\OneWayTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProfilerWcfClientProcessingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MockOperationContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationCorrelationTelemetryInitializerTests.cs" />
