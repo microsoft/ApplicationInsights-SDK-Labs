@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 {
-    class MockClientChannel : IRequestChannel, IOutputChannel
+    class MockClientChannel : IRequestChannel, IOutputChannel, IDuplexChannel
     {
         public EndpointAddress LocalAddress { get; private set; }
 
@@ -35,6 +35,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public bool FailRequest { get; set; }
         public bool FailEndRequest { get; set; }
         public Message LastMessageSent { get; private set; }
+        public Message MessageToReceive { get; set; }
 
 
         public MockClientChannel(String remoteUrl)
@@ -283,6 +284,82 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
                     "There was an error processing the message"
                     ),
                 action);
+        }
+
+        //
+        //
+        // IDuplexChannel fields
+        //
+        public Message Receive()
+        {
+            if ( MessageToReceive != null )
+            {
+                return MessageToReceive;
+            }
+            throw new TimeoutException();
+        }
+
+        public Message Receive(TimeSpan timeout)
+        {
+            if ( MessageToReceive != null )
+            {
+                return MessageToReceive;
+            }
+            throw new TimeoutException();
+        }
+
+        public IAsyncResult BeginReceive(AsyncCallback callback, object state)
+        {
+            return new SyncAsyncResult(state);
+        }
+
+        public IAsyncResult BeginReceive(TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            return new SyncAsyncResult(state);
+        }
+
+        public Message EndReceive(IAsyncResult result)
+        {
+            result.AsyncWaitHandle.WaitOne();
+            if ( MessageToReceive != null )
+            {
+                return MessageToReceive;
+            }
+            throw new TimeoutException();
+        }
+
+        public bool TryReceive(TimeSpan timeout, out Message message)
+        {
+            message = MessageToReceive;
+            return message != null;
+        }
+
+        public IAsyncResult BeginTryReceive(TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            return new SyncAsyncResult(callback);
+        }
+
+        public bool EndTryReceive(IAsyncResult result, out Message message)
+        {
+            result.AsyncWaitHandle.WaitOne();
+            message = MessageToReceive;
+            return message != null;
+        }
+
+        public bool WaitForMessage(TimeSpan timeout)
+        {
+            return MessageToReceive != null;
+        }
+
+        public IAsyncResult BeginWaitForMessage(TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            return new SyncAsyncResult(state);
+        }
+
+        public bool EndWaitForMessage(IAsyncResult result)
+        {
+            result.AsyncWaitHandle.WaitOne();
+            return MessageToReceive != null;
         }
 
         class SyncAsyncResult : IAsyncResult

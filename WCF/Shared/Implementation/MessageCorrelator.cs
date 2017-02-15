@@ -114,7 +114,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 }
                 if ( timeout > TimeSpan.Zero )
                 {
-                    this.TimeoutTimer = new Timer(callback, this, TimeSpan.Zero, timeout);
+                    this.TimeoutTimer = new Timer(callback, this, timeout, TimeSpan.FromMilliseconds(-1));
                 }
             }
             public void Dispose()

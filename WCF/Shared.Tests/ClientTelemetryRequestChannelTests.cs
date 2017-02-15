@@ -49,7 +49,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public void WhenInnerChannelIsNull_ConstructorThrowsException()
         {
 
-            var manager = new ClientChannelManager(new TelemetryClient(), typeof(ISimpleService), BuildOperationMap()),
+            var manager = new ClientChannelManager(new TelemetryClient(), typeof(ISimpleService), BuildOperationMap());
             bool failed = false;
             try
             {

@@ -47,7 +47,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public ClientTelemetryDuplexChannel(IChannelManager channelManager, IChannel channel)
             : base(channelManager, channel)
         {
-            correlator = new MessageCorrelator();
+            correlator = new MessageCorrelator(this.OnRequestTimeout);
         }
 
         //
@@ -240,6 +240,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 StopSendTelemetry(telemetry, reply, null, nameof(HandleReply));
             }
             // not our message, leave it be
+        }
+        private void OnRequestTimeout(UniqueId messageId, DependencyTelemetry telemetry)
+        {
+            StopSendTelemetry(telemetry, null, new TimeoutException(), nameof(OnRequestTimeout));
         }
     }
 }
