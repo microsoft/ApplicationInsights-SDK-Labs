@@ -75,7 +75,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                     StopSendTelemetry(telemetry, null, null, nameof(Send));
                 } else
                 {
-                    correlator.Add(message.Headers.MessageId, telemetry);
+                    correlator.Add(message.Headers.MessageId, telemetry, timeout);
                 }
             } catch ( Exception ex )
             {
@@ -99,7 +99,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             try
             {
                 var result = DuplexChannel.BeginSend(message, timeout, callback, state);
-                correlator.Add(message.Headers.MessageId, telemetry);
+                correlator.Add(message.Headers.MessageId, telemetry, timeout);
                 return new NestedAsyncResult(result, telemetry, message.Headers.MessageId);
             } catch ( Exception ex )
             {
@@ -229,7 +229,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         protected override void OnClose()
         {
-            correlator.Clear();
+            correlator.Dispose();
             base.OnClose();
         }
         private void HandleReply(Message reply)

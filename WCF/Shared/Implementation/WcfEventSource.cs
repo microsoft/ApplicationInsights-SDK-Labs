@@ -126,6 +126,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             this.WriteEvent(54, id, callbackName ?? string.Empty, reason ?? string.Empty, this.ApplicationName);
         }
 
+        [Event(55, Keywords = Keywords.DependencyTracking, Message = "ChannelFactory created for channel shape {0}", Level = EventLevel.Informational)]
+        public void ChannelFactoryCreated(String channelShape, String appDomainName = "Invalid")
+        {
+            this.WriteEvent(55, channelShape, this.ApplicationName);
+        }
+
 
         [NonEvent]
         private String GetApplicationName()

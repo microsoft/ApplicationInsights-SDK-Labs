@@ -27,6 +27,41 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                 innerChannel
                 );
         }
+
+        [TestMethod]
+        [TestCategory("Client")]
+        public void WhenChannelManagerIsNull_ConstructorThrowsException()
+        {
+            var innerChannel = new MockClientChannel(SvcUrl);
+            bool failed = false;
+            try
+            {
+                var channel = new ClientTelemetryRequestChannel(null, innerChannel);
+            } catch ( ArgumentNullException )
+            {
+                failed = true;
+            }
+            Assert.IsTrue(failed, "Constructor did not throw ArgumentNullException");
+        }
+
+        [TestMethod]
+        [TestCategory("Client")]
+        public void WhenInnerChannelIsNull_ConstructorThrowsException()
+        {
+
+            var manager = new ClientChannelManager(new TelemetryClient(), typeof(ISimpleService), BuildOperationMap()),
+            bool failed = false;
+            try
+            {
+                var channel = new ClientTelemetryRequestChannel(manager, null);
+            } catch ( ArgumentNullException )
+            {
+                failed = true;
+            }
+            Assert.IsTrue(failed, "Constructor did not throw ArgumentNullException");
+        }
+
+
         [TestMethod]
         [TestCategory("Client")]
         public void WhenChannelIsCreated_InnerChannelRemoteAddressIsReturned()

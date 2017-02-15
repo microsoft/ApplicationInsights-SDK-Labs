@@ -11,6 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ClientChannelManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientIpTelemetryInitializerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryBindingElementTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryExtensionElementTestscs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryOutputChannelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryRequestChannelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryEndpointBehaviorTests.cs" />
@@ -20,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Integration\MultipleServiceCallsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\OperationContextExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\TracingTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MessageCorrelatorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationFilterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integration\OneWayTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProfilerWcfClientProcessingTests.cs" />

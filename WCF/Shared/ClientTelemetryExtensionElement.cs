@@ -11,7 +11,7 @@ namespace Microsoft.ApplicationInsights.Wcf
     /// events for calls to Web Services done using the
     /// WCF client-side stack through the configuration file
     /// </summary>
-    public class ClientTelemetryExtensionElement : BehaviorExtensionElement
+    public sealed class ClientTelemetryExtensionElement : BehaviorExtensionElement
     {
         private ConfigurationPropertyCollection properties;
 
@@ -85,6 +85,11 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// <returns>A new Endpoint Behavior that will track client-side calls</returns>
         protected override object CreateBehavior()
         {
+            return CreateBehaviorInternal();
+        }
+
+        internal ClientTelemetryEndpointBehavior CreateBehaviorInternal()
+        {
             var behavior = new ClientTelemetryEndpointBehavior(TelemetryConfiguration.Active);
             behavior.ParentOperationIdHeaderName = ParentOperationIdHeaderName;
             behavior.RootOperationIdHeaderName = RootOperationIdHeaderName;
@@ -93,8 +98,7 @@ namespace Microsoft.ApplicationInsights.Wcf
             behavior.SoapHeaderNamespace = SoapHeaderNamespace;
             return behavior;
         }
-
-        private ConfigurationPropertyCollection CreateProperties()
+        internal ConfigurationPropertyCollection CreateProperties()
         {
             var props = new ConfigurationPropertyCollection();
             props.Add(new ConfigurationProperty("parentOperationIdHeaderName", typeof(String), CorrelationHeaders.HttpStandardParentIdHeader));
