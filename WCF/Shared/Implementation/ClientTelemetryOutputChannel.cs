@@ -67,8 +67,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             var telemetry = StartSendTelemetry(message, nameof(BeginSend));
             try
             {
-                var result = OutputChannel.BeginSend(message, timeout, callback, state);
-                return new NestedAsyncResult(result, telemetry);
+                return new SendAsyncResult(OutputChannel, message, timeout, this.OnSendComplete, callback, state, telemetry);
             } catch ( Exception ex )
             {
                 StopSendTelemetry(telemetry, null, ex, nameof(BeginSend));
@@ -82,16 +81,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            var nar = (NestedAsyncResult)result;
-            try
+            SendAsyncResult.End<SendAsyncResult>(result);
+        }
+
+        private void OnSendComplete(IAsyncResult result)
+        {
+            if ( result == null )
             {
-                OutputChannel.EndSend(nar.Inner);
-                StopSendTelemetry(nar.Telemetry, null, null, nameof(EndSend));
-            } catch ( Exception ex )
-            {
-                StopSendTelemetry(nar.Telemetry, null, ex, nameof(EndSend));
-                throw;
+                throw new ArgumentNullException(nameof(result));
             }
+            var sar = (SendAsyncResult)result;
+            StopSendTelemetry(sar.Telemetry, null, sar.LastException, nameof(OnSendComplete));
         }
     }
 }

@@ -98,9 +98,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             var telemetry = StartSendTelemetry(message, nameof(BeginSend));
             try
             {
-                var result = DuplexChannel.BeginSend(message, timeout, callback, state);
+                var result = new SendAsyncResult(DuplexChannel, message, timeout, this.OnSendDone, callback, state, telemetry);
                 correlator.Add(message.Headers.MessageId, telemetry, timeout);
-                return new NestedAsyncResult(result, telemetry, message.Headers.MessageId);
+                return result;
             } catch ( Exception ex )
             {
                 StopSendTelemetry(telemetry, null, ex, nameof(BeginSend));
@@ -114,21 +114,18 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            var nar = (NestedAsyncResult)result;
-            try
+            SendAsyncResult.End<SendAsyncResult>(result);
+        }
+
+        private void OnSendDone(IAsyncResult result)
+        {
+            SendAsyncResult sar = (SendAsyncResult)result;
+            
+            if ( IsOneWay(sar.Telemetry) || sar.LastException != null )
             {
-                DuplexChannel.EndSend(nar.Inner);
-                if ( IsOneWay(nar.Telemetry) )
-                {
-                    // not expecting reply
-                    correlator.Remove((UniqueId)nar.OtherState);
-                    StopSendTelemetry(nar.Telemetry, null, null, nameof(EndSend));
-                }
-            } catch ( Exception ex )
-            {
-                // send failed, don't expect reply
-                correlator.Remove((UniqueId)nar.OtherState);
-                StopSendTelemetry(nar.Telemetry, null, ex, nameof(EndSend));
+                // not expecting reply
+                correlator.Remove(sar.RequestId);
+                StopSendTelemetry(sar.Telemetry, null, sar.LastException, nameof(OnSendDone));
             }
         }
 
@@ -172,12 +169,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginReceive(AsyncCallback callback, object state)
         {
-            return DuplexChannel.BeginReceive(callback, state);
+            return BeginReceive(ChannelManager.ReceiveTimeout, callback, state);
         }
 
         public IAsyncResult BeginReceive(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            return DuplexChannel.BeginReceive(timeout, callback, state);
+            return new ReceiveAsyncResult(this.DuplexChannel, timeout, null, callback, state);
         }
         public Message EndReceive(IAsyncResult result)
         {
@@ -185,18 +182,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            var reply = DuplexChannel.EndReceive(result);
-            if ( reply != null )
+            var rar = ReceiveAsyncResult.End<ReceiveAsyncResult>(result);
+            if ( rar.Message != null )
             {
-                this.HandleReply(reply);
+                this.HandleReply(rar.Message);
             }
-            return reply;
+            return rar.Message;
         }
-
 
         public IAsyncResult BeginTryReceive(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            return DuplexChannel.BeginTryReceive(timeout, callback, state);
+            return new TryReceiveAsyncResult(DuplexChannel, timeout, null, callback, state);
         }
         public bool EndTryReceive(IAsyncResult result, out Message message)
         {
@@ -204,12 +200,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            bool success = DuplexChannel.EndTryReceive(result, out message);
-            if ( success && message != null )
+            var trar = TryReceiveAsyncResult.End<TryReceiveAsyncResult>(result);
+            message = trar.Message;
+            if ( trar.Result && message != null )
             {
                 this.HandleReply(message);
             }
-            return success;
+            return trar.Result;
         }
 
 

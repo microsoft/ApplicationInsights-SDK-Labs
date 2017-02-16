@@ -114,17 +114,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         //
         public IAsyncResult BeginOpen(AsyncCallback callback, object state)
         {
-            HookChannelEvents();
-            var telemetry = StartOpenTelemetry(nameof(BeginOpen));
-            try
-            {
-                var result = InnerChannel.BeginOpen(callback, state);
-                return new NestedAsyncResult(result, telemetry);
-            } catch ( Exception ex )
-            {
-                StopOpenTelemetry(telemetry, ex, nameof(BeginOpen));
-                throw;
-            }
+            return BeginOpen(this.ChannelManager.OpenTimeout, callback, state);
         }
 
         public IAsyncResult BeginOpen(TimeSpan timeout, AsyncCallback callback, object state)
@@ -133,8 +123,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             var telemetry = StartOpenTelemetry(nameof(BeginOpen));
             try
             {
-                var result = InnerChannel.BeginOpen(timeout, callback, state);
-                return new NestedAsyncResult(result, telemetry);
+                return new OpenAsyncResult(InnerChannel, timeout, this.OpenCompleted, callback, state, telemetry);
             } catch ( Exception ex )
             {
                 StopOpenTelemetry(telemetry, ex, nameof(BeginOpen));
@@ -148,16 +137,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            NestedAsyncResult nar = (NestedAsyncResult)result;
-            try
+            OpenAsyncResult.End<OpenAsyncResult>(result);
+        }
+
+        private void OpenCompleted(IAsyncResult result)
+        {
+            if ( result == null )
             {
-                InnerChannel.EndOpen(nar.Inner);
-                StopOpenTelemetry(nar.Telemetry, null, nameof(EndOpen));
-            } catch ( Exception ex )
-            {
-                StopOpenTelemetry(nar.Telemetry, ex, nameof(EndOpen));
-                throw;
+                throw new ArgumentNullException(nameof(result));
             }
+            var oar = (OpenAsyncResult)result;
+            StopOpenTelemetry(oar.Telemetry, oar.LastException, nameof(OpenCompleted));
         }
 
         public IAsyncResult BeginClose(AsyncCallback callback, object state)

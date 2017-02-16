@@ -145,7 +145,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
                 ChangeState(CommunicationState.Faulted);
                 throw new EndpointNotFoundException();
             }
-            return new SyncAsyncResult(state);
+            return new SyncAsyncResult(callback, state);
         }
 
         public IAsyncResult BeginOpen(TimeSpan timeout, AsyncCallback callback, object state)
@@ -156,27 +156,27 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
                 ChangeState(CommunicationState.Faulted);
                 throw new EndpointNotFoundException();
             }
-            return new SyncAsyncResult(state);
+            return new SyncAsyncResult(callback, state);
         }
 
         public void EndOpen(IAsyncResult result)
         {
-            result.AsyncWaitHandle.WaitOne();
+            ((SyncAsyncResult)result).End();
         }
 
         public IAsyncResult BeginClose(AsyncCallback callback, object state)
         {
-            return new SyncAsyncResult(state);
+            return new SyncAsyncResult(callback, state);
         }
 
         public IAsyncResult BeginClose(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            return new SyncAsyncResult(state);
+            return new SyncAsyncResult(callback, state);
         }
 
         public void EndClose(IAsyncResult result)
         {
-            result.AsyncWaitHandle.WaitOne();
+            ((SyncAsyncResult)result).End();
         }
 
         public T GetProperty<T>() where T : class
@@ -211,12 +211,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             {
                 throw new TimeoutException();
             }
-            return new SyncAsyncResult(state);
+            return new SyncAsyncResult(callback, state);
         }
 
         public Message EndRequest(IAsyncResult result)
         {
-            result.AsyncWaitHandle.WaitOne();
+            ((SyncAsyncResult)result).End();
             if ( FailEndRequest )
             {
                 throw new TimeoutException();
@@ -254,7 +254,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             {
                 throw new TimeoutException();
             }
-            return new SyncAsyncResult(state);
+            return new SyncAsyncResult(callback, state);
         }
 
         public void EndSend(IAsyncResult result)
@@ -263,7 +263,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             {
                 throw new TimeoutException();
             }
-            result.AsyncWaitHandle.WaitOne();
+            ((SyncAsyncResult)result).End();
         }
 
 
@@ -310,17 +310,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 
         public IAsyncResult BeginReceive(AsyncCallback callback, object state)
         {
-            return new SyncAsyncResult(state);
+            return new SyncAsyncResult(callback, state);
         }
 
         public IAsyncResult BeginReceive(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            return new SyncAsyncResult(state);
+            return new SyncAsyncResult(callback, state);
         }
 
         public Message EndReceive(IAsyncResult result)
         {
-            result.AsyncWaitHandle.WaitOne();
+            ((SyncAsyncResult)result).End();
             if ( MessageToReceive != null )
             {
                 return MessageToReceive;
@@ -336,12 +336,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 
         public IAsyncResult BeginTryReceive(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            return new SyncAsyncResult(callback);
+            return new SyncAsyncResult(callback, state);
         }
 
         public bool EndTryReceive(IAsyncResult result, out Message message)
         {
-            result.AsyncWaitHandle.WaitOne();
+            ((SyncAsyncResult)result).End();
             message = MessageToReceive;
             return message != null;
         }
@@ -353,31 +353,53 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 
         public IAsyncResult BeginWaitForMessage(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            return new SyncAsyncResult(state);
+            return new SyncAsyncResult(callback, state);
         }
 
         public bool EndWaitForMessage(IAsyncResult result)
         {
-            result.AsyncWaitHandle.WaitOne();
+            ((SyncAsyncResult)result).End();
             return MessageToReceive != null;
         }
 
         class SyncAsyncResult : IAsyncResult
         {
+            private EventWaitHandle waitHandle;
+            private AsyncCallback callback;
+            private Timer timer;
             public object AsyncState { get; private set; }
 
-            public WaitHandle AsyncWaitHandle { get; private set; }
+            public WaitHandle AsyncWaitHandle { get { return waitHandle; } }
 
             public bool CompletedSynchronously { get; private set; }
 
             public bool IsCompleted { get; private set; }
 
-            public SyncAsyncResult(object state)
+            public SyncAsyncResult(AsyncCallback callback, object state)
             {
                 this.AsyncState = state;
-                AsyncWaitHandle = new ManualResetEvent(true);
-                CompletedSynchronously = true;
-                IsCompleted = true;
+                this.callback = callback;
+                waitHandle = new ManualResetEvent(false);
+                CompletedSynchronously = false;
+                IsCompleted = false;
+                timer = new Timer(this.OnDone, null, TimeSpan.FromMilliseconds(10), TimeSpan.FromMilliseconds(-1));
+            }
+
+            public void End()
+            {
+                this.waitHandle.WaitOne();
+                this.waitHandle.Close();
+            }
+            private void Complete()
+            {
+                this.IsCompleted = true;
+                this.waitHandle.Set();
+                callback?.Invoke(this);
+            }
+
+            private void OnDone(object state)
+            {
+                this.Complete();
             }
         }
     }
