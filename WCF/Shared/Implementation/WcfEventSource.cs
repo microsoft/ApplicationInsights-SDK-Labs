@@ -132,6 +132,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             this.WriteEvent(55, channelShape, this.ApplicationName);
         }
 
+        [Event(56, Keywords = Keywords.DependencyTracking, Message = "{0}.{1} callback called.", Level = EventLevel.Informational)]
+        public void ChannelCalled(String channel, String method, String appDomainName = "Invalid")
+        {
+            this.WriteEvent(56, channel, method, this.ApplicationName);
+        }
 
         [NonEvent]
         private String GetApplicationName()

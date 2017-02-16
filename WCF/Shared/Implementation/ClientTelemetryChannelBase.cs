@@ -40,21 +40,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void Open()
         {
-            HookChannelEvents();
-            var telemetry = this.StartOpenTelemetry(nameof(Open));
-            try
-            {
-                InnerChannel.Open();
-                this.StopOpenTelemetry(telemetry, null, nameof(Open));
-            } catch ( Exception ex )
-            {
-                this.StopOpenTelemetry(telemetry, ex, nameof(Open));
-                throw;
-            }
+            Open(ChannelManager.OpenTimeout);
         }
 
         public void Open(TimeSpan timeout)
         {
+            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(Open));
             HookChannelEvents();
             var telemetry = this.StartOpenTelemetry(nameof(Open));
             try
@@ -70,18 +61,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void Close()
         {
-            try
-            {
-                InnerChannel.Close();
-            } finally
-            {
-                UnhookChannelEvents();
-                OnClose();
-            }
+            Close(ChannelManager.CloseTimeout);
         }
 
         public void Close(TimeSpan timeout)
         {
+            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(Close));
             try
             {
                 InnerChannel.Close(timeout);
@@ -94,6 +79,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void Abort()
         {
+            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(Abort));
             try
             {
                 InnerChannel.Abort();
@@ -119,6 +105,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginOpen(TimeSpan timeout, AsyncCallback callback, object state)
         {
+            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginOpen));
             HookChannelEvents();
             var telemetry = StartOpenTelemetry(nameof(BeginOpen));
             try
@@ -137,6 +124,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
+            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndOpen));
             OpenAsyncResult.End<OpenAsyncResult>(result);
         }
 
@@ -152,11 +140,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginClose(AsyncCallback callback, object state)
         {
-            return InnerChannel.BeginClose(callback, state);
+            return BeginClose(ChannelManager.CloseTimeout, callback, state);
         }
 
         public IAsyncResult BeginClose(TimeSpan timeout, AsyncCallback callback, object state)
         {
+            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginClose));
             return InnerChannel.BeginClose(timeout, callback, state);
         }
 
@@ -166,6 +155,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
+            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndClose));
             try
             {
                 InnerChannel.EndClose(result);
