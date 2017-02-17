@@ -282,10 +282,15 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 if ( error != null )
                 {
                     telemetry.Success = false;
+                    if ( error is TimeoutException )
+                    {
+                        telemetry.ResultCode = "Timeout";
+                    }
                 }
                 if ( response != null && response.IsFault )
                 {
                     telemetry.Success = false;
+                    telemetry.ResultCode = "SOAP Fault";
                 }
                 telemetry.Stop();
                 ChannelManager.TelemetryClient.TrackDependency(telemetry);

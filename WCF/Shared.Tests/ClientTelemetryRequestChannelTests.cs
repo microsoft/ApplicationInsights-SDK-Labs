@@ -415,7 +415,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
             var response = channel.Request(BuildMessage(TwoWayOp1), TimeSpan.FromSeconds(10));
 
-            CheckOpDependencyWritten(DependencyConstants.WcfClientCall, typeof(ISimpleService), TwoWayOp1, "GetSimpleData", false);
+            var telemetry = CheckOpDependencyWritten(DependencyConstants.WcfClientCall, typeof(ISimpleService), TwoWayOp1, "GetSimpleData", false);
+            Assert.AreEqual("SOAP Fault", telemetry.ResultCode);
         }
 
         [TestMethod]
@@ -577,7 +578,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.AreEqual(contract.FullName, dependency.Data);
             Assert.AreEqual(success, dependency.Success.Value);
         }
-        private void CheckOpDependencyWritten(String type, Type contract, String action, String method, bool success)
+        private DependencyTelemetry CheckOpDependencyWritten(String type, Type contract, String action, String method, bool success)
         {
             var dependency = TestTelemetryChannel.CollectedData().OfType<DependencyTelemetry>().FirstOrDefault();
             Assert.IsNotNull(dependency, "Did not write dependency event");
@@ -587,6 +588,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.AreEqual(contract.Name + "." + method, dependency.Data);
             Assert.AreEqual(action, dependency.Properties["soapAction"]);
             Assert.AreEqual(success, dependency.Success.Value);
+            return dependency;
         }
 
         private ClientOperationMap BuildOperationMap()

@@ -77,6 +77,31 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
         [TestMethod]
         [TestCategory("Client")]
+        public void WhenMessageIsSent_WithTimeoutException_TelemetryHasResultCode()
+        {
+            var innerChannel = new MockClientChannel(SvcUrl);
+            TestTelemetryChannel.Clear();
+            var channel = GetChannel(innerChannel, typeof(IOneWayService));
+
+            innerChannel.FailRequest = true;
+
+            bool failed = false;
+            try
+            {
+                channel.Send(BuildMessage(OneWayOp1));
+            } catch ( TimeoutException )
+            {
+                failed = true;
+            }
+            Assert.IsTrue(failed, "Send did not throw TimeoutException");
+
+            var telemetry = TestTelemetryChannel.CollectedData().OfType<DependencyTelemetry>().First();
+            Assert.AreEqual("Timeout", telemetry.ResultCode);
+        }
+
+
+        [TestMethod]
+        [TestCategory("Client")]
         public void WhenMessageIsSent_Async_TelemetryIsWritten()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
