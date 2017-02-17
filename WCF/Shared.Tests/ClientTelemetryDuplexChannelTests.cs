@@ -13,21 +13,22 @@ using System.Xml;
 namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
     [TestClass]
-    public class ClientTelemetryDuplexChannelTests
+    public class ClientTelemetryDuplexChannelTests : ChannelTestBase<IDuplexChannel>
     {
         const String TwoWayOp1 = "http://tempuri.org/ISimpleService/GetSimpleData";
         const String TwoWayOp2 = "http://tempuri.org/ISimpleService/CallFailsWithFault";
         const String OneWayOp1 = "http://tempuri.org/IOneWayService/SuccessfullOneWayCall";
 
-        const String HostName = "localhost";
-        const String SvcUrl = "http://localhost/MyService.svc";
-
-        private ClientTelemetryDuplexChannel GetChannel(IChannel innerChannel, Type contract)
+        internal override IDuplexChannel GetChannel(IChannel innerChannel, Type contract)
         {
-            return new ClientTelemetryDuplexChannel(
+            return GetChannel(
                 new ClientChannelManager(new TelemetryClient(), contract, BuildOperationMap()),
                 innerChannel
                 );
+        }
+        internal override IDuplexChannel GetChannel(IChannelManager manager, IChannel innerChannel)
+        {
+            return new ClientTelemetryDuplexChannel(manager, innerChannel);
         }
 
         [TestMethod]
@@ -198,7 +199,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             return Message.CreateMessage(MessageVersion.Default, action, "<text/>");
         }
 
-        private ClientOperationMap BuildOperationMap()
+        internal override ClientOperationMap BuildOperationMap()
         {
             ClientOpDescription[] ops = new ClientOpDescription[]
             {

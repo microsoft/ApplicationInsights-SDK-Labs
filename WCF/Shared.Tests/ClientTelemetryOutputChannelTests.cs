@@ -11,19 +11,24 @@ using System.ServiceModel.Channels;
 namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
     [TestClass]
-    public class ClientTelemetryOutputChannelTests
+    public class ClientTelemetryOutputChannelTests : ChannelTestBase<IOutputChannel>
     {
         const String OneWayOp1 = "http://tempuri.org/IOneWayService/SuccessfullOneWayCall";
 
-        const String HostName = "localhost";
-        const String SvcUrl = "http://localhost/MyService.svc";
-
-        private ClientTelemetryOutputChannel GetChannel(IChannel innerChannel, Type contract, TelemetryClient client = null)
+        private IOutputChannel GetChannel(IChannel innerChannel, Type contract, TelemetryClient client)
         {
-            return new ClientTelemetryOutputChannel(
+            return GetChannel(
                 new ClientChannelManager(client ?? new TelemetryClient(), contract, BuildOperationMap()),
                 innerChannel
                 );
+        }
+        internal override IOutputChannel GetChannel(IChannel innerChannel, Type contract)
+        {
+            return GetChannel(innerChannel, contract, null);
+        }
+        internal override IOutputChannel GetChannel(IChannelManager manager, IChannel innerChannel)
+        {
+            return new ClientTelemetryOutputChannel(manager, innerChannel);
         }
 
         [TestMethod]
@@ -193,7 +198,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             return Message.CreateMessage(MessageVersion.Default, action, "<text/>");
         }
 
-        private ClientOperationMap BuildOperationMap()
+        internal override ClientOperationMap BuildOperationMap()
         {
             ClientOpDescription[] ops = new ClientOpDescription[]
             {

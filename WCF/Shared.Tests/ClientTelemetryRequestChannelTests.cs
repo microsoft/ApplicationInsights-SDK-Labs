@@ -11,368 +11,24 @@ using System.ServiceModel.Channels;
 namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
     [TestClass]
-    public class ClientTelemetryRequestChannelTests
+    public class ClientTelemetryRequestChannelTests  : ChannelTestBase<IRequestChannel>
     {
         const String TwoWayOp1 = "http://tempuri.org/ISimpleService/GetSimpleData";
         const String TwoWayOp2 = "http://tempuri.org/ISimpleService/CallFailsWithFault";
         const String OneWayOp1 = "http://tempuri.org/IOneWayService/SuccessfullOneWayCall";
 
-        const String HostName = "localhost";
-        const String SvcUrl = "http://localhost/MyService.svc";
 
-        private ClientTelemetryRequestChannel GetChannel(IChannel innerChannel, Type contract)
+        internal override IRequestChannel GetChannel(IChannel innerChannel, Type contract)
         {
             return new ClientTelemetryRequestChannel(
                 new ClientChannelManager(new TelemetryClient(), contract, BuildOperationMap()),
                 innerChannel
                 );
         }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelManagerIsNull_ConstructorThrowsException()
+        internal override IRequestChannel GetChannel(IChannelManager manager, IChannel innerChannel)
         {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            bool failed = false;
-            try
-            {
-                var channel = new ClientTelemetryRequestChannel(null, innerChannel);
-            } catch ( ArgumentNullException )
-            {
-                failed = true;
-            }
-            Assert.IsTrue(failed, "Constructor did not throw ArgumentNullException");
+            return new ClientTelemetryRequestChannel(manager, innerChannel);
         }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenInnerChannelIsNull_ConstructorThrowsException()
-        {
-
-            var manager = new ClientChannelManager(new TelemetryClient(), typeof(ISimpleService), BuildOperationMap());
-            bool failed = false;
-            try
-            {
-                var channel = new ClientTelemetryRequestChannel(manager, null);
-            } catch ( ArgumentNullException )
-            {
-                failed = true;
-            }
-            Assert.IsTrue(failed, "Constructor did not throw ArgumentNullException");
-        }
-
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsCreated_InnerChannelRemoteAddressIsReturned()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            Assert.AreEqual(innerChannel.RemoteAddress, channel.RemoteAddress);
-        }
-
-        //
-        // Event Handling
-        //
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpened_InnerChannelEventsAreHooked()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            channel.Open();
-
-            Assert.IsTrue(innerChannel.OpeningIsHooked(), "Opening event is not hooked");
-            Assert.IsTrue(innerChannel.OpenedIsHooked(), "Opened event is not hooked");
-            Assert.IsTrue(innerChannel.ClosingIsHooked(), "Closing event is not hooked");
-            Assert.IsTrue(innerChannel.ClosedIsHooked(), "Closed event is not hooked");
-            Assert.IsTrue(innerChannel.FaultedIsHooked(), "Faulted event is not hooked");
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpenedWithTimeout_InnerChannelEventsAreHooked()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            channel.Open(TimeSpan.FromSeconds(10));
-
-            Assert.IsTrue(innerChannel.OpeningIsHooked(), "Opening event is not hooked");
-            Assert.IsTrue(innerChannel.OpenedIsHooked(), "Opened event is not hooked");
-            Assert.IsTrue(innerChannel.ClosingIsHooked(), "Closing event is not hooked");
-            Assert.IsTrue(innerChannel.ClosedIsHooked(), "Closed event is not hooked");
-            Assert.IsTrue(innerChannel.FaultedIsHooked(), "Faulted event is not hooked");
-        }
-
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpenedAsync_InnerChannelEventsAreHooked()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            var result = channel.BeginOpen(null, null);
-            channel.EndOpen(result);
-
-            Assert.IsTrue(innerChannel.OpeningIsHooked(), "Opening event is not hooked");
-            Assert.IsTrue(innerChannel.OpenedIsHooked(), "Opened event is not hooked");
-            Assert.IsTrue(innerChannel.ClosingIsHooked(), "Closing event is not hooked");
-            Assert.IsTrue(innerChannel.ClosedIsHooked(), "Closed event is not hooked");
-            Assert.IsTrue(innerChannel.FaultedIsHooked(), "Faulted event is not hooked");
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpenedAsyncWithTimeout_InnerChannelEventsAreHooked()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            var result = channel.BeginOpen(TimeSpan.FromSeconds(10), null, null);
-            channel.EndOpen(result);
-
-            Assert.IsTrue(innerChannel.OpeningIsHooked(), "Opening event is not hooked");
-            Assert.IsTrue(innerChannel.OpenedIsHooked(), "Opened event is not hooked");
-            Assert.IsTrue(innerChannel.ClosingIsHooked(), "Closing event is not hooked");
-            Assert.IsTrue(innerChannel.ClosedIsHooked(), "Closed event is not hooked");
-            Assert.IsTrue(innerChannel.FaultedIsHooked(), "Faulted event is not hooked");
-        }
-
-        [TestMethod]
-        public void WhenChannelIsClosed_InnerChannelEventsAreUnhooked()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            channel.Open();
-            channel.Close();
-
-            Assert.IsFalse(innerChannel.OpeningIsHooked(), "Opening event is hooked");
-            Assert.IsFalse(innerChannel.OpenedIsHooked(), "Opened event is hooked");
-            Assert.IsFalse(innerChannel.ClosingIsHooked(), "Closing event is hooked");
-            Assert.IsFalse(innerChannel.ClosedIsHooked(), "Closed event is hooked");
-            Assert.IsFalse(innerChannel.FaultedIsHooked(), "Faulted event is hooked");
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsClosedWithTimeout_InnerChannelEventsAreUnhooked()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            channel.Open();
-            channel.Close(TimeSpan.FromSeconds(1));
-
-            Assert.IsFalse(innerChannel.OpeningIsHooked(), "Opening event is hooked");
-            Assert.IsFalse(innerChannel.OpenedIsHooked(), "Opened event is hooked");
-            Assert.IsFalse(innerChannel.ClosingIsHooked(), "Closing event is hooked");
-            Assert.IsFalse(innerChannel.ClosedIsHooked(), "Closed event is hooked");
-            Assert.IsFalse(innerChannel.FaultedIsHooked(), "Faulted event is hooked");
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsClosedAsync_InnerChannelEventsAreUnhooked()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            channel.Open();
-            var result = channel.BeginClose(null, null);
-            channel.EndClose(result);
-
-            Assert.IsFalse(innerChannel.OpeningIsHooked(), "Opening event is hooked");
-            Assert.IsFalse(innerChannel.OpenedIsHooked(), "Opened event is hooked");
-            Assert.IsFalse(innerChannel.ClosingIsHooked(), "Closing event is hooked");
-            Assert.IsFalse(innerChannel.ClosedIsHooked(), "Closed event is hooked");
-            Assert.IsFalse(innerChannel.FaultedIsHooked(), "Faulted event is hooked");
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsClosedAsyncWithTimeout_InnerChannelEventsAreUnhooked()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            channel.Open();
-            var result = channel.BeginClose(TimeSpan.FromSeconds(10), null, null);
-            channel.EndClose(result);
-
-            Assert.IsFalse(innerChannel.OpeningIsHooked(), "Opening event is hooked");
-            Assert.IsFalse(innerChannel.OpenedIsHooked(), "Opened event is hooked");
-            Assert.IsFalse(innerChannel.ClosingIsHooked(), "Closing event is hooked");
-            Assert.IsFalse(innerChannel.ClosedIsHooked(), "Closed event is hooked");
-            Assert.IsFalse(innerChannel.FaultedIsHooked(), "Faulted event is hooked");
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsAborted_InnerChannelEventsAreUnhooked()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            channel.Open();
-            channel.Abort();
-
-            Assert.IsFalse(innerChannel.OpeningIsHooked(), "Opening event is hooked");
-            Assert.IsFalse(innerChannel.OpenedIsHooked(), "Opened event is hooked");
-            Assert.IsFalse(innerChannel.ClosingIsHooked(), "Closing event is hooked");
-            Assert.IsFalse(innerChannel.ClosedIsHooked(), "Closed event is hooked");
-            Assert.IsFalse(innerChannel.FaultedIsHooked(), "Faulted event is hooked");
-        }
-
-
-        //
-        // Channel.Open Telemetry
-        //
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpened_TelemetryIsWritten()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            channel.Open();
-
-            CheckDependencyWritten(DependencyConstants.WcfChannelOpen, typeof(ISimpleService), true);
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpenedWithTimeout_TelemetryIsWritten()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            channel.Open(TimeSpan.FromSeconds(10));
-
-            CheckDependencyWritten(DependencyConstants.WcfChannelOpen, typeof(ISimpleService), true);
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpenedAsync_TelemetryIsWritten()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            var result = channel.BeginOpen(null, null);
-            channel.EndOpen(result);
-
-            CheckDependencyWritten(DependencyConstants.WcfChannelOpen, typeof(ISimpleService), true);
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpenedAsyncWithTimeout_TelemetryIsWritten()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            var result = channel.BeginOpen(TimeSpan.FromSeconds(10), null, null);
-            channel.EndOpen(result);
-
-            CheckDependencyWritten(DependencyConstants.WcfChannelOpen, typeof(ISimpleService), true);
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpened_TelemetryIsWritten_Failure()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            innerChannel.FailOpen = true;
-
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            bool failed = false;
-            try
-            {
-                channel.Open();
-            } catch ( Exception )
-            {
-                failed = true;
-            }
-            Assert.IsTrue(failed, "Open() did not throw exception");
-
-            CheckDependencyWritten(DependencyConstants.WcfChannelOpen, typeof(ISimpleService), false);
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpenedWithTimeout_TelemetryIsWritten_Failure()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            innerChannel.FailOpen = true;
-
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            bool failed = false;
-            try
-            {
-                channel.Open(TimeSpan.FromSeconds(10));
-            } catch ( Exception )
-            {
-                failed = true;
-            }
-            Assert.IsTrue(failed, "Open() did not throw exception");
-
-            CheckDependencyWritten(DependencyConstants.WcfChannelOpen, typeof(ISimpleService), false);
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpenedAsync_TelemetryIsWritten_FailureInBegin()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            innerChannel.FailBeginOpen = true;
-
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            bool failed = false;
-            try
-            {
-                channel.BeginOpen(null, null);
-            } catch ( Exception )
-            {
-                failed = true;
-            }
-            Assert.IsTrue(failed, "BeginOpen() did not throw exception");
-
-            CheckDependencyWritten(DependencyConstants.WcfChannelOpen, typeof(ISimpleService), false);
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenChannelIsOpenedAsyncWithTimeout_TelemetryIsWritten_FailureInBegin()
-        {
-            var innerChannel = new MockClientChannel(SvcUrl);
-            innerChannel.FailBeginOpen = true;
-
-            TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            bool failed = false;
-            try
-            {
-                channel.BeginOpen(TimeSpan.FromSeconds(10), null, null);
-            } catch ( Exception )
-            {
-                failed = true;
-            }
-            Assert.IsTrue(failed, "BeginOpen() did not throw exception");
-
-            CheckDependencyWritten(DependencyConstants.WcfChannelOpen, typeof(ISimpleService), false);
-        }
-
-
 
         //
         // Request Telemetry
@@ -568,16 +224,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             return Message.CreateMessage(MessageVersion.Default, action, "<text/>");
         }
 
-        private void CheckDependencyWritten(String type, Type contract, bool success)
-        {
-            var dependency = TestTelemetryChannel.CollectedData().OfType<DependencyTelemetry>().FirstOrDefault();
-            Assert.IsNotNull(dependency, "Did not write dependency event");
-            Assert.AreEqual(SvcUrl, dependency.Name);
-            Assert.AreEqual("localhost", dependency.Target);
-            Assert.AreEqual(type, dependency.Type);
-            Assert.AreEqual(contract.FullName, dependency.Data);
-            Assert.AreEqual(success, dependency.Success.Value);
-        }
         private DependencyTelemetry CheckOpDependencyWritten(String type, Type contract, String action, String method, bool success)
         {
             var dependency = TestTelemetryChannel.CollectedData().OfType<DependencyTelemetry>().FirstOrDefault();
@@ -591,7 +237,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             return dependency;
         }
 
-        private ClientOperationMap BuildOperationMap()
+        internal override ClientOperationMap BuildOperationMap()
         {
             ClientOpDescription[] ops = new ClientOpDescription[]
             {
