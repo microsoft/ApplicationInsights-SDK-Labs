@@ -7,7 +7,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Reflection;
 using System.Runtime.Remoting;
-using System.Runtime.Remoting.Channels;
 using System.ServiceModel;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests
@@ -15,38 +14,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
     [TestClass]
     public class ClientTelemetryEndpointBehaviorTests
     {
-        [TestMethod]
-        [TestCategory("Client")]
-        public void BehaviorBuildsContractDescription_TwoWay()
-        {
-            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
-            {
-                var configuration = new TelemetryConfiguration();
-                var factory = new ChannelFactory<ISimpleService>(new NetTcpBinding(), host.GetServiceAddress());
-                ISimpleService channel = null;
-                try
-                {
-                    var desc = ClientTelemetryEndpointBehavior.BuildDescription(factory.Endpoint);
-                    factory.Close();
-
-                    Assert.IsNotNull(desc);
-                    ClientOpDescription op;
-                    var found = desc.TryLookupByAction("http://tempuri.org/ISimpleService/GetSimpleData", out op);
-                    Assert.IsTrue(found);
-                    Assert.AreEqual(false, op.IsOneWay);
-                    Assert.AreEqual("GetSimpleData", op.Name);
-                } catch
-                {
-                    factory.Abort();
-                    if ( channel != null )
-                    {
-                        ((IClientChannel)channel).Abort();
-                    }
-                    throw;
-                }
-            }
-        }
-
         [TestMethod]
         [TestCategory("Client")]
         public void BehaviorAddsCustomBinding()

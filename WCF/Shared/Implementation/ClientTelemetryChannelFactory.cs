@@ -8,15 +8,14 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
     {
         private IChannelFactory<TChannel> innerFactory;
         public TelemetryClient TelemetryClient { get; private set; }
-        public Type ContractType { get; private set; }
-        public ClientOperationMap OperationMap { get; set; }
+        public ClientContract OperationMap { get; set; }
         public String RootOperationIdHeaderName { get; set; }
         public String ParentOperationIdHeaderName { get; set; }
         public String SoapRootOperationIdHeaderName { get; set; }
         public String SoapParentOperationIdHeaderName { get; set; }
         public String SoapHeaderNamespace { get; set; }
 
-        public ClientTelemetryChannelFactory(Binding binding, IChannelFactory<TChannel> factory, TelemetryClient client, Type contractType, ClientOperationMap map)
+        public ClientTelemetryChannelFactory(Binding binding, IChannelFactory<TChannel> factory, TelemetryClient client, ClientContract map)
             : base(binding)
         {
             if ( factory == null )
@@ -27,17 +26,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(client));
             }
-            if ( contractType == null )
-            {
-                throw new ArgumentNullException(nameof(contractType));
-            }
             if ( map == null )
             {
                 throw new ArgumentNullException(nameof(map));
             }
             this.innerFactory = factory;
             this.TelemetryClient = client;
-            this.ContractType = contractType;
             this.OperationMap = map;
 
             WcfEventSource.Log.ChannelFactoryCreated(typeof(TChannel).FullName);

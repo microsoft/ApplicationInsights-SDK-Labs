@@ -13,7 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryExtensionElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CorrelationHeaders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ChannelAsyncResult.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOpDescription.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryDuplexChannel.cs" />
@@ -28,7 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\MessageCorrelator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\OperationFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\PlatformContext.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOperationMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientContract.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ProfilerWcfClientProcessing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\RequestTrackingConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\SdkVersionUtils.cs" />

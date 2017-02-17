@@ -18,30 +18,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public void WhenClientIsNull_ConstructorThrowsException()
         {
             TelemetryClient client = null;
-            Type contractType = typeof(ISimpleService);
-            ClientOperationMap map = BuildOperationMap();
+            ClientContract map = new ClientContract(typeof(ISimpleService));
             bool failed = false;
             try
             {
-                var element = new ClientTelemetryBindingElement(client, contractType, map);
-            } catch ( ArgumentNullException )
-            {
-                failed = true;
-            }
-            Assert.IsTrue(failed, "Constructor did not throw ArgumentNullException");
-        }
-
-        [TestMethod]
-        [TestCategory("Client")]
-        public void WhenContractIsNull_ConstructorThrowsException()
-        {
-            TelemetryClient client = new TelemetryClient();
-            Type contractType = null;
-            ClientOperationMap map = BuildOperationMap();
-            bool failed = false;
-            try
-            {
-                var element = new ClientTelemetryBindingElement(client, contractType, map);
+                var element = new ClientTelemetryBindingElement(client, map);
             } catch ( ArgumentNullException )
             {
                 failed = true;
@@ -55,11 +36,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             TelemetryClient client = new TelemetryClient();
             Type contractType = typeof(ISimpleService);
-            ClientOperationMap map = null;
+            ClientContract map = null;
             bool failed = false;
             try
             {
-                var element = new ClientTelemetryBindingElement(client, contractType, map);
+                var element = new ClientTelemetryBindingElement(client, map);
             } catch ( ArgumentNullException )
             {
                 failed = true;
@@ -72,12 +53,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public void WhenContextIsNull_CanBuildChannelFactoryThrowsException()
         {
             TelemetryClient client = new TelemetryClient();
-            Type contractType = typeof(ISimpleService);
-            ClientOperationMap map = BuildOperationMap();
+            ClientContract map = new ClientContract(typeof(ISimpleService));
             bool failed = false;
             try
             {
-                var element = new ClientTelemetryBindingElement(client, contractType, map);
+                var element = new ClientTelemetryBindingElement(client, map);
                 element.CanBuildChannelFactory<IRequestChannel>(null);
             } catch ( ArgumentNullException )
             {
@@ -91,12 +71,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public void WhenContextIsNull_BuildChannelFactoryThrowsException()
         {
             TelemetryClient client = new TelemetryClient();
-            Type contractType = typeof(ISimpleService);
-            ClientOperationMap map = BuildOperationMap();
+            ClientContract map = new ClientContract(typeof(ISimpleService));
             bool failed = false;
             try
             {
-                var element = new ClientTelemetryBindingElement(client, contractType, map);
+                var element = new ClientTelemetryBindingElement(client, map);
                 element.BuildChannelFactory<IRequestChannel>(null);
             } catch ( ArgumentNullException )
             {
@@ -145,9 +124,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public void WithIInputChannel_CanBuildChannelFactoryReturnsFalse()
         {
             TelemetryClient client = new TelemetryClient();
-            Type contractType = typeof(ISimpleService);
-            ClientOperationMap map = BuildOperationMap();
-            var element = new ClientTelemetryBindingElement(client, contractType, map);
+            ClientContract map = new ClientContract(typeof(ISimpleService));
+            var element = new ClientTelemetryBindingElement(client, map);
 
             var custom = new CustomBinding(new NetMsmqBinding());
             BindingContext context = new BindingContext(custom, new BindingParameterCollection());
@@ -158,9 +136,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public void TestChannelShape<TChannel>(Binding binding, bool tryCreate = true)
         {
             TelemetryClient client = new TelemetryClient();
-            Type contractType = typeof(ISimpleService);
-            ClientOperationMap map = BuildOperationMap();
-            var element = new ClientTelemetryBindingElement(client, contractType, map);
+            ClientContract map = new ClientContract(typeof(ISimpleService));
+            var element = new ClientTelemetryBindingElement(client, map);
 
             var custom = new CustomBinding(binding);
             BindingContext context = new BindingContext(custom, new BindingParameterCollection());
@@ -172,16 +149,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                 Assert.IsNotNull(factory, "BuildChannelFactory() returned null");
                 factory.Close();
             }
-        }
-
-        private ClientOperationMap BuildOperationMap()
-        {
-            ClientOpDescription[] ops = new ClientOpDescription[]
-            {
-                new ClientOpDescription { Action = TwoWayOp1, IsOneWay = false, Name = "GetSimpleData" },
-                new ClientOpDescription { Action = TwoWayOp2, IsOneWay = false, Name = "CallFailsWithFault" },
-            };
-            return new ClientOperationMap(ops);
         }
     }
 }

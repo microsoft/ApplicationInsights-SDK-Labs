@@ -22,7 +22,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         internal override IDuplexChannel GetChannel(IChannel innerChannel, Type contract)
         {
             return GetChannel(
-                new ClientChannelManager(new TelemetryClient(), contract, BuildOperationMap()),
+                new ClientChannelManager(new TelemetryClient(), contract),
                 innerChannel
                 );
         }
@@ -74,7 +74,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             TestTelemetryChannel.Clear();
             var innerChannel = new MockClientChannel(SvcUrl);
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = GetChannel(innerChannel, typeof(IOneWayService));
 
             var request = BuildMessage(OneWayOp1);
             request.Headers.MessageId = new UniqueId();
@@ -197,17 +197,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         private Message BuildMessage(String action)
         {
             return Message.CreateMessage(MessageVersion.Default, action, "<text/>");
-        }
-
-        internal override ClientOperationMap BuildOperationMap()
-        {
-            ClientOpDescription[] ops = new ClientOpDescription[]
-            {
-                new ClientOpDescription { Action = TwoWayOp1, IsOneWay = false, Name = "GetSimpleData" },
-                new ClientOpDescription { Action = TwoWayOp2, IsOneWay = false, Name = "CallFailsWithFault" },
-                new ClientOpDescription { Action = OneWayOp1, IsOneWay = true, Name = "SuccessfullOneWayCall" },
-            };
-            return new ClientOperationMap(ops);
         }
     }
 }

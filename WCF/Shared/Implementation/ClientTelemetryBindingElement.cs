@@ -6,8 +6,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
     internal sealed class ClientTelemetryBindingElement : BindingElement
     {
         private TelemetryClient telemetryClient;
-        private Type contractType;
-        private ClientOperationMap operationMap;
+        private ClientContract operationMap;
 
         public String RootOperationIdHeaderName { get; set; }
         public String ParentOperationIdHeaderName { get; set; }
@@ -15,28 +14,23 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public String SoapParentOperationIdHeaderName { get; set; }
         public String SoapHeaderNamespace { get; set; }
 
-        public ClientTelemetryBindingElement(TelemetryClient client, Type contract, ClientOperationMap map)
+        public ClientTelemetryBindingElement(TelemetryClient client, ClientContract map)
         {
             if ( client == null )
             {
                 throw new ArgumentNullException(nameof(client));
-            }
-            if ( contract == null )
-            {
-                throw new ArgumentNullException(nameof(contract));
             }
             if ( map == null )
             {
                 throw new ArgumentNullException(nameof(map));
             }
             this.telemetryClient = client;
-            this.contractType = contract;
             this.operationMap = map;
         }
 
         public override BindingElement Clone()
         {
-            return new ClientTelemetryBindingElement(telemetryClient, contractType, operationMap);
+            return new ClientTelemetryBindingElement(telemetryClient, operationMap);
         }
 
         public override T GetProperty<T>(BindingContext context)
@@ -69,7 +63,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 throw new InvalidOperationException("Unsupported channel shape: " + typeof(TChannel));
             }
             var innerFactory = context.BuildInnerChannelFactory<TChannel>();
-            var factory = new ClientTelemetryChannelFactory<TChannel>(context.Binding, innerFactory, telemetryClient, contractType, operationMap);
+            var factory = new ClientTelemetryChannelFactory<TChannel>(context.Binding, innerFactory, telemetryClient, operationMap);
             factory.RootOperationIdHeaderName = RootOperationIdHeaderName;
             factory.ParentOperationIdHeaderName = ParentOperationIdHeaderName;
             factory.SoapRootOperationIdHeaderName = SoapRootOperationIdHeaderName;

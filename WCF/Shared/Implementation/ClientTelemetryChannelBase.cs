@@ -215,7 +215,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 telemetry.Type = DependencyConstants.WcfChannelOpen;
                 telemetry.Target = RemoteAddress.Uri.Host;
                 telemetry.Name = RemoteAddress.Uri.ToString();
-                telemetry.Data = ChannelManager.ContractType.FullName;
+                telemetry.Data = ChannelManager.OperationMap.ContractType.FullName;
                 return telemetry;
             } catch ( Exception ex )
             {
@@ -243,7 +243,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         protected DependencyTelemetry StartSendTelemetry(Message request, String method)
         {
             var soapAction = request.Headers.Action;
-            ClientOpDescription operation;
+            ClientOperation operation;
             if ( !ChannelManager.OperationMap.TryLookupByAction(soapAction, out operation) )
             {
                 return null;
@@ -257,7 +257,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 telemetry.Type = DependencyConstants.WcfClientCall;
                 telemetry.Target = RemoteAddress.Uri.Host;
                 telemetry.Name = RemoteAddress.Uri.ToString();
-                telemetry.Data = ChannelManager.ContractType.Name + "." + operation.Name;
+                telemetry.Data = ChannelManager.OperationMap.ContractType.Name + "." + operation.Name;
                 telemetry.Properties[DependencyConstants.SoapActionProperty] = soapAction;
                 if ( operation.IsOneWay )
                 {

@@ -37,8 +37,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
             WcfEventSource.Log.ClientTelemetryApplied(contract.FullName);
 
-            var description = BuildDescription(endpoint);
-            var element = new ClientTelemetryBindingElement(telemetryClient, contract, description);
+            var description = new ClientContract(endpoint.Contract);
+            var element = new ClientTelemetryBindingElement(telemetryClient, description);
             element.RootOperationIdHeaderName = RootOperationIdHeaderName;
             element.ParentOperationIdHeaderName = ParentOperationIdHeaderName;
             element.SoapRootOperationIdHeaderName = SoapRootOperationIdHeaderName;
@@ -60,16 +60,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void Validate(ServiceEndpoint endpoint)
         {
-        }
-
-        public static ClientOperationMap BuildDescription(ServiceEndpoint endpoint)
-        {
-            ClientOpDescription[] op = new ClientOpDescription[endpoint.Contract.Operations.Count];
-            for ( int i=0; i < op.Length; i++ )
-            {
-                op[i] = ClientOpDescription.FromDescription(endpoint.Contract.Operations[i]);
-            }
-            return new ClientOperationMap(op);
         }
     }
 

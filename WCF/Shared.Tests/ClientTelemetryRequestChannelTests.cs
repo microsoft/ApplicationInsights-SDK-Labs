@@ -21,7 +21,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         internal override IRequestChannel GetChannel(IChannel innerChannel, Type contract)
         {
             return new ClientTelemetryRequestChannel(
-                new ClientChannelManager(new TelemetryClient(), contract, BuildOperationMap()),
+                new ClientChannelManager(new TelemetryClient(), contract),
                 innerChannel
                 );
         }
@@ -235,17 +235,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.AreEqual(action, dependency.Properties["soapAction"]);
             Assert.AreEqual(success, dependency.Success.Value);
             return dependency;
-        }
-
-        internal override ClientOperationMap BuildOperationMap()
-        {
-            ClientOpDescription[] ops = new ClientOpDescription[]
-            {
-                new ClientOpDescription { Action = TwoWayOp1, IsOneWay = false, Name = "GetSimpleData" },
-                new ClientOpDescription { Action = TwoWayOp2, IsOneWay = false, Name = "CallFailsWithFault" },
-                new ClientOpDescription { Action = OneWayOp1, IsOneWay = true, Name = "SuccessfullOneWayCall" },
-            };
-            return new ClientOperationMap(ops);
         }
     }
 }

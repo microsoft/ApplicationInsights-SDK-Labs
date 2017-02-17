@@ -18,7 +18,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         private IOutputChannel GetChannel(IChannel innerChannel, Type contract, TelemetryClient client)
         {
             return GetChannel(
-                new ClientChannelManager(client ?? new TelemetryClient(), contract, BuildOperationMap()),
+                new ClientChannelManager(client ?? new TelemetryClient(), contract),
                 innerChannel
                 );
         }
@@ -196,15 +196,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         private Message BuildMessage(String action)
         {
             return Message.CreateMessage(MessageVersion.Default, action, "<text/>");
-        }
-
-        internal override ClientOperationMap BuildOperationMap()
-        {
-            ClientOpDescription[] ops = new ClientOpDescription[]
-            {
-                new ClientOpDescription { Action = OneWayOp1, IsOneWay = true, Name = "SuccessfullOneWayCall" },
-            };
-            return new ClientOperationMap(ops);
         }
 
         private void CheckOpDependencyWritten(String type, Type contract, String action, String method, bool success)

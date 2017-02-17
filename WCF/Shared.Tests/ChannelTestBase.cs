@@ -37,7 +37,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public void WhenInnerChannelIsNull_ConstructorThrowsException()
         {
 
-            var manager = new ClientChannelManager(new TelemetryClient(), typeof(ISimpleService), BuildOperationMap());
+            var manager = new ClientChannelManager(new TelemetryClient(), typeof(ISimpleService));
             bool failed = false;
             try
             {
@@ -366,8 +366,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
         internal abstract TChannel GetChannel(IChannel channel, Type contract);
         internal abstract TChannel GetChannel(IChannelManager manager, IChannel channel);
-
-        internal abstract ClientOperationMap BuildOperationMap();
 
         private void CheckOpenDependencyWritten(Type contract, bool success)
         {
