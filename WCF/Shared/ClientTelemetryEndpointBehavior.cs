@@ -95,6 +95,7 @@ namespace Microsoft.ApplicationInsights.Wcf
 
         void IEndpointBehavior.ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
         {
+            throw new NotSupportedException("Client telemetry cannot be used on the server-side stack.");
         }
 
         void IEndpointBehavior.Validate(ServiceEndpoint endpoint)
