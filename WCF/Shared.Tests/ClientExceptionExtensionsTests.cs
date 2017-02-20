@@ -15,7 +15,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             try
             {
                 ClientExceptionExtensions.ToResultCode(null);
-            } catch (ArgumentNullException ex)
+            } catch ( ArgumentNullException )
             {
                 failed = true;
             }
