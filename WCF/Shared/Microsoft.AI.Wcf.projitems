@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ClientIpTelemetryInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryEndpointBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryExtensionElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CorrelationHeaders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ChannelAsyncResult.cs" />
@@ -17,7 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryDuplexChannel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryEndpointBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryBindingElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryOutputChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryRequestChannel.cs" />
