@@ -36,6 +36,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public bool FailEndRequest { get; set; }
         public Message LastMessageSent { get; private set; }
         public Message MessageToReceive { get; set; }
+        public Exception ExceptionToThrowOnSend { get; set; }
 
 
         public MockClientChannel(String remoteUrl)
@@ -209,6 +210,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             LastMessageSent = message;
             if ( FailRequest )
             {
+                if ( ExceptionToThrowOnSend != null )
+                {
+                    throw ExceptionToThrowOnSend;
+                }
                 throw new TimeoutException();
             }
             return new SyncAsyncResult(callback, state);
@@ -238,6 +243,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             LastMessageSent = message;
             if ( FailRequest )
             {
+                if ( ExceptionToThrowOnSend != null )
+                {
+                    throw ExceptionToThrowOnSend;
+                }
                 throw new TimeoutException();
             }
         }

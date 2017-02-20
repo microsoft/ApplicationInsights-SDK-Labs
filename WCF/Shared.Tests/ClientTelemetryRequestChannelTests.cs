@@ -72,7 +72,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var response = channel.Request(BuildMessage(TwoWayOp1), TimeSpan.FromSeconds(10));
 
             var telemetry = CheckOpDependencyWritten(DependencyConstants.WcfClientCall, typeof(ISimpleService), TwoWayOp1, "GetSimpleData", false);
-            Assert.AreEqual("SOAP Fault", telemetry.ResultCode);
+            Assert.AreEqual("SoapFault", telemetry.ResultCode);
         }
 
         [TestMethod]

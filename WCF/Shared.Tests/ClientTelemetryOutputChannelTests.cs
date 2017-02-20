@@ -6,6 +6,7 @@ using Microsoft.ApplicationInsights.Wcf.Tests.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
+using System.ServiceModel;
 using System.ServiceModel.Channels;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests
@@ -89,6 +90,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var channel = GetChannel(innerChannel, typeof(IOneWayService));
 
             innerChannel.FailRequest = true;
+            innerChannel.ExceptionToThrowOnSend = new TimeoutException();
 
             bool failed = false;
             try
@@ -103,7 +105,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var telemetry = TestTelemetryChannel.CollectedData().OfType<DependencyTelemetry>().First();
             Assert.AreEqual("Timeout", telemetry.ResultCode);
         }
-
 
         [TestMethod]
         [TestCategory("Client")]
