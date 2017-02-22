@@ -68,3 +68,53 @@ Current Limitations
 ---------------------
 - Operation duration will not track how long the call was throttled by WCF due to the `<serviceThrottling>` configuration.
 
+
+Client Dependency Telemetry Tracking
+---------------------
+With version 0.27.0, a new experimental feature is introduced to help emit `DependencyTelemetry` events
+when the client-side channel stack in WCF is used to call a Web Service. This feature works
+by hooking into the channel stack and emiting telemetry for the channel open and send operations.
+
+This feature is disabled by default, but can be enabled in two ways:
+
+The first option is to create a new Endpoint Behavior and add the `<clientTelemetry/>` element to it:
+
+```XML
+<behaviors>
+  <endpointBehaviors>
+    <behavior name="clientEndpoints">
+      <clientTelemetry />
+    </behavior>
+  </endpointBehaviors>
+</behaviors>
+```
+
+Then register this behavior in your client endpoint:
+
+```XML
+<client>
+  <endpoint address="..."
+            ...
+            behaviorConfiguration="clientEndpoints" />
+</client>
+```
+
+The second option will take advantage of the Application Insights Profiler if it's available
+to automatically instrument all client-side proxies in your application. You can
+enable this by editing your `ApplicationInsights.config` file and registering the corresponding
+`TelemetryModule`:
+
+```XML
+<TelemetryModules>
+    ...
+    <Add Type="Microsoft.ApplicationInsights.Wcf.WcfDependencyTrackingTelemetryModule, Microsoft.AI.Wcf"/>
+</TelemetryModules>
+``` 
+
+__Limitations__
+* Callback contracts (i.e. duplex) are not supported
+* When using asynchronous calls to your WCF service, dependency telemetry events might not get correctly
+assiociated with the request on an ASP.NET application due to the `HttpContext` not being correctly propagated.
+* When using HTTP-based bindings, you will see multiple dependency telemetry events being generated for the same
+request if the Application Insights `DependencyTrackingModule` is enabled. This is because the module will emit a separate
+event for the HTTP request itself.
