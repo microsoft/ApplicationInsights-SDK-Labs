@@ -64,7 +64,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(Send));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(Send));
             var telemetry = StartSendTelemetry(message, nameof(Send));
             try
             {
@@ -96,7 +96,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginSend));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginSend));
             var telemetry = StartSendTelemetry(message, nameof(BeginSend));
             try
             {
@@ -116,7 +116,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndSend));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndSend));
             SendAsyncResult.End<SendAsyncResult>(result);
         }
 
@@ -147,7 +147,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public Message Receive(TimeSpan timeout)
         {
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(Receive));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(Receive));
             var response = DuplexChannel.Receive(timeout);
             if ( response != null )
             {
@@ -158,7 +158,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public bool TryReceive(TimeSpan timeout, out Message message)
         {
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(TryReceive));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(TryReceive));
             bool success = DuplexChannel.TryReceive(timeout, out message);
             if ( success && message != null )
             {
@@ -169,7 +169,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public bool WaitForMessage(TimeSpan timeout)
         {
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(WaitForMessage));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(WaitForMessage));
             return DuplexChannel.WaitForMessage(timeout);
         }
 
@@ -180,7 +180,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginReceive(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginReceive));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginReceive));
             return new ReceiveAsyncResult(this.DuplexChannel, timeout, null, callback, state);
         }
         public Message EndReceive(IAsyncResult result)
@@ -189,7 +189,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndReceive));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndReceive));
             var rar = ReceiveAsyncResult.End<ReceiveAsyncResult>(result);
             if ( rar.Message != null )
             {
@@ -200,7 +200,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginTryReceive(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginTryReceive));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginTryReceive));
             return new TryReceiveAsyncResult(DuplexChannel, timeout, null, callback, state);
         }
         public bool EndTryReceive(IAsyncResult result, out Message message)
@@ -209,7 +209,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndTryReceive));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndTryReceive));
             var trar = TryReceiveAsyncResult.End<TryReceiveAsyncResult>(result);
             message = trar.Message;
             if ( trar.Result && message != null )
@@ -222,7 +222,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginWaitForMessage(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginWaitForMessage));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginWaitForMessage));
             return DuplexChannel.BeginWaitForMessage(timeout, callback, state);
         }
         public bool EndWaitForMessage(IAsyncResult result)
@@ -231,7 +231,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndWaitForMessage));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndWaitForMessage));
             return DuplexChannel.EndWaitForMessage(result);
         }
 

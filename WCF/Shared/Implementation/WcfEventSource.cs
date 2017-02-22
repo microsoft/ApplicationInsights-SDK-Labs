@@ -17,7 +17,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             public const EventKeywords RequestTelemetry = (EventKeywords)0x20;
             public const EventKeywords ExceptionTelemetry = (EventKeywords)0x40;
             public const EventKeywords OperationContext = (EventKeywords)0x80;
-            public const EventKeywords DependencyTracking = (EventKeywords)0x100;
         }
 
         public static readonly WcfEventSource Log = new WcfEventSource();
@@ -94,48 +93,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public void ResponseMessageClosed(String property, String appDomainName = "Invalid")
         {
             this.WriteEvent(36, property, this.ApplicationName);
-        }
-
-        [Event(50, Keywords = Keywords.DependencyTracking, Message = "Exception while processing {0}: {1}", Level = EventLevel.Error)]
-        public void ClientInspectorError(String method, String exception, String appDomainName = "Invalid")
-        {
-            this.WriteEvent(50, method, exception, this.ApplicationName);
-        }
-
-        [Event(51, Keywords = Keywords.DependencyTracking, Message = "Channel Tracker failed in callback {0}: {1}", Level = EventLevel.Error)]
-        public void ChannelTrackerError(String callback, String exception, String appDomainName = "Invalid")
-        {
-            this.WriteEvent(51, callback, exception, this.ApplicationName);
-        }
-
-        [Event(52, Keywords = Keywords.DependencyTracking, Message = "Client Telemetry applied to contract: {0}", Level = EventLevel.Informational)]
-        public void ClientTelemetryApplied(String contract, String appDomainName = "Invalid")
-        {
-            this.WriteEvent(52, contract, this.ApplicationName);
-        }
-
-        [Event(53, Keywords = Keywords.DependencyTracking, Message = "{0}", Level = EventLevel.Informational)]
-        public void ClientDependencyTrackingInfo(String info, String appDomainName = "Invalid")
-        {
-            this.WriteEvent(53, info, this.ApplicationName);
-        }
-
-        [Event(54, Keywords = Keywords.DependencyTracking, Message = "Callback '{1}' will not run for id = '{0}'. Reason: {2}", Level = EventLevel.Warning)]
-        public void NotExpectedCallback(long id, string callbackName, string reason, string appDomainName = "Incorrect")
-        {
-            this.WriteEvent(54, id, callbackName ?? string.Empty, reason ?? string.Empty, this.ApplicationName);
-        }
-
-        [Event(55, Keywords = Keywords.DependencyTracking, Message = "ChannelFactory created for channel shape {0}", Level = EventLevel.Informational)]
-        public void ChannelFactoryCreated(String channelShape, String appDomainName = "Invalid")
-        {
-            this.WriteEvent(55, channelShape, this.ApplicationName);
-        }
-
-        [Event(56, Keywords = Keywords.DependencyTracking, Message = "{0}.{1} callback called.", Level = EventLevel.Informational)]
-        public void ChannelCalled(String channel, String method, String appDomainName = "Invalid")
-        {
-            this.WriteEvent(56, channel, method, this.ApplicationName);
         }
 
         [NonEvent]

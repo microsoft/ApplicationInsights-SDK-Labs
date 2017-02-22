@@ -45,7 +45,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void Open(TimeSpan timeout)
         {
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(Open));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(Open));
             HookChannelEvents();
             var telemetry = this.StartOpenTelemetry(nameof(Open));
             try
@@ -66,7 +66,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void Close(TimeSpan timeout)
         {
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(Close));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(Close));
             try
             {
                 InnerChannel.Close(timeout);
@@ -78,7 +78,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public void Abort()
         {
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(Abort));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(Abort));
             try
             {
                 InnerChannel.Abort();
@@ -103,7 +103,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginOpen(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginOpen));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginOpen));
             HookChannelEvents();
             var telemetry = StartOpenTelemetry(nameof(BeginOpen));
             try
@@ -122,7 +122,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndOpen));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndOpen));
             OpenAsyncResult.End<OpenAsyncResult>(result);
         }
 
@@ -143,7 +143,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public IAsyncResult BeginClose(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginClose));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginClose));
             return InnerChannel.BeginClose(timeout, callback, state);
         }
 
@@ -153,7 +153,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndClose));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndClose));
             try
             {
                 InnerChannel.EndClose(result);
@@ -216,7 +216,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 return telemetry;
             } catch ( Exception ex )
             {
-                WcfEventSource.Log.ClientInspectorError(method, ex.ToString());
+                WcfClientEventSource.Log.ClientTelemetryError(method, ex.ToString());
                 return null;
             }
         }
@@ -233,7 +233,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 ChannelManager.TelemetryClient.TrackDependency(telemetry);
             } catch ( Exception ex )
             {
-                WcfEventSource.Log.ClientInspectorError(method, ex.ToString());
+                WcfClientEventSource.Log.ClientTelemetryError(method, ex.ToString());
             }
         }
 
@@ -264,7 +264,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 return telemetry;
             } catch ( Exception ex )
             {
-                WcfEventSource.Log.ClientInspectorError(method, ex.ToString());
+                WcfClientEventSource.Log.ClientTelemetryError(method, ex.ToString());
                 return null;
             }
         }
@@ -290,7 +290,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 ChannelManager.TelemetryClient.TrackDependency(telemetry);
             } catch ( Exception ex )
             {
-                WcfEventSource.Log.ClientInspectorError(method, ex.ToString());
+                WcfClientEventSource.Log.ClientTelemetryError(method, ex.ToString());
             }
         }
         protected bool IsOneWay(DependencyTelemetry telemetry)

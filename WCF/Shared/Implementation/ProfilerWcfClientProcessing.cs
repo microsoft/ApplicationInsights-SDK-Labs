@@ -25,7 +25,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             if ( thisObj == null )
             {
-                WcfEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint1), "thisObj == null");
+                WcfClientEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint1), "thisObj == null");
                 return returnValue;
             }
             AddBehavior(((ChannelFactory)thisObj).Endpoint);
@@ -41,7 +41,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             if ( thisObj == null )
             {
-                WcfEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint2), "thisObj == null");
+                WcfClientEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint2), "thisObj == null");
                 return returnValue;
             }
             AddBehavior(((ChannelFactory)thisObj).Endpoint);
@@ -56,7 +56,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             if ( thisObj == null )
             {
-                WcfEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint3), "thisObj == null");
+                WcfClientEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint3), "thisObj == null");
                 return returnValue;
             }
             AddBehavior(((ChannelFactory)thisObj).Endpoint);

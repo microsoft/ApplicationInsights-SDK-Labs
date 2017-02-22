@@ -34,7 +34,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             this.TelemetryClient = client;
             this.OperationMap = map;
 
-            WcfEventSource.Log.ChannelFactoryCreated(typeof(TChannel).FullName);
+            WcfClientEventSource.Log.ChannelFactoryCreated(typeof(TChannel).FullName);
         }
 
         public override T GetProperty<T>()

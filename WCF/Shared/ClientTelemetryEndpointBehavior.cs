@@ -74,7 +74,7 @@ namespace Microsoft.ApplicationInsights.Wcf
         {
             var contract = endpoint.Contract.ContractType;
 
-            WcfEventSource.Log.ClientTelemetryApplied(contract.FullName);
+            WcfClientEventSource.Log.ClientTelemetryApplied(contract.FullName);
 
             var description = new ClientContract(endpoint.Contract);
             var element = new ClientTelemetryBindingElement(telemetryClient, description);

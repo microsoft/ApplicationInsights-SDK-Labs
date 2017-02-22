@@ -41,7 +41,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(Send));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(Send));
             var telemetry = StartSendTelemetry(message, nameof(Send));
             try
             {
@@ -65,7 +65,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginSend));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginSend));
             var telemetry = StartSendTelemetry(message, nameof(BeginSend));
             try
             {
@@ -83,7 +83,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndSend));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndSend));
             SendAsyncResult.End<SendAsyncResult>(result);
         }
 

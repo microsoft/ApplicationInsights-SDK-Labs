@@ -93,15 +93,15 @@ namespace Microsoft.ApplicationInsights.Wcf
 
             if ( Decorator.IsHostEnabled() )
             {
-                WcfEventSource.Log.ClientDependencyTrackingInfo("Profiler is attached");
-                WcfEventSource.Log.ClientDependencyTrackingInfo("Agent version: " + Decorator.GetAgentVersion());
+                WcfClientEventSource.Log.ClientDependencyTrackingInfo("Profiler is attached");
+                WcfClientEventSource.Log.ClientDependencyTrackingInfo("Agent version: " + Decorator.GetAgentVersion());
                 if ( !DisableRuntimeInstrumentation )
                 {
                     this.wcfClientProcessing = new ProfilerWcfClientProcessing(this);
                     DecorateProfilerForWcfClientProcessing();
                 } else
                 {
-                    WcfEventSource.Log.ClientDependencyTrackingInfo("Runtime Instrumentation is disabled.");
+                    WcfClientEventSource.Log.ClientDependencyTrackingInfo("Runtime Instrumentation is disabled.");
                 }
             }
         }
