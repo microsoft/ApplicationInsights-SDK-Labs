@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    internal abstract class ClientTelemetryChannelBase
+    internal abstract class ClientTelemetryChannelBase : IDisposable
     {
         protected IChannel InnerChannel { get; private set; }
         protected IChannelManager ChannelManager { get; private set; }
@@ -72,8 +72,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 InnerChannel.Close(timeout);
             } finally
             {
-                UnhookChannelEvents();
-                OnClose();
+                Dispose(true);
             }
         }
 
@@ -85,8 +84,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 InnerChannel.Abort();
             } finally
             {
-                UnhookChannelEvents();
-                OnClose();
+                Dispose(true);
             }
         }
 
@@ -161,8 +159,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 InnerChannel.EndClose(result);
             } finally
             {
-                UnhookChannelEvents();
-                OnClose();
+                Dispose(true);
             }
         }
 
@@ -306,10 +303,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             return false;
         }
 
-        protected virtual void OnClose()
+        void IDisposable.Dispose()
         {
+            this.Dispose(true);
         }
 
+        protected void Dispose(bool disposing)
+        {
+            UnhookChannelEvents();
+            OnClosed();
+        }
+        protected virtual void OnClosed()
+        {
+        }
 
         private void SetCorrelationHeaders(DependencyTelemetry telemetry, Message message)
         {
@@ -350,33 +356,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         private String ValueOrDefault(String value, String defaultValue)
         {
             return String.IsNullOrEmpty(value) ? defaultValue : value;
-        }
-
-        protected class NestedAsyncResult : IAsyncResult
-        {
-
-            public object AsyncState { get { return Inner.AsyncState; } }
-
-            public WaitHandle AsyncWaitHandle { get { return Inner.AsyncWaitHandle; } }
-
-            public bool CompletedSynchronously { get { return Inner.CompletedSynchronously; } }
-
-            public bool IsCompleted { get { return Inner.IsCompleted; } }
-
-            public IAsyncResult Inner { get; private set; }
-            public DependencyTelemetry Telemetry { get; private set; }
-            public object OtherState { get; private set; }
-
-            public NestedAsyncResult(IAsyncResult innerResult, DependencyTelemetry telemetry)
-                : this(innerResult, telemetry, null)
-            {
-            }
-            public NestedAsyncResult(IAsyncResult innerResult, DependencyTelemetry telemetry, object otherState)
-            {
-                this.Inner = innerResult;
-                this.Telemetry = telemetry;
-                this.OtherState = otherState;
-            }
         }
     }
 }

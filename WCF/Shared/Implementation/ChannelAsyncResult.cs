@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    internal abstract class ChannelAsyncResult : IAsyncResult
+    internal abstract class ChannelAsyncResult : IAsyncResult, IDisposable
     {
         private AsyncCallback callback;
         private EventWaitHandle waitHandle;
@@ -22,7 +22,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public DependencyTelemetry Telemetry { get; private set; }
         public Exception LastException { get; private set; }
         public IAsyncResult OriginalResult { get; protected set; }
-
 
         public ChannelAsyncResult(AsyncCallback completeCallback, AsyncCallback callback, object state, DependencyTelemetry channelState)
         {
@@ -68,13 +67,23 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             {
                 car.AsyncWaitHandle.WaitOne();
             }
-            car.waitHandle.Close();
+
+            ((IDisposable)car).Dispose();
 
             if ( car.LastException != null )
             {
                 throw car.LastException;
             }
             return (TAsyncResult)car;
+        }
+
+        void IDisposable.Dispose()
+        {
+            // done here only to avoid CA1001
+            if ( this.waitHandle != null )
+            {
+                this.waitHandle.Close();
+            }
         }
     }
 

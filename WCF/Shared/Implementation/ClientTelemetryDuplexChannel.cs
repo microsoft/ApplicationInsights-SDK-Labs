@@ -236,10 +236,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         }
 
 
-        protected override void OnClose()
+
+        protected override void OnClosed()
         {
             correlator.Dispose();
-            base.OnClose();
+            base.OnClosed();
         }
         private void HandleReply(Message reply)
         {

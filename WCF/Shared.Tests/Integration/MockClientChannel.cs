@@ -371,7 +371,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             return MessageToReceive != null;
         }
 
-        class SyncAsyncResult : IAsyncResult
+        class SyncAsyncResult : IAsyncResult, IDisposable
         {
             private EventWaitHandle waitHandle;
             private AsyncCallback callback;
@@ -398,6 +398,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             {
                 this.waitHandle.WaitOne();
                 this.waitHandle.Close();
+                this.timer.Dispose();
             }
             private void Complete()
             {
@@ -409,6 +410,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             private void OnDone(object state)
             {
                 this.Complete();
+            }
+
+            void IDisposable.Dispose()
+            {
+                this.End();
             }
         }
     }
