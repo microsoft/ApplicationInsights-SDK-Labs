@@ -40,7 +40,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             LastException = exception;
             try
             {
-                OnComplete();
+                OnAsyncCompleted();
             } catch ( Exception ex )
             {
                 LastException = ex;
@@ -55,7 +55,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
         }
 
-        protected void OnComplete()
+        protected void OnAsyncCompleted()
         {
             this.completeCallback?.Invoke(this);
         }
@@ -96,7 +96,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             this.InnerChannel = innerChannel;
 
-            OriginalResult = innerChannel.BeginOpen(timeout, OnOpenComplete, this);
+            OriginalResult = innerChannel.BeginOpen(timeout, OnComplete, this);
             if ( OriginalResult.CompletedSynchronously )
             {
                 innerChannel.EndOpen(OriginalResult);
@@ -104,7 +104,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
         }
 
-        private static void OnOpenComplete(IAsyncResult result)
+        private static void OnComplete(IAsyncResult result)
         {
             if ( result.CompletedSynchronously )
             {
@@ -133,7 +133,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             this.InnerChannel = innerChannel;
             this.RequestId = message.Headers.MessageId;
 
-            this.OriginalResult = innerChannel.BeginSend(message, timeout, OnSendComplete, this);
+            this.OriginalResult = innerChannel.BeginSend(message, timeout, OnComplete, this);
             if ( OriginalResult.CompletedSynchronously )
             {
                 innerChannel.EndSend(OriginalResult);
@@ -141,7 +141,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
         }
 
-        private static void OnSendComplete(IAsyncResult result)
+        private static void OnComplete(IAsyncResult result)
         {
             if ( result.CompletedSynchronously )
             {
@@ -169,7 +169,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             this.InnerChannel = innerChannel;
 
-            OriginalResult = innerChannel.BeginRequest(message, timeout, OnRequestComplete, this);
+            OriginalResult = innerChannel.BeginRequest(message, timeout, OnComplete, this);
             if ( OriginalResult.CompletedSynchronously )
             {
                 this.Reply = innerChannel.EndRequest(OriginalResult);
@@ -177,7 +177,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
         }
 
-        private static void OnRequestComplete(IAsyncResult result)
+        private static void OnComplete(IAsyncResult result)
         {
             if ( result.CompletedSynchronously )
             {
@@ -205,7 +205,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             this.InnerChannel = innerChannel;
 
-            OriginalResult = innerChannel.BeginReceive(timeout, OnRequestComplete, this);
+            OriginalResult = innerChannel.BeginReceive(timeout, OnComplete, this);
             if ( OriginalResult.CompletedSynchronously )
             {
                 this.Message = innerChannel.EndReceive(OriginalResult);
@@ -213,7 +213,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
         }
 
-        private static void OnRequestComplete(IAsyncResult result)
+        private static void OnComplete(IAsyncResult result)
         {
             if ( result.CompletedSynchronously )
             {
@@ -242,7 +242,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             this.InnerChannel = innerChannel;
 
-            OriginalResult = innerChannel.BeginTryReceive(timeout, OnRequestComplete, this);
+            OriginalResult = innerChannel.BeginTryReceive(timeout, OnComplete, this);
             if ( OriginalResult.CompletedSynchronously )
             {
                 Message message = null;
@@ -252,7 +252,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
         }
 
-        private static void OnRequestComplete(IAsyncResult result)
+        private static void OnComplete(IAsyncResult result)
         {
             if ( result.CompletedSynchronously )
             {
