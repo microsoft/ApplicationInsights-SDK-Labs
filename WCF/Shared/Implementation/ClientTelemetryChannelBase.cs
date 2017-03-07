@@ -212,7 +212,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 telemetry.Type = DependencyConstants.WcfChannelOpen;
                 telemetry.Target = RemoteAddress.Uri.Host;
                 telemetry.Name = RemoteAddress.Uri.ToString();
-                telemetry.Data = ChannelManager.OperationMap.ContractType.FullName;
+                telemetry.Data = ChannelManager.OperationMap.ContractType.Name;
                 return telemetry;
             } catch ( Exception ex )
             {

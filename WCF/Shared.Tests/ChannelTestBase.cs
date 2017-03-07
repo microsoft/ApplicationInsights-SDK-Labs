@@ -374,7 +374,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.AreEqual(SvcUrl, dependency.Name);
             Assert.AreEqual(HostName, dependency.Target);
             Assert.AreEqual(DependencyConstants.WcfChannelOpen, dependency.Type);
-            Assert.AreEqual(contract.FullName, dependency.Data);
+            Assert.AreEqual(contract.Name, dependency.Data);
             Assert.AreEqual(success, dependency.Success.Value);
         }
     }
