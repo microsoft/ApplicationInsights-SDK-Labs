@@ -10,17 +10,31 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
     {
         private AsyncCallback callback;
         private EventWaitHandle waitHandle;
-        private AsyncCallback completeCallback;
+        private AsyncCallback channelCompletionCallback;
+        const int Incomplete = 0;
+        const int CompletedSync = 1;
+        const int CompletedAsync = 2;
+        private int completed;
 
         public object AsyncState { get; private set; }
 
         public WaitHandle AsyncWaitHandle { get { return waitHandle; } }
 
-        public bool CompletedSynchronously { get; private set; }
+        public bool CompletedSynchronously
+        {
+            get { return Thread.VolatileRead(ref completed) == CompletedSync; }
+        }
 
-        public bool IsCompleted { get; private set; }
-        public DependencyTelemetry Telemetry { get; private set; }
+        public bool IsCompleted
+        {
+            get { return Thread.VolatileRead(ref completed) != Incomplete; }
+        }
+        // should only be read once we're complete and we don't care if
+        // it's not read in order
         public Exception LastException { get; private set; }
+
+        // these get set during construction, so no need for much check
+        public DependencyTelemetry Telemetry { get; private set; }
         public IAsyncResult OriginalResult { get; protected set; }
 
         public ChannelAsyncResult(AsyncCallback completeCallback, AsyncCallback callback, object state, DependencyTelemetry channelState)
@@ -28,23 +42,26 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             this.AsyncState = state;
             this.waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
             this.Telemetry = channelState;
-            this.completeCallback = completeCallback;
+            this.channelCompletionCallback = completeCallback;
             this.callback = callback;
         }
 
         protected void Complete(bool completedSync, Exception exception = null)
         {
-            this.CompletedSynchronously = completedSync;
-            this.IsCompleted = true;
+            this.LastException = exception;
 
-            LastException = exception;
+            Thread.VolatileWrite(ref this.completed, completedSync ? CompletedSync : CompletedAsync);
+
             try
             {
-                OnAsyncCompleted();
+                // tell channel the async operation is done
+                NotifyCompletionToChannel();
             } catch ( Exception ex )
             {
                 LastException = ex;
             }
+            // set the waitHandle so that when callback() calls EndWhatever()
+            // it doesn't hang
             this.waitHandle.Set();
             try
             {
@@ -55,9 +72,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
         }
 
-        protected void OnAsyncCompleted()
+        protected void NotifyCompletionToChannel()
         {
-            this.completeCallback?.Invoke(this);
+            this.channelCompletionCallback?.Invoke(this);
         }
 
         public static TAsyncResult End<TAsyncResult>(IAsyncResult result) where TAsyncResult : ChannelAsyncResult
