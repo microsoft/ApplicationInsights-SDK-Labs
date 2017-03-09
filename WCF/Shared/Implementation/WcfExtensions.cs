@@ -21,5 +21,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
             return null;
         }
+
+        public static HttpRequestMessageProperty GetHttpRequestHeaders(this Message message)
+        {
+            HttpRequestMessageProperty headers = null;
+            if ( message.Properties.ContainsKey(HttpRequestMessageProperty.Name) )
+            {
+                headers = (HttpRequestMessageProperty)message.Properties[HttpRequestMessageProperty.Name];
+            } else
+            {
+                headers = new HttpRequestMessageProperty();
+                message.Properties.Add(HttpRequestMessageProperty.Name, headers);
+            }
+            return headers;
+        }
     }
 }

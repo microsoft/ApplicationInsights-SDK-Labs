@@ -15,9 +15,11 @@
     <dependencies>
       <group targetFramework=".NETFramework4.0">
         <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.2.0" />
+        <dependency id="Microsoft.ApplicationInsights.Agent.Intercept" version="1.2.1" />
       </group>
       <group targetFramework=".NETFramework4.5">
         <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.2.0" />
+        <dependency id="Microsoft.ApplicationInsights.Agent.Intercept" version="1.2.1" />
       </group>
     </dependencies>
   </metadata>
