@@ -50,7 +50,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         [Event(6, Keywords = Keywords.WcfModule, Message = "WCF Telemetry Module {0} failed stage {1} with exception: {3}", Level = EventLevel.Error)]
         public void TelemetryModuleExecutionFailed(String typeName, String stageName, String exception, String appDomainName = "Invalid")
         {
-            this.WriteEvent(5, typeName, stageName, exception, ApplicationName);
+            this.WriteEvent(6, typeName, stageName, exception, ApplicationName);
         }
 
         [Event(7, Keywords = Keywords.WcfModule, Message = "No OperationContext found on thread", Level = EventLevel.Warning)]
