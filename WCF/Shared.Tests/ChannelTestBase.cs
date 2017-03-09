@@ -371,10 +371,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var dependency = TestTelemetryChannel.CollectedData().OfType<DependencyTelemetry>().FirstOrDefault();
             Assert.IsNotNull(dependency, "Did not write dependency event");
-            Assert.AreEqual(SvcUrl, dependency.Name);
+            Assert.AreEqual(SvcUrl, dependency.Data);
             Assert.AreEqual(HostName, dependency.Target);
             Assert.AreEqual(DependencyConstants.WcfChannelOpen, dependency.Type);
-            Assert.AreEqual(contract.Name, dependency.Data);
+            Assert.AreEqual(contract.Name, dependency.Name);
             Assert.AreEqual(success, dependency.Success.Value);
         }
     }

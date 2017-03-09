@@ -211,8 +211,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 telemetry.Start();
                 telemetry.Type = DependencyConstants.WcfChannelOpen;
                 telemetry.Target = RemoteAddress.Uri.Host;
-                telemetry.Name = RemoteAddress.Uri.ToString();
-                telemetry.Data = ChannelManager.OperationMap.ContractType.Name;
+                telemetry.Data = RemoteAddress.Uri.ToString();
+                telemetry.Name = ChannelManager.OperationMap.ContractType.Name;
                 return telemetry;
             } catch ( Exception ex )
             {
