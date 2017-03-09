@@ -254,7 +254,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 telemetry.Type = DependencyConstants.WcfClientCall;
                 telemetry.Target = RemoteAddress.Uri.Host;
                 telemetry.Data = RemoteAddress.Uri.ToString();
-                telemetry.Name = ChannelManager.OperationMap.ContractType.Name + "." + operation.Name;
+                telemetry.Name = operation.Name;
                 telemetry.Properties[DependencyConstants.SoapActionProperty] = soapAction;
                 if ( operation.IsOneWay )
                 {

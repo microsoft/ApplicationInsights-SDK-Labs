@@ -20,7 +20,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var found = cc.TryLookupByAction("http://tempuri.org/ISimpleService/GetSimpleData", out op);
             Assert.IsTrue(found);
             Assert.AreEqual(false, op.IsOneWay);
-            Assert.AreEqual("GetSimpleData", op.Name);
+            Assert.AreEqual("ISimpleService.GetSimpleData", op.Name);
         }
 
         [TestMethod]
@@ -34,7 +34,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             var found = cc.TryLookupByAction("http://tempuri.org/IOneWayService/SuccessfullOneWayCall", out op);
             Assert.IsTrue(found);
             Assert.AreEqual(true, op.IsOneWay);
-            Assert.AreEqual("SuccessfullOneWayCall", op.Name);
+            Assert.AreEqual("IOneWayService.SuccessfullOneWayCall", op.Name);
         }
     }
 }

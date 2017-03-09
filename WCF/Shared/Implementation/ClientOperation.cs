@@ -9,11 +9,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         public String Name { get; private set; }
         public bool IsOneWay { get; private set; }
 
-        public ClientOperation(OperationDescription description)
+        public ClientOperation(String contractName, OperationDescription description)
         {
             Action = description.Messages[0].Action;
             IsOneWay = description.IsOneWay;
-            Name = description.Name;
+            // Doing this here means we won't need to concatenate on each service call
+            Name = contractName + "." + description.Name;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             dictionary = new Dictionary<String, ClientOperation>();
             foreach ( var op in description.Operations )
             {
-                var opDesc = new ClientOperation(op);
+                var opDesc = new ClientOperation(ContractType.Name, op);
                 dictionary.Add(opDesc.Action, opDesc);
             }
         }

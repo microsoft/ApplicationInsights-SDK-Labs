@@ -76,14 +76,18 @@ namespace Microsoft.ApplicationInsights.Wcf
 
             WcfClientEventSource.Log.ClientTelemetryApplied(contract.FullName);
 
+            // in most cases, we'll create the description only once
+            // since channel factories are cached by default in ClientBase<T>.
+            // We could possibly cache this to avoid the hit in other scenarios.
             var description = new ClientContract(endpoint.Contract);
-            var element = new ClientTelemetryBindingElement(telemetryClient, description);
-            element.RootOperationIdHeaderName = RootOperationIdHeaderName;
-            element.ParentOperationIdHeaderName = ParentOperationIdHeaderName;
-            element.SoapRootOperationIdHeaderName = SoapRootOperationIdHeaderName;
-            element.SoapParentOperationIdHeaderName = SoapParentOperationIdHeaderName;
-            element.SoapHeaderNamespace = SoapHeaderNamespace;
-
+            var element = new ClientTelemetryBindingElement(telemetryClient, description)
+            {
+                RootOperationIdHeaderName = RootOperationIdHeaderName,
+                ParentOperationIdHeaderName = ParentOperationIdHeaderName,
+                SoapRootOperationIdHeaderName = SoapRootOperationIdHeaderName,
+                SoapParentOperationIdHeaderName = SoapParentOperationIdHeaderName,
+                SoapHeaderNamespace = SoapHeaderNamespace
+            };
             var collection = endpoint.Binding.CreateBindingElements();
             collection.Insert(0, element);
             endpoint.Binding = new CustomBinding(collection);
