@@ -28,7 +28,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 WcfClientEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint1), "thisObj == null");
                 return returnValue;
             }
-            AddBehavior(((ChannelFactory)thisObj).Endpoint);
+            AddBehaviorIfNotPresent(((ChannelFactory)thisObj).Endpoint);
             return returnValue;
         }
 
@@ -44,7 +44,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 WcfClientEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint2), "thisObj == null");
                 return returnValue;
             }
-            AddBehavior(((ChannelFactory)thisObj).Endpoint);
+            AddBehaviorIfNotPresent(((ChannelFactory)thisObj).Endpoint);
             return returnValue;
         }
 
@@ -59,11 +59,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 WcfClientEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint3), "thisObj == null");
                 return returnValue;
             }
-            AddBehavior(((ChannelFactory)thisObj).Endpoint);
+            AddBehaviorIfNotPresent(((ChannelFactory)thisObj).Endpoint);
             return returnValue;
         }
 
-        private void AddBehavior(ServiceEndpoint endpoint)
+        private void AddBehaviorIfNotPresent(ServiceEndpoint endpoint)
         {
             if ( endpoint.Behaviors.OfType<ClientTelemetryEndpointBehavior>().Any() )
             {
@@ -71,13 +71,14 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
                 // or the configuration
                 return;
             }
-            var behavior = new ClientTelemetryEndpointBehavior(this.trackingModule.TelemetryClient);
-            behavior.RootOperationIdHeaderName = this.trackingModule.RootOperationIdHeaderName;
-            behavior.ParentOperationIdHeaderName = this.trackingModule.ParentOperationIdHeaderName;
-            behavior.SoapRootOperationIdHeaderName = this.trackingModule.SoapRootOperationIdHeaderName;
-            behavior.SoapParentOperationIdHeaderName = this.trackingModule.SoapParentOperationIdHeaderName;
-            behavior.SoapHeaderNamespace = this.trackingModule.SoapHeaderNamespace;
-
+            var behavior = new ClientTelemetryEndpointBehavior(this.trackingModule.TelemetryClient)
+            {
+                RootOperationIdHeaderName = this.trackingModule.RootOperationIdHeaderName,
+                ParentOperationIdHeaderName = this.trackingModule.ParentOperationIdHeaderName,
+                SoapRootOperationIdHeaderName = this.trackingModule.SoapRootOperationIdHeaderName,
+                SoapParentOperationIdHeaderName = this.trackingModule.SoapParentOperationIdHeaderName,
+                SoapHeaderNamespace = this.trackingModule.SoapHeaderNamespace
+            };
             endpoint.Behaviors.Add(behavior);
         }
     }
