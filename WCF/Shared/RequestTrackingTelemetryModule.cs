@@ -92,7 +92,10 @@ namespace Microsoft.ApplicationInsights.Wcf
                 telemetry.Success = !isFault;
             }
             telemetry.ResponseCode = responseCode.ToString("d");
-            telemetry.Properties.Add("Protocol", telemetry.Url.Scheme);
+            if ( telemetry.Url != null )
+            {
+                telemetry.Properties.Add("Protocol", telemetry.Url.Scheme);
+            }
             // if the Microsoft.ApplicationInsights.Web package started
             // tracking this request before WCF handled it, we
             // don't want to track it because it would duplicate the event.

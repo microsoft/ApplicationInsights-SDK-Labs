@@ -71,6 +71,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             var context = WcfOperationContext.Current;
             if ( context != null )
             {
+                // Do not run OnEndRequest for stuff we're not interested in!
+                if ( !LogTelemetryFor(context) )
+                {
+                    return;
+                }
                 foreach ( var mod in GetModules() )
                 {
                     var tracer = mod as IWcfMessageTrace;
