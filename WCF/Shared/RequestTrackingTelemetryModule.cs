@@ -36,7 +36,11 @@ namespace Microsoft.ApplicationInsights.Wcf
                 return;
 
             RequestTelemetry telemetry = operation.Request;
-            telemetry.Start();
+            // if ASP.NET has already started the request, leave the start time alone.
+            if ( operation.OwnsRequest )
+            {
+                telemetry.Start();
+            }
 
             telemetry.Url = operation.EndpointUri;
             telemetry.Name = operation.OperationName;
@@ -51,6 +55,9 @@ namespace Microsoft.ApplicationInsights.Wcf
                     telemetry.Url = operation.ToHeader;
                 }
             }
+
+            // run telemetry initializers here, while the request message is still open
+            this.telemetryClient.Initialize(telemetry);
         }
 
         void IWcfTelemetryModule.OnEndRequest(IOperationContext operation, Message reply)
@@ -60,14 +67,18 @@ namespace Microsoft.ApplicationInsights.Wcf
             if ( telemetryClient == null )
                 return;
 
+            if ( reply != null && reply.IsClosed() )
+            {
+                WcfEventSource.Log.ResponseMessageClosed(nameof(RequestTrackingTelemetryModule), "OnEndRequest");
+            }
+
             RequestTelemetry telemetry = operation.Request;
-            telemetry.Stop();
 
             // make some assumptions
             bool isFault = false;
             HttpStatusCode responseCode = HttpStatusCode.OK;
 
-            if ( reply != null )
+            if ( reply != null && !reply.IsClosed() )
             {
                 isFault = reply.IsFault;
             }
@@ -102,6 +113,7 @@ namespace Microsoft.ApplicationInsights.Wcf
             // Let the HttpModule instead write it later on.
             if ( operation.OwnsRequest )
             {
+                telemetry.Stop();
                 telemetryClient.TrackRequest(telemetry);
             }
         }

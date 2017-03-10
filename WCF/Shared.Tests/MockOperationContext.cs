@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
-    public class MockOperationContext : IOperationContext
+    public class MockOperationContext : IOperationContext, IOperationContextState
     {
         public IDictionary<String, object> IncomingProperties { get; private set; }
         public IDictionary<String, object> OutgoingProperties { get; private set; }
         public IDictionary<String, object> IncomingHeaders { get; private set; }
+        private Dictionary<String, object> stateDictionary;
         public String OperationId { get { return Request.Id; } }
         public RequestTelemetry Request { get; private set; }
         public bool OwnsRequest { get; private set; }
@@ -34,6 +35,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             this.Request = new RequestTelemetry();
             this.Request.GenerateOperationId();
             this.OwnsRequest = true;
+            this.stateDictionary = new Dictionary<string, object>();
         }
 
         public bool HasIncomingMessageProperty(string propertyName)
@@ -72,6 +74,23 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public void SetHttpHeaders(HttpRequestMessageProperty httpHeaders)
         {
             IncomingProperties[HttpRequestMessageProperty.Name] = httpHeaders;
+        }
+
+        public void SetState(string key, object value)
+        {
+            stateDictionary.Add(key, value);
+        }
+
+        public bool TryGetState<T>(string key, out T value)
+        {
+            value = default(T);
+            object obj = null;
+            if ( stateDictionary.TryGetValue(key, out obj) )
+            {
+                value = (T)obj;
+                return true;
+            }
+            return false;
         }
     }
 }

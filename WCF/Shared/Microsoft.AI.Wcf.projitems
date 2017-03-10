@@ -38,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfEventSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfInterceptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IOperationContextState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IWcfMessageTrace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationContextExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationCorrelationTelemetryInitializer.cs" />

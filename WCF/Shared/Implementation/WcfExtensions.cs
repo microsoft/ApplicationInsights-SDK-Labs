@@ -35,5 +35,14 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             }
             return headers;
         }
+
+        public static bool IsClosed(this Message message)
+        {
+            if ( message == null )
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+            return message.State == MessageState.Closed;
+        }
     }
 }
