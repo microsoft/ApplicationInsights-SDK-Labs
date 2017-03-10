@@ -73,7 +73,7 @@ namespace Microsoft.ApplicationInsights.Wcf
             bool isFault = false;
             HttpStatusCode responseCode = HttpStatusCode.OK;
 
-            if ( reply != null )
+            if ( reply != null && !reply.IsClosed() )
             {
                 isFault = reply.IsFault;
             }
