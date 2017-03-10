@@ -30,6 +30,9 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// </summary>
         public string SoapHeaderNamespace { get; set; }
 
+        private const String RequestHeadersChecked = "OCTI_RequestHeadersChecked";
+        private static readonly object Checked = new object();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationCorrelationTelemetryInitializer"/> class.
         /// </summary>
@@ -93,11 +96,25 @@ namespace Microsoft.ApplicationInsights.Wcf
                 {
                     telemetry.Context.Operation.Id = parentContext.Id;
                 }
+            } else
+            {
+                // we've initialized the correlation headers for
+                // this request object. We want to initialize
+                // all other telemetry events from this request
+                // without checking the WCF message headers
+                // ever again, as this can trigger ObjectDisposedException
+                // errors when TelemetryClient.Initialize() is called
+                // at the end of the request
+                ((IOperationContextState)operation).SetState(RequestHeadersChecked, Checked);
             }
         }
 
         private String GetHeader(IOperationContext context, String httpHeader, String soapHeader)
         {
+            if ( RequestAlreadyChecked(context) )
+            {
+                return null;
+            }
             var httpHeaders = context.GetHttpRequestHeaders();
             if ( httpHeaders != null )
             {
@@ -106,6 +123,16 @@ namespace Microsoft.ApplicationInsights.Wcf
             {
                 return context.GetIncomingMessageHeader<String>(soapHeader, SoapHeaderNamespace);
             }
+        }
+
+        private bool RequestAlreadyChecked(IOperationContext context)
+        {
+            object checkedValue = null;
+            if ( ((IOperationContextState)context).TryGetState(RequestHeadersChecked, out checkedValue) )
+            {
+                return checkedValue == Checked;
+            }
+            return false;
         }
     }
 }

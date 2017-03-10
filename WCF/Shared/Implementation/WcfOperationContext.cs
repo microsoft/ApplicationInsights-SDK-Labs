@@ -1,5 +1,6 @@
 ﻿using Microsoft.ApplicationInsights.DataContracts;
 using System;
+using System.Collections.Concurrent;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Messaging;
 using System.ServiceModel;
@@ -7,9 +8,11 @@ using System.ServiceModel.Dispatcher;
 
 namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    internal class WcfOperationContext : IOperationContext, IExtension<OperationContext>
+    internal class WcfOperationContext : IOperationContext, IExtension<OperationContext>, IOperationContextState
     {
         private OperationContext context;
+        private ConcurrentDictionary<String, Object> stateDicctionary;
+
         const String CallContextProperty = "AIWcfOperationContext";
 
         public String OperationId
@@ -49,6 +52,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         private WcfOperationContext(OperationContext operationContext, RequestTelemetry httpCtxTelemetry)
         {
             context = operationContext;
+            stateDicctionary = new ConcurrentDictionary<string, object>();
             OperationName = DiscoverOperationName(operationContext);
             if ( httpCtxTelemetry != null )
             {
@@ -232,6 +236,24 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         void IExtension<OperationContext>.Detach(OperationContext owner)
         {
+        }
+
+        void IOperationContextState.SetState(string key, object value)
+        {
+            stateDicctionary[key] = value;
+        }
+
+        bool IOperationContextState.TryGetState<T>(string key, out T value)
+        {
+            value = default(T);
+            object storedValue = null;
+            
+            if ( stateDicctionary.TryGetValue(key, out storedValue) )
+            {
+                value = (T)storedValue;
+                return true;
+            }
+            return false;
         }
 
         private String DiscoverOperationName(OperationContext operationContext)

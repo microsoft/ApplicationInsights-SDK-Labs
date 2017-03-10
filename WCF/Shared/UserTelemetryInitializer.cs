@@ -9,6 +9,8 @@ namespace Microsoft.ApplicationInsights.Wcf
     /// </summary>
     public sealed class UserTelemetryInitializer : WcfTelemetryInitializer
     {
+        private const String IdentityName = "UTI_IdentityName";
+
         /// <summary>
         /// Called when a telemetry item is available
         /// </summary>
@@ -29,16 +31,24 @@ namespace Microsoft.ApplicationInsights.Wcf
 
         private void UpdateUserContext(IOperationContext operation, UserContext userContext)
         {
-            var ctxt = operation.SecurityContext;
-            if ( ctxt == null || ctxt.IsAnonymous )
+            var contextState = (IOperationContextState)operation;
+            String knownIdentity = null;
+            if ( contextState.TryGetState(IdentityName, out knownIdentity) )
             {
+                userContext.Id = knownIdentity;
                 return;
             }
 
-            if ( ctxt.PrimaryIdentity != null )
+            var ctxt = operation.SecurityContext;
+            if ( ctxt != null && !ctxt.IsAnonymous && ctxt.PrimaryIdentity != null )
             {
                 userContext.Id = ctxt.PrimaryIdentity.Name;
             }
+
+            // we store this here (even if it's null), to avoid
+            // having to check the request security context later on
+            // when it might no longer be available.
+            contextState.SetState(IdentityName, userContext.Id ?? "");
         }
     }
 }
