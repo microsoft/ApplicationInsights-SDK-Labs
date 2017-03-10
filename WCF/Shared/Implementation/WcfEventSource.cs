@@ -91,18 +91,18 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             this.WriteEvent(30, operationId ?? "NULL", ownsRequest, this.ApplicationName);
         }
 
-        public const String RequestMessageClosed_Message = "Request message closed while reading property {0}";
+        public const String RequestMessageClosed_Message = "Request message closed while attempting action '{0}' ({1})";
         [Event(35, Keywords = Keywords.OperationContext, Message = RequestMessageClosed_Message, Level = EventLevel.Warning)]
-        public void RequestMessageClosed(String property, String appDomainName = "Invalid")
+        public void RequestMessageClosed(String action, String argument, String appDomainName = "Invalid")
         {
-            this.WriteEvent(35, property, this.ApplicationName);
+            this.WriteEvent(35, action, argument, this.ApplicationName);
         }
 
-        public const String ResponseMessageClosed_Message = "Response message closed while reading property {0}";
+        public const String ResponseMessageClosed_Message = "Response message closed while attempting action '{0}' ({1})";
         [Event(36, Keywords = Keywords.OperationContext, Message = ResponseMessageClosed_Message, Level = EventLevel.Warning)]
-        public void ResponseMessageClosed(String property, String appDomainName = "Invalid")
+        public void ResponseMessageClosed(String action, String argument, String appDomainName = "Invalid")
         {
-            this.WriteEvent(36, property, this.ApplicationName);
+            this.WriteEvent(36, action, argument, this.ApplicationName);
         }
 
         [NonEvent]

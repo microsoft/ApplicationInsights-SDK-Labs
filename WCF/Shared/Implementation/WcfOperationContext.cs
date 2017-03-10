@@ -79,7 +79,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             } catch ( ObjectDisposedException )
             {
                 // WCF message has been closed already
-                WcfEventSource.Log.RequestMessageClosed(propertyName);
+                WcfEventSource.Log.RequestMessageClosed("reading property", propertyName);
                 return false;
             }
         }
@@ -96,7 +96,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             } catch ( ObjectDisposedException )
             {
                 // WCF message has been closed already
-                WcfEventSource.Log.RequestMessageClosed(propertyName);
+                WcfEventSource.Log.RequestMessageClosed("reading property", propertyName);
                 return null;
             }
         }
@@ -113,7 +113,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             } catch ( ObjectDisposedException )
             {
                 // WCF message has been closed already
-                WcfEventSource.Log.ResponseMessageClosed(propertyName);
+                WcfEventSource.Log.ResponseMessageClosed("reading property", propertyName);
                 return false;
             }
         }
@@ -130,7 +130,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             } catch ( ObjectDisposedException )
             {
                 // WCF message has been closed already
-                WcfEventSource.Log.ResponseMessageClosed(propertyName);
+                WcfEventSource.Log.ResponseMessageClosed("reading property", propertyName);
                 return null;
             }
         }
@@ -155,7 +155,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             } catch ( ObjectDisposedException )
             {
                 // WCF message has been closed already
-                WcfEventSource.Log.RequestMessageClosed(ns + "#" + name);
+                WcfEventSource.Log.RequestMessageClosed("reading header", ns + "#" + name);
             }
             return default(T);
         }
@@ -202,7 +202,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             } catch ( ObjectDisposedException )
             {
                 // WCF message has been closed already
-                WcfEventSource.Log.RequestMessageClosed("ServiceSecurityContext");
+                WcfEventSource.Log.RequestMessageClosed("reading", "ServiceSecurityContext");
                 return null;
             }
         }

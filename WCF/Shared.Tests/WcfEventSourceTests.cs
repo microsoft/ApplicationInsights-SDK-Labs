@@ -125,9 +125,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             using ( var listener = new WcfEventListener() )
             {
-                var property = "MyProperty";
-                WcfEventSource.Log.RequestMessageClosed(property);
-                Assert.AreEqual(String.Format(WcfEventSource.RequestMessageClosed_Message, property), listener.FirstEventMessage);
+                var action = "reading property";
+                var argument = "Myproperty";
+                WcfEventSource.Log.RequestMessageClosed(action, argument);
+                Assert.AreEqual(String.Format(WcfEventSource.RequestMessageClosed_Message, action, argument), listener.FirstEventMessage);
             }
         }
 
@@ -136,9 +137,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             using ( var listener = new WcfEventListener() )
             {
-                var property = "MyProperty";
-                WcfEventSource.Log.ResponseMessageClosed(property);
-                Assert.AreEqual(String.Format(WcfEventSource.ResponseMessageClosed_Message, property), listener.FirstEventMessage);
+                var action = "reading property";
+                var argument = "Myproperty";
+                WcfEventSource.Log.ResponseMessageClosed(action, argument);
+                Assert.AreEqual(String.Format(WcfEventSource.ResponseMessageClosed_Message, action, argument), listener.FirstEventMessage);
             }
         }
 

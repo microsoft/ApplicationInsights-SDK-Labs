@@ -67,6 +67,11 @@ namespace Microsoft.ApplicationInsights.Wcf
             if ( telemetryClient == null )
                 return;
 
+            if ( reply != null && reply.IsClosed() )
+            {
+                WcfEventSource.Log.ResponseMessageClosed(nameof(RequestTrackingTelemetryModule), "OnEndRequest");
+            }
+
             RequestTelemetry telemetry = operation.Request;
 
             // make some assumptions
