@@ -51,5 +51,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Service\IAsyncService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\ISimpleService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\SimpleService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WcfEventSourceTests.cs" />
   </ItemGroup>
 </Project>
