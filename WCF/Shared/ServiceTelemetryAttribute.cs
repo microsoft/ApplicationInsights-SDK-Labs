@@ -40,9 +40,18 @@ namespace Microsoft.ApplicationInsights.Wcf
                 }
 
                 var contractFilter = BuildFilter(serviceDescription);
-                var interceptor = new WcfInterceptor(configuration, contractFilter);
+                WcfInterceptor interceptor = null; 
                 foreach ( ChannelDispatcher channelDisp in serviceHost.ChannelDispatchers )
                 {
+                    if ( channelDisp.ErrorHandlers.OfType<WcfInterceptor>().Any() )
+                    {
+                        // already added, ignore
+                        continue;
+                    }
+                    if ( interceptor == null )
+                    {
+                        interceptor = new WcfInterceptor(configuration, contractFilter);
+                    }
                     channelDisp.ErrorHandlers.Insert(0, interceptor);
                     foreach ( var ep in channelDisp.Endpoints )
                     {
