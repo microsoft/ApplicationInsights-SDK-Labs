@@ -105,7 +105,7 @@ namespace Microsoft.ApplicationInsights.Wcf
             telemetry.ResponseCode = responseCode.ToString("d");
             if ( telemetry.Url != null )
             {
-                telemetry.Properties.Add("Protocol", telemetry.Url.Scheme);
+                telemetry.Properties["Protocol"] = telemetry.Url.Scheme;
             }
             // if the Microsoft.ApplicationInsights.Web package started
             // tracking this request before WCF handled it, we

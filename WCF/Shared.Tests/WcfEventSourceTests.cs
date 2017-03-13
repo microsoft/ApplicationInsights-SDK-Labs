@@ -9,12 +9,18 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
     [TestClass]
     public class WcfEventSourceTests
     {
+        private void CheckMessage(WcfEventListener listener, String format, params object[] args)
+        {
+            Assert.AreEqual(String.Format(CultureInfo.CurrentCulture, format, args), listener.FirstEventMessage);
+
+        }
         [TestMethod]
         public void InitializationFailure_Message()
         {
@@ -22,7 +28,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             {
                 var msg = "Exception message";
                 WcfEventSource.Log.InitializationFailure(msg);
-                Assert.AreEqual(String.Format(WcfEventSource.InitializationFailure_Message, msg), listener.FirstEventMessage);
+                CheckMessage(listener, WcfEventSource.InitializationFailure_Message, msg);
             }
         }
 
@@ -34,7 +40,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                 var typeName = "MyType";
                 var stageName = "MyStage";
                 WcfEventSource.Log.TelemetryModuleExecutionStarted(typeName, stageName);
-                Assert.AreEqual(String.Format(WcfEventSource.TelemetryModuleExecutionStarted_Message, typeName, stageName), listener.FirstEventMessage);
+                CheckMessage(listener, WcfEventSource.TelemetryModuleExecutionStarted_Message, typeName, stageName);
             }
         }
 
@@ -46,7 +52,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                 var typeName = "MyType";
                 var stageName = "MyStage";
                 WcfEventSource.Log.TelemetryModuleExecutionStopped(typeName, stageName);
-                Assert.AreEqual(String.Format(WcfEventSource.TelemetryModuleExecutionStopped_Message, typeName, stageName), listener.FirstEventMessage);
+                CheckMessage(listener, WcfEventSource.TelemetryModuleExecutionStopped_Message, typeName, stageName);
             }
         }
 
@@ -59,7 +65,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                 var stageName = "MyStage";
                 var exception = "MyException";
                 WcfEventSource.Log.TelemetryModuleExecutionFailed(typeName, stageName, exception);
-                Assert.AreEqual(String.Format(WcfEventSource.TelemetryModuleExecutionFailed_Message, typeName, stageName, exception), listener.FirstEventMessage);
+                CheckMessage(listener, WcfEventSource.TelemetryModuleExecutionFailed_Message, typeName, stageName, exception);
             }
         }
 
@@ -69,7 +75,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             using ( var listener = new WcfEventListener() )
             {
                 WcfEventSource.Log.NoOperationContextFound();
-                Assert.AreEqual(WcfEventSource.NoOperationContextFound_Message, listener.FirstEventMessage);
+                CheckMessage(listener, WcfEventSource.NoOperationContextFound_Message);
             }
         }
 
@@ -82,7 +88,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                 var contractNamespace = "MyNS";
                 var operationName = "MyOperation";
                 WcfEventSource.Log.OperationIgnored(contractName, contractNamespace, operationName);
-                Assert.AreEqual(String.Format(WcfEventSource.OperationIgnored_Message, contractName, contractNamespace, operationName), listener.FirstEventMessage);
+                CheckMessage(listener, WcfEventSource.OperationIgnored_Message, contractName, contractNamespace, operationName);
             }
         }
 
@@ -93,7 +99,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             {
                 var typeName = "MyType";
                 WcfEventSource.Log.WcfTelemetryInitializerLoaded(typeName);
-                Assert.AreEqual(String.Format(WcfEventSource.WcfTelemetryInitializerLoaded_Message, typeName), listener.FirstEventMessage);
+                CheckMessage(listener, WcfEventSource.WcfTelemetryInitializerLoaded_Message, typeName);
             }
         }
 
@@ -104,7 +110,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             {
                 var ip = "10.0.0.1";
                 WcfEventSource.Log.LocationIdSet(ip);
-                Assert.AreEqual(String.Format(WcfEventSource.LocationIdSet_Message, ip), listener.FirstEventMessage);
+                CheckMessage(listener, WcfEventSource.LocationIdSet_Message, ip);
             }
         }
 
@@ -116,7 +122,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                 var operationId = "abcdef";
                 var ownsContext = true;
                 WcfEventSource.Log.OperationContextCreated(operationId, ownsContext);
-                Assert.AreEqual(String.Format(WcfEventSource.OperationContextCreated_Message, operationId, ownsContext), listener.FirstEventMessage);
+                CheckMessage(listener, WcfEventSource.OperationContextCreated_Message, operationId, ownsContext);
             }
         }
 
@@ -128,7 +134,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                 var action = "reading property";
                 var argument = "Myproperty";
                 WcfEventSource.Log.RequestMessageClosed(action, argument);
-                Assert.AreEqual(String.Format(WcfEventSource.RequestMessageClosed_Message, action, argument), listener.FirstEventMessage);
+                CheckMessage(listener, WcfEventSource.RequestMessageClosed_Message, action, argument);
             }
         }
 
@@ -140,7 +146,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                 var action = "reading property";
                 var argument = "Myproperty";
                 WcfEventSource.Log.ResponseMessageClosed(action, argument);
-                Assert.AreEqual(String.Format(WcfEventSource.ResponseMessageClosed_Message, action, argument), listener.FirstEventMessage);
+                CheckMessage(listener, WcfEventSource.ResponseMessageClosed_Message, action, argument);
             }
         }
 
@@ -161,7 +167,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             {
                 lock ( lockObj )
                 {
-                    var str = String.Format(eventData.Message, eventData.Payload.ToArray());
+                    var str = String.Format(CultureInfo.CurrentCulture, eventData.Message, eventData.Payload.ToArray());
                     AllMessages.Add(str);
                     if ( String.IsNullOrEmpty(FirstEventMessage) )
                     {
