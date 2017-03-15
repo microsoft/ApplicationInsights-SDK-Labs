@@ -1,17 +1,17 @@
-﻿using Microsoft.ApplicationInsights.Wcf.Implementation;
-using Microsoft.ApplicationInsights.Wcf.Tests.Service;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.ServiceModel;
+    using System.ServiceModel.Channels;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Service;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class ClientTelemetryBindingElementTests
     {
-        const String TwoWayOp1 = "http://tempuri.org/ISimpleService/GetSimpleData";
-        const String TwoWayOp2 = "http://tempuri.org/ISimpleService/CallFailsWithFault";
+        private const string TwoWayOp1 = "http://tempuri.org/ISimpleService/GetSimpleData";
+        private const string TwoWayOp2 = "http://tempuri.org/ISimpleService/CallFailsWithFault";
 
         [TestMethod]
         [TestCategory("Client")]
@@ -23,10 +23,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             try
             {
                 var element = new ClientTelemetryBindingElement(client, map);
-            } catch ( ArgumentNullException )
+            }
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "Constructor did not throw ArgumentNullException");
         }
 
@@ -41,10 +43,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             try
             {
                 var element = new ClientTelemetryBindingElement(client, map);
-            } catch ( ArgumentNullException )
+            }
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "Constructor did not throw ArgumentNullException");
         }
 
@@ -59,10 +63,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             {
                 var element = new ClientTelemetryBindingElement(client, map);
                 element.CanBuildChannelFactory<IRequestChannel>(null);
-            } catch ( ArgumentNullException )
+            }
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "CanBuildChannelFactory did not throw ArgumentNullException");
         }
 
@@ -77,10 +83,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             {
                 var element = new ClientTelemetryBindingElement(client, map);
                 element.BuildChannelFactory<IRequestChannel>(null);
-            } catch ( ArgumentNullException )
+            }
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "BuildChannelFactory did not throw ArgumentNullException");
         }
 
@@ -132,7 +140,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.IsFalse(element.CanBuildChannelFactory<IInputChannel>(context));
         }
 
-
         public void TestChannelShape<TChannel>(Binding binding, bool tryCreate = true)
         {
             TelemetryClient client = new TelemetryClient();
@@ -143,7 +150,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             BindingContext context = new BindingContext(custom, new BindingParameterCollection());
             Assert.IsTrue(element.CanBuildChannelFactory<TChannel>(context));
 
-            if ( tryCreate )
+            if (tryCreate)
             {
                 var factory = element.BuildChannelFactory<TChannel>(context);
                 Assert.IsNotNull(factory, "BuildChannelFactory() returned null");

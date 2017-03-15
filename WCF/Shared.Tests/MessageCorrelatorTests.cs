@@ -1,12 +1,12 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Threading;
-using System.Xml;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.Threading;
+    using System.Xml;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class MessageCorrelatorTests
     {
@@ -19,10 +19,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             try
             {
                 correlator.Add(null, telemetry, TimeSpan.FromMilliseconds(100));
-            } catch ( ArgumentNullException )
+            }
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "ArgumentNullException was not thrown");
         }
 
@@ -34,13 +36,14 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             try
             {
                 correlator.Add(new UniqueId(), null, TimeSpan.FromMilliseconds(100));
-            } catch ( ArgumentNullException )
+            }
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "ArgumentNullException was not thrown");
         }
-
 
         [TestMethod]
         public void WhenMessageIsAdded_TryLookupReturnsTrue()
@@ -84,8 +87,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                     timeoutId = messageId;
                     timeoutTelemetry = dependencyObj;
                     timeoutEvent.Set();
-                }
-            );
+                });
             var telemetry = new DependencyTelemetry();
 
             var id = new UniqueId();
@@ -104,8 +106,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                 (messageId, dependencyObj) =>
                 {
                     timeoutEvent.Set();
-                }
-            );
+                });
             var telemetry = new DependencyTelemetry();
 
             // add and remove right away
@@ -129,10 +130,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             try
             {
                 correlator.Add(id, new DependencyTelemetry(), TimeSpan.FromMilliseconds(100));
-            } catch ( ObjectDisposedException )
+            }
+            catch (ObjectDisposedException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "Add did not throw ObjectDisposedException");
         }
     }

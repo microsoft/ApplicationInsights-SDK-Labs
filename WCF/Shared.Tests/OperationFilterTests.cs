@@ -1,12 +1,11 @@
-﻿using Microsoft.ApplicationInsights.Wcf.Tests.Service;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Reflection;
-using System.ServiceModel.Description;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.ServiceModel.Description;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Service;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class OperationFilterTests
     {
@@ -14,16 +13,16 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public void WhenNoOpsAreInstrumentedShouldProcessReturnsTrue()
         {
             ContractDescription contract = ContractBuilder.CreateDescription(
-                typeof(ISimpleService), typeof(SimpleService)
-                );
+                typeof(ISimpleService),
+                typeof(SimpleService));
 
             var filter = new OperationFilter(contract);
-            foreach ( var operation in contract.Operations )
+            foreach (var operation in contract.Operations)
             {
                 Assert.IsTrue(
                     filter.ShouldProcess(operation.Name),
-                    "Operation {0} not processed", operation.Name
-                );
+                    "Operation {0} not processed",
+                    operation.Name);
             }
         }
 
@@ -31,29 +30,26 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         public void WhenAnOpIsInstrumentedShouldProcessReturnsTrue()
         {
             ContractDescription contract = ContractBuilder.CreateDescription(
-                typeof(ISelectiveTelemetryService), typeof(SelectiveTelemetryService)
-                );
+                typeof(ISelectiveTelemetryService),
+                typeof(SelectiveTelemetryService));
 
             var filter = new OperationFilter(contract);
             Assert.IsTrue(
                 filter.ShouldProcess("OperationWithTelemetry"),
-                "ShouldProcessRequest('OperationWithTelemetry') returned false"
-            );
+                "ShouldProcessRequest('OperationWithTelemetry') returned false");
         }
 
         [TestMethod]
         public void WhenAnOpIsNotBeenInstrumentedShouldProcessReturnsFalse()
         {
             ContractDescription contract = ContractBuilder.CreateDescription(
-                typeof(ISelectiveTelemetryService), typeof(SelectiveTelemetryService)
-                );
+                typeof(ISelectiveTelemetryService),
+                typeof(SelectiveTelemetryService));
 
             var filter = new OperationFilter(contract);
             Assert.IsFalse(
                 filter.ShouldProcess("OperationWithoutTelemetry"),
-                "ShouldProcessRequest('OperationWithoutTelemetry') returned true"
-            );
+                "ShouldProcessRequest('OperationWithoutTelemetry') returned true");
         }
-
     }
 }

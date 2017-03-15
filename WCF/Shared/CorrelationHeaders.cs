@@ -1,31 +1,35 @@
-﻿using System;
-
-namespace Microsoft.ApplicationInsights.Wcf
+﻿namespace Microsoft.ApplicationInsights.Wcf
 {
+    using System;
+
     /// <summary>
-    /// Default correlation header names
+    /// Default correlation header names.
     /// </summary>
     public static class CorrelationHeaders
     {
         /// <summary>
-        /// Default HTTP header name for ParentId
+        /// Default HTTP header name for ParentId.
         /// </summary>
-        public const String HttpStandardParentIdHeader = "x-ms-request-id";
+        public const string HttpStandardParentIdHeader = "x-ms-request-id";
+
         /// <summary>
-        /// Default HTTP header name for RootId
+        /// Default HTTP header name for RootId.
         /// </summary>
-        public const String HttpStandardRootIdHeader = "x-ms-request-root-id";
+        public const string HttpStandardRootIdHeader = "x-ms-request-root-id";
+
         /// <summary>
-        /// Default SOAP header name for ParentId
+        /// Default SOAP header name for ParentId.
         /// </summary>
-        public const String SoapStandardParentIdHeader = "requestId";
+        public const string SoapStandardParentIdHeader = "requestId";
+
         /// <summary>
-        /// Default SOAP header name for RootId
+        /// Default SOAP header name for RootId.
         /// </summary>
-        public const String SoapStandardRootIdHeader = "requestRootId";
+        public const string SoapStandardRootIdHeader = "requestRootId";
+
         /// <summary>
-        /// Default XML namespace for SOAP headers
+        /// Default XML namespace for SOAP headers.
         /// </summary>
-        public const String SoapStandardNamespace = "http://schemas.microsoft.com/application-insights";
+        public const string SoapStandardNamespace = "http://schemas.microsoft.com/application-insights";
     }
 }

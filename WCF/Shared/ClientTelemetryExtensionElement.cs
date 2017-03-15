@@ -1,22 +1,21 @@
-﻿using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
-using System;
-using System.Configuration;
-using System.ServiceModel.Configuration;
-
-namespace Microsoft.ApplicationInsights.Wcf
+﻿namespace Microsoft.ApplicationInsights.Wcf
 {
+    using System;
+    using System.Configuration;
+    using System.ServiceModel.Configuration;
+    using Microsoft.ApplicationInsights.Extensibility;
+
     /// <summary>
     /// Supports generating Application Insights dependency
     /// events for calls to Web Services done using the
-    /// WCF client-side stack through the configuration file
+    /// WCF client-side stack through the configuration file.
     /// </summary>
     public sealed class ClientTelemetryExtensionElement : BehaviorExtensionElement
     {
         private ConfigurationPropertyCollection properties;
 
         /// <summary>
-        /// Gets the type of the behavior
+        /// Gets the type of the behavior.
         /// </summary>
         public override Type BehaviorType
         {
@@ -26,87 +25,97 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// <summary>
         /// Gets or sets the name of the HTTP header to get root operation Id from.
         /// </summary>
-        public String RootOperationIdHeaderName
+        public string RootOperationIdHeaderName
         {
-            get { return (String)base["rootOperationIdHeaderName"]; }
+            get { return (string)base["rootOperationIdHeaderName"]; }
             set { base["rootOperationIdHeaderName"] = value; }
         }
+
         /// <summary>
         /// Gets or sets the name of the HTTP header to get parent operation Id from.
         /// </summary>
-        public String ParentOperationIdHeaderName
+        public string ParentOperationIdHeaderName
         {
-            get { return (String)base["parentOperationIdHeaderName"]; }
+            get { return (string)base["parentOperationIdHeaderName"]; }
             set { base["parentOperationIdHeaderName"] = value; }
         }
+
         /// <summary>
         /// Gets or sets the name of the SOAP header to get root operation Id from.
         /// </summary>
-        public String SoapRootOperationIdHeaderName
+        public string SoapRootOperationIdHeaderName
         {
-            get { return (String)base["soapRootOperationIdHeaderName"]; }
+            get { return (string)base["soapRootOperationIdHeaderName"]; }
             set { base["soapRootOperationIdHeaderName"] = value; }
         }
+
         /// <summary>
         /// Gets or sets the name of the SOAP header to get parent operation Id from.
         /// </summary>
-        public String SoapParentOperationIdHeaderName
+        public string SoapParentOperationIdHeaderName
         {
-            get { return (String)base["soapParentOperationIdHeaderName"]; }
+            get { return (string)base["soapParentOperationIdHeaderName"]; }
             set { base["soapParentOperationIdHeaderName"] = value; }
         }
+
         /// <summary>
         /// Gets or sets the XML Namespace for the root/parent operation ID SOAP headers.
         /// </summary>
-        public String SoapHeaderNamespace
+        public string SoapHeaderNamespace
         {
-            get { return (String)base["soapHeaderNamespace"]; }
+            get { return (string)base["soapHeaderNamespace"]; }
             set { base["soapHeaderNamespace"] = value; }
         }
 
         /// <summary>
-        /// The list of properties supported by this behavior
+        /// The list of properties supported by this behavior.
         /// </summary>
         protected override ConfigurationPropertyCollection Properties
         {
             get
             {
-                if ( properties == null )
+                if (this.properties == null)
                 {
-                    properties = CreateProperties();
+                    this.properties = this.CreateProperties();
                 }
-                return properties;
-            }
-        }
 
-        /// <summary>
-        /// Creates the ApplicationInsights behavior
-        /// </summary>
-        /// <returns>A new Endpoint Behavior that will track client-side calls</returns>
-        protected override object CreateBehavior()
-        {
-            return CreateBehaviorInternal();
+                return this.properties;
+            }
         }
 
         internal ClientTelemetryEndpointBehavior CreateBehaviorInternal()
         {
-            var behavior = new ClientTelemetryEndpointBehavior(TelemetryConfiguration.Active);
-            behavior.ParentOperationIdHeaderName = ParentOperationIdHeaderName;
-            behavior.RootOperationIdHeaderName = RootOperationIdHeaderName;
-            behavior.SoapParentOperationIdHeaderName = SoapParentOperationIdHeaderName;
-            behavior.SoapRootOperationIdHeaderName = SoapRootOperationIdHeaderName;
-            behavior.SoapHeaderNamespace = SoapHeaderNamespace;
+            var behavior = new ClientTelemetryEndpointBehavior(TelemetryConfiguration.Active)
+            {
+                ParentOperationIdHeaderName = this.ParentOperationIdHeaderName,
+                RootOperationIdHeaderName = this.RootOperationIdHeaderName,
+                SoapParentOperationIdHeaderName = this.SoapParentOperationIdHeaderName,
+                SoapRootOperationIdHeaderName = this.SoapRootOperationIdHeaderName,
+                SoapHeaderNamespace = this.SoapHeaderNamespace
+            };
             return behavior;
         }
+
         internal ConfigurationPropertyCollection CreateProperties()
         {
-            var props = new ConfigurationPropertyCollection();
-            props.Add(new ConfigurationProperty("parentOperationIdHeaderName", typeof(String), CorrelationHeaders.HttpStandardParentIdHeader));
-            props.Add(new ConfigurationProperty("rootOperationIdHeaderName", typeof(String), CorrelationHeaders.HttpStandardRootIdHeader));
-            props.Add(new ConfigurationProperty("soapParentOperationIdHeaderName", typeof(String), CorrelationHeaders.SoapStandardParentIdHeader));
-            props.Add(new ConfigurationProperty("soapRootOperationIdHeaderName", typeof(String), CorrelationHeaders.SoapStandardRootIdHeader));
-            props.Add(new ConfigurationProperty("soapHeaderNamespace", typeof(String), CorrelationHeaders.SoapStandardNamespace));
+            var props = new ConfigurationPropertyCollection
+            {
+                new ConfigurationProperty("parentOperationIdHeaderName", typeof(string), CorrelationHeaders.HttpStandardParentIdHeader),
+                new ConfigurationProperty("rootOperationIdHeaderName", typeof(string), CorrelationHeaders.HttpStandardRootIdHeader),
+                new ConfigurationProperty("soapParentOperationIdHeaderName", typeof(string), CorrelationHeaders.SoapStandardParentIdHeader),
+                new ConfigurationProperty("soapRootOperationIdHeaderName", typeof(string), CorrelationHeaders.SoapStandardRootIdHeader),
+                new ConfigurationProperty("soapHeaderNamespace", typeof(string), CorrelationHeaders.SoapStandardNamespace)
+            };
             return props;
+        }
+
+        /// <summary>
+        /// Creates the ApplicationInsights behavior.
+        /// </summary>
+        /// <returns>A new Endpoint Behavior that will track client-side calls.</returns>
+        protected override object CreateBehavior()
+        {
+            return this.CreateBehaviorInternal();
         }
     }
 }

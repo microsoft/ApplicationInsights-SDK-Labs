@@ -1,15 +1,15 @@
-﻿using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-using System.ServiceModel.Description;
-using System.ServiceModel.Dispatcher;
-
-namespace Microsoft.ApplicationInsights.Wcf
+﻿namespace Microsoft.ApplicationInsights.Wcf
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.ServiceModel;
+    using System.ServiceModel.Channels;
+    using System.ServiceModel.Description;
+    using System.ServiceModel.Dispatcher;
+    using Microsoft.ApplicationInsights.Extensibility;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+
     /// <summary>
     /// Enables Application Insights telemetry when applied on a
     /// WCF service class.
@@ -18,12 +18,12 @@ namespace Microsoft.ApplicationInsights.Wcf
     public sealed class ServiceTelemetryAttribute : Attribute, IServiceBehavior
     {
         /// <summary>
-        /// The Application Insights instrumentation key.
+        /// Gets or sets the Application Insights instrumentation key.
         /// </summary>
         /// <remarks>
         /// You can use this as an alternative to setting the key in the ApplicationInsights.config file.
         /// </remarks>
-        public String InstrumentationKey { get; set; }
+        public string InstrumentationKey { get; set; }
 
         void IServiceBehavior.AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase, Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters)
         {
@@ -34,34 +34,37 @@ namespace Microsoft.ApplicationInsights.Wcf
             try
             {
                 TelemetryConfiguration configuration = TelemetryConfiguration.Active;
-                if ( !String.IsNullOrEmpty(InstrumentationKey) )
+                if (!string.IsNullOrEmpty(this.InstrumentationKey))
                 {
-                    configuration.InstrumentationKey = InstrumentationKey;
+                    configuration.InstrumentationKey = this.InstrumentationKey;
                 }
 
                 var contractFilter = BuildFilter(serviceDescription);
-                WcfInterceptor interceptor = null; 
-                foreach ( ChannelDispatcher channelDisp in serviceHost.ChannelDispatchers )
+                WcfInterceptor interceptor = null;
+                foreach (ChannelDispatcher channelDisp in serviceHost.ChannelDispatchers)
                 {
-                    if ( channelDisp.ErrorHandlers.OfType<WcfInterceptor>().Any() )
+                    if (channelDisp.ErrorHandlers.OfType<WcfInterceptor>().Any())
                     {
                         // already added, ignore
                         continue;
                     }
-                    if ( interceptor == null )
+
+                    if (interceptor == null)
                     {
                         interceptor = new WcfInterceptor(configuration, contractFilter);
                     }
+
                     channelDisp.ErrorHandlers.Insert(0, interceptor);
-                    foreach ( var ep in channelDisp.Endpoints )
+                    foreach (var ep in channelDisp.Endpoints)
                     {
-                        if ( !ep.IsSystemEndpoint )
+                        if (!ep.IsSystemEndpoint)
                         {
                             ep.DispatchRuntime.MessageInspectors.Insert(0, interceptor);
                         }
                     }
                 }
-            } catch ( Exception ex )
+            }
+            catch (Exception ex)
             {
                 WcfEventSource.Log.InitializationFailure(ex.ToString());
             }

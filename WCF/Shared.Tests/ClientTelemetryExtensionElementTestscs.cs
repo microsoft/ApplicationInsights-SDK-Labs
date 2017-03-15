@@ -1,11 +1,11 @@
-﻿using Microsoft.ApplicationInsights.Wcf.Implementation;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Configuration;
-using System.Linq;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.Configuration;
+    using System.Linq;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class ClientTelemetryExtensionElementTestscs
     {

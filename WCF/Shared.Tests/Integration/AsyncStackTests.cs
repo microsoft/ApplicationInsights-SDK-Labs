@@ -1,12 +1,12 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
-using Microsoft.ApplicationInsights.Wcf.Tests.Service;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 {
+    using System;
+    using System.Linq;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Service;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 #if NET45
     [TestClass]
     public class AsyncStackTests
@@ -16,7 +16,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public void TelemetryEventsAreGeneratedOnAsyncCall()
         {
             TestTelemetryChannel.Clear();
-            using ( var host = new HostingContext<AsyncService, IAsyncService>() )
+            using (var host = new HostingContext<AsyncService, IAsyncService>())
             {
                 host.Open();
                 IAsyncService client = host.GetChannel();
@@ -32,17 +32,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             TestTelemetryChannel.Clear();
             var host = new HostingContext<AsyncService, IAsyncService>()
                       .ShouldWaitForCompletion();
-            using ( host )
+            using (host)
             {
                 host.Open();
                 IAsyncService client = host.GetChannel();
                 try
                 {
                     client.FailWithFaultAsync().Wait();
-                } catch
+                }
+                catch
                 {
                 }
             }
+
             var errors = from item in TestTelemetryChannel.CollectedData()
                          where item is ExceptionTelemetry
                          select item;
@@ -56,17 +58,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             TestTelemetryChannel.Clear();
             var host = new HostingContext<AsyncService, IAsyncService>()
                       .ShouldWaitForCompletion();
-            using ( host )
+            using (host)
             {
                 host.Open();
                 IAsyncService client = host.GetChannel();
                 try
                 {
                     client.FailWithFaultAsync().Wait();
-                } catch
+                }
+                catch
                 {
                 }
             }
+
             var error = (from item in TestTelemetryChannel.CollectedData()
                          where item is ExceptionTelemetry
                          select item).Cast<ExceptionTelemetry>().First();
@@ -82,17 +86,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             TestTelemetryChannel.Clear();
             var host = new HostingContext<AsyncService, IAsyncService>()
                       .ShouldWaitForCompletion();
-            using ( host )
+            using (host)
             {
                 host.Open();
                 IAsyncService client = host.GetChannel();
                 try
                 {
                     client.FailWithExceptionAsync().Wait();
-                } catch
+                }
+                catch
                 {
                 }
             }
+
             var errors = from item in TestTelemetryChannel.CollectedData()
                          where item is ExceptionTelemetry
                          select item;
@@ -107,17 +113,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             var host = new HostingContext<AsyncService, IAsyncService>()
                       .ShouldWaitForCompletion()
                       .IncludeDetailsInFaults();
-            using ( host )
+            using (host)
             {
                 host.Open();
                 IAsyncService client = host.GetChannel();
                 try
                 {
                     client.FailWithExceptionAsync().Wait();
-                } catch
+                }
+                catch
                 {
                 }
             }
+
             var errors = from item in TestTelemetryChannel.CollectedData()
                          where item is ExceptionTelemetry
                          select item;
@@ -129,12 +137,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public void TelemetryContextIsFlowedAccrossAsyncCalls()
         {
             TestTelemetryChannel.Clear();
-            using ( var host = new HostingContext<AsyncService, IAsyncService>() )
+            using (var host = new HostingContext<AsyncService, IAsyncService>())
             {
                 host.Open();
                 IAsyncService client = host.GetChannel();
                 client.WriteDependencyEventAsync().Wait();
             }
+
             var data = TestTelemetryChannel.CollectedData();
             var request = data
                          .OfType<RequestTelemetry>()
@@ -144,7 +153,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
                             .FirstOrDefault();
             Assert.AreEqual(request.Context.Operation.Id, dependency.Context.Operation.Id);
             Assert.AreEqual(request.Context.Operation.Name, dependency.Context.Operation.Name);
-
         }
     }
 #endif // NET45

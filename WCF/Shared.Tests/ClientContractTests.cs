@@ -1,11 +1,11 @@
-﻿using Microsoft.ApplicationInsights.Wcf.Implementation;
-using Microsoft.ApplicationInsights.Wcf.Tests.Service;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.ServiceModel.Description;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.ServiceModel.Description;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Service;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class ClientContractTests
     {

@@ -1,10 +1,10 @@
-﻿using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
-using Microsoft.Diagnostics.Instrumentation.Extensions.Intercept;
-using System;
-
-namespace Microsoft.ApplicationInsights.Wcf
+﻿namespace Microsoft.ApplicationInsights.Wcf
 {
+    using System;
+    using Microsoft.ApplicationInsights.Extensibility;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+    using Microsoft.Diagnostics.Instrumentation.Extensions.Intercept;
+
     /// <summary>
     /// Provides telemetry for web service calls done through the
     /// WCF client-side stack.
@@ -18,69 +18,76 @@ namespace Microsoft.ApplicationInsights.Wcf
     /// </remarks>
     public sealed class WcfDependencyTrackingTelemetryModule : ITelemetryModule
     {
+        private readonly object lockObject = new object();
         private ProfilerWcfClientProcessing wcfClientProcessing = null;
         private bool initialized = false;
-        private readonly object lockObject = new object();
 
         /// <summary>
         /// Gets or sets the name of the HTTP header to get root operation Id from.
         /// </summary>
         public string RootOperationIdHeaderName { get; set; }
+
         /// <summary>
         /// Gets or sets the name of the HTTP header to get parent operation Id from.
         /// </summary>
         public string ParentOperationIdHeaderName { get; set; }
+
         /// <summary>
         /// Gets or sets the name of the SOAP header to get root operation Id from.
         /// </summary>
         public string SoapRootOperationIdHeaderName { get; set; }
+
         /// <summary>
         /// Gets or sets the name of the SOAP header to get parent operation Id from.
         /// </summary>
         public string SoapParentOperationIdHeaderName { get; set; }
+
         /// <summary>
         /// Gets or sets the XML Namespace for the root/parent operation ID SOAP headers.
         /// </summary>
         public string SoapHeaderNamespace { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether to disable runtime instrumentation.
         /// </summary>
         public bool DisableRuntimeInstrumentation { get; set; }
+
         /// <summary>
-        /// Telemetry Client based on configuration we were initialized with
+        /// Gets the Telemetry Client based on configuration we were initialized with.
         /// </summary>
         internal TelemetryClient TelemetryClient { get; private set; }
 
         /// <summary>
-        /// Initializes this telemetry module
+        /// Initializes this telemetry module.
         /// </summary>
-        /// <param name="configuration">Application Insights configuration</param>
+        /// <param name="configuration">Application Insights configuration.</param>
         public void Initialize(TelemetryConfiguration configuration)
         {
-            if ( configuration == null )
+            if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            if ( !initialized )
+            if (!this.initialized)
             {
-                lock ( lockObject )
+                lock (this.lockObject)
                 {
-                    if ( !initialized )
+                    if (!this.initialized)
                     {
                         try
                         {
                             this.TelemetryClient = new TelemetryClient(configuration);
-                            DoInitialization(configuration);
-                        } catch ( Exception ex )
+                            this.DoInitialization(configuration);
+                        }
+                        catch (Exception ex)
                         {
                             WcfEventSource.Log.InitializationFailure(ex.ToString());
                         }
-                        initialized = true;
+
+                        this.initialized = true;
                     }
                 }
             }
-
         }
 
         private void DoInitialization(TelemetryConfiguration configuration)
@@ -91,15 +98,16 @@ namespace Microsoft.ApplicationInsights.Wcf
             this.SoapParentOperationIdHeaderName = CorrelationHeaders.SoapStandardParentIdHeader;
             this.SoapRootOperationIdHeaderName = CorrelationHeaders.SoapStandardRootIdHeader;
 
-            if ( Decorator.IsHostEnabled() )
+            if (Decorator.IsHostEnabled())
             {
                 WcfClientEventSource.Log.ClientDependencyTrackingInfo("Profiler is attached");
                 WcfClientEventSource.Log.ClientDependencyTrackingInfo("Agent version: " + Decorator.GetAgentVersion());
-                if ( !DisableRuntimeInstrumentation )
+                if (!this.DisableRuntimeInstrumentation)
                 {
                     this.wcfClientProcessing = new ProfilerWcfClientProcessing(this);
-                    DecorateProfilerForWcfClientProcessing();
-                } else
+                    this.DecorateProfilerForWcfClientProcessing();
+                }
+                else
                 {
                     WcfClientEventSource.Log.ClientDependencyTrackingInfo("Runtime Instrumentation is disabled.");
                 }
@@ -108,14 +116,15 @@ namespace Microsoft.ApplicationInsights.Wcf
 
         private void DecorateProfilerForWcfClientProcessing()
         {
-            const String assembly = "System.ServiceModel";
-            const String module = "System.ServiceModel.dll";
-            const String className = "System.ServiceModel.ChannelFactory";
+            const string Assembly = "System.ServiceModel";
+            const string Module = "System.ServiceModel.dll";
+            const string ClassName = "System.ServiceModel.ChannelFactory";
 
             // void InitializeEndpoint(ServiceEndpoint endpoint)
             Decorator.Decorate(
-                assembly, module,
-                className + ".InitializeEndpoint",
+                Assembly,
+                Module,
+                ClassName + ".InitializeEndpoint",
                 1,
                 null,
                 this.wcfClientProcessing.OnEndInitializeEndpoint1,
@@ -124,8 +133,9 @@ namespace Microsoft.ApplicationInsights.Wcf
             // void InitializeEndpoint(Binding binding, EndpointAddress address)
             // void InitializeEndpoint(string configurationName, EndpointAddress address)
             Decorator.Decorate(
-                assembly, module,
-                className + ".InitializeEndpoint",
+                Assembly,
+                Module,
+                ClassName + ".InitializeEndpoint",
                 2,
                 this.wcfClientProcessing.OnStartInitializeEndpoint2,
                 this.wcfClientProcessing.OnEndInitializeEndpoint2,
@@ -133,8 +143,9 @@ namespace Microsoft.ApplicationInsights.Wcf
 
             // void InitializeEndpoint(string configurationName, EndpointAddress address, Configuration configuration)
             Decorator.Decorate(
-                assembly, module,
-                className + ".InitializeEndpoint",
+                Assembly,
+                Module,
+                ClassName + ".InitializeEndpoint",
                 3,
                 null,
                 this.wcfClientProcessing.OnEndInitializeEndpoint3,

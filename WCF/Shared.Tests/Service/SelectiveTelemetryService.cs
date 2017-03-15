@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
 {
+    using System;
+
     [ServiceTelemetry]
     public class SelectiveTelemetryService : ISelectiveTelemetryService
     {

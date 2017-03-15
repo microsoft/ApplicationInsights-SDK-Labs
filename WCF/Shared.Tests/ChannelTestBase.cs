@@ -1,20 +1,20 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
-using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
-using Microsoft.ApplicationInsights.Wcf.Tests.Integration;
-using Microsoft.ApplicationInsights.Wcf.Tests.Service;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
-using System.Reflection;
-using System.ServiceModel.Channels;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
+    using System.ServiceModel.Channels;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Integration;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Service;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     public abstract class ChannelTestBase<TChannel> where TChannel : IChannel
     {
-        public const String SvcUrl = "http://localhost/MyService.svc";
-        public const String HostName = "localhost";
+        public const string SvcUrl = "http://localhost/MyService.svc";
+        public const string HostName = "localhost";
 
         [TestMethod]
         [TestCategory("Client")]
@@ -24,11 +24,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             bool failed = false;
             try
             {
-                var channel = GetChannel(null, innerChannel);
-            } catch ( ArgumentNullException )
+                var channel = this.GetChannel(null, innerChannel);
+            }
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "Constructor did not throw ArgumentNullException");
         }
 
@@ -36,19 +38,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         [TestCategory("Client")]
         public void WhenInnerChannelIsNull_ConstructorThrowsException()
         {
-
             var manager = new ClientChannelManager(new TelemetryClient(), typeof(ISimpleService));
             bool failed = false;
             try
             {
-                var channel = GetChannel(manager, null);
-            } catch ( ArgumentNullException )
+                var channel = this.GetChannel(manager, null);
+            }
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "Constructor did not throw ArgumentNullException");
         }
-
 
         [TestMethod]
         [TestCategory("Client")]
@@ -56,24 +58,23 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
-            // IChannel does not define RemoteAddress, so cheat
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
 
+            // IChannel does not define RemoteAddress, so cheat
             var prop = channel.GetType().GetProperty("RemoteAddress", BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty);
             Assert.AreEqual(innerChannel.RemoteAddress, prop.GetValue(channel, null));
         }
 
-        //
+        // -------------------------------
         // Event Handling
-        //
-
+        // -------------------------------
         [TestMethod]
         [TestCategory("Client")]
         public void WhenChannelIsOpened_InnerChannelEventsAreHooked()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             channel.Open();
 
             Assert.IsTrue(innerChannel.OpeningIsHooked(), "Opening event is not hooked");
@@ -89,7 +90,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             channel.Open(TimeSpan.FromSeconds(10));
 
             Assert.IsTrue(innerChannel.OpeningIsHooked(), "Opening event is not hooked");
@@ -99,14 +100,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.IsTrue(innerChannel.FaultedIsHooked(), "Faulted event is not hooked");
         }
 
-
         [TestMethod]
         [TestCategory("Client")]
         public void WhenChannelIsOpenedAsync_InnerChannelEventsAreHooked()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             var result = channel.BeginOpen(null, null);
             channel.EndOpen(result);
 
@@ -123,7 +123,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             var result = channel.BeginOpen(TimeSpan.FromSeconds(10), null, null);
             channel.EndOpen(result);
 
@@ -139,7 +139,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             channel.Open();
             channel.Close();
 
@@ -156,7 +156,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             channel.Open();
             channel.Close(TimeSpan.FromSeconds(1));
 
@@ -173,7 +173,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             channel.Open();
             var result = channel.BeginClose(null, null);
             channel.EndClose(result);
@@ -191,7 +191,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             channel.Open();
             var result = channel.BeginClose(TimeSpan.FromSeconds(10), null, null);
             channel.EndClose(result);
@@ -209,7 +209,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             channel.Open();
             channel.Abort();
 
@@ -220,17 +220,16 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.IsFalse(innerChannel.FaultedIsHooked(), "Faulted event is hooked");
         }
 
-        //
+        // ---------------------------------------
         // Channel.Open Telemetry
-        //
-
+        // ---------------------------------------
         [TestMethod]
         [TestCategory("Client")]
         public void WhenChannelIsOpened_TelemetryIsWritten()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             channel.Open();
 
             CheckOpenDependencyWritten(typeof(ISimpleService), true);
@@ -242,7 +241,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             channel.Open(TimeSpan.FromSeconds(10));
 
             CheckOpenDependencyWritten(typeof(ISimpleService), true);
@@ -254,7 +253,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             var result = channel.BeginOpen(null, null);
             channel.EndOpen(result);
 
@@ -267,7 +266,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             var result = channel.BeginOpen(TimeSpan.FromSeconds(10), null, null);
             channel.EndOpen(result);
 
@@ -282,15 +281,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             innerChannel.FailOpen = true;
 
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             bool failed = false;
             try
             {
                 channel.Open();
-            } catch ( Exception )
+            }
+            catch (Exception)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "Open() did not throw exception");
 
             CheckOpenDependencyWritten(typeof(ISimpleService), false);
@@ -304,15 +305,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             innerChannel.FailOpen = true;
 
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             bool failed = false;
             try
             {
                 channel.Open(TimeSpan.FromSeconds(10));
-            } catch ( Exception )
+            }
+            catch (Exception)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "Open() did not throw exception");
 
             CheckOpenDependencyWritten(typeof(ISimpleService), false);
@@ -326,15 +329,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             innerChannel.FailBeginOpen = true;
 
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             bool failed = false;
             try
             {
                 channel.BeginOpen(null, null);
-            } catch ( Exception )
+            }
+            catch (Exception)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "BeginOpen() did not throw exception");
 
             CheckOpenDependencyWritten(typeof(ISimpleService), false);
@@ -348,26 +353,27 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             innerChannel.FailBeginOpen = true;
 
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
             bool failed = false;
             try
             {
                 channel.BeginOpen(TimeSpan.FromSeconds(10), null, null);
-            } catch ( Exception )
+            }
+            catch (Exception)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "BeginOpen() did not throw exception");
 
             CheckOpenDependencyWritten(typeof(ISimpleService), false);
         }
 
-
-
         internal abstract TChannel GetChannel(IChannel channel, Type contract);
+
         internal abstract TChannel GetChannel(IChannelManager manager, IChannel channel);
 
-        private void CheckOpenDependencyWritten(Type contract, bool success)
+        private static void CheckOpenDependencyWritten(Type contract, bool success)
         {
             var dependency = TestTelemetryChannel.CollectedData().OfType<DependencyTelemetry>().FirstOrDefault();
             Assert.IsNotNull(dependency, "Did not write dependency event");

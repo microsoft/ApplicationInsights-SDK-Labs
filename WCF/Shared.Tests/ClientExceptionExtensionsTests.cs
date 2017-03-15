@@ -1,10 +1,10 @@
-﻿using Microsoft.ApplicationInsights.Wcf.Implementation;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.ServiceModel;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.ServiceModel;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class ClientExceptionExtensionsTests
     {
@@ -15,10 +15,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             try
             {
                 ClientExceptionExtensions.ToResultCode(null);
-            } catch ( ArgumentNullException )
+            }
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "ToResultCode() did not throw ArgumentNullException");
         }
 
@@ -52,8 +54,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             TestException<ChannelTerminatedException>("ChannelTerminatedException");
         }
 
-
-        private void TestException<TException>(string expected) where TException : Exception, new()
+        private static void TestException<TException>(string expected) where TException : Exception, new()
         {
             var ex = new TException();
             Assert.AreEqual(expected, ex.ToResultCode());

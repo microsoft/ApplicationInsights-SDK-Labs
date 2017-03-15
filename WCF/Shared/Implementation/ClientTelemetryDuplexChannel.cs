@@ -1,13 +1,10 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using System;
-using System.Collections.Generic;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-using System.Text;
-using System.Xml;
-
-namespace Microsoft.ApplicationInsights.Wcf.Implementation
+﻿namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
+    using System;
+    using System.ServiceModel;
+    using System.ServiceModel.Channels;
+    using System.Xml;
+    using Microsoft.ApplicationInsights.DataContracts;
 
     // An IRequestChannel is simulated on top of a duplex channel is
     // done by DuplexChannelBinder.Request() by correlating messages based on the message id
@@ -22,238 +19,255 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
     {
         private MessageCorrelator correlator;
 
-        private IDuplexChannel DuplexChannel
+        public ClientTelemetryDuplexChannel(IChannelManager channelManager, IChannel channel)
+            : base(channelManager, channel)
         {
-            get { return (IDuplexChannel)InnerChannel; }
+            this.correlator = new MessageCorrelator(this.OnRequestTimeout);
         }
+
         public EndpointAddress LocalAddress
         {
-            get { return DuplexChannel.LocalAddress; }
+            get { return this.DuplexChannel.LocalAddress; }
         }
+
         public IDuplexSession Session
         {
-            get { return ((IDuplexSessionChannel)DuplexChannel).Session; }
+            get { return ((IDuplexSessionChannel)this.DuplexChannel).Session; }
         }
+
         public Uri Via
         {
-            get { return DuplexChannel.Via; }
+            get { return this.DuplexChannel.Via; }
         }
 
         public override EndpointAddress RemoteAddress
         {
-            get { return DuplexChannel.RemoteAddress; }
+            get { return this.DuplexChannel.RemoteAddress; }
         }
 
-        public ClientTelemetryDuplexChannel(IChannelManager channelManager, IChannel channel)
-            : base(channelManager, channel)
+        private IDuplexChannel DuplexChannel
         {
-            correlator = new MessageCorrelator(this.OnRequestTimeout);
+            get { return (IDuplexChannel)this.InnerChannel; }
         }
 
-        //
+        // ------------------------
         // Send side
-        //
+        // ------------------------
         public void Send(Message message)
         {
-            Send(message, ChannelManager.SendTimeout);
+            this.Send(message, this.ChannelManager.SendTimeout);
         }
 
         public void Send(Message message, TimeSpan timeout)
         {
-            if ( message == null )
+            if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(Send));
-            var telemetry = StartSendTelemetry(message, nameof(Send));
+
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.Send));
+            var telemetry = StartSendTelemetry(message, nameof(this.Send));
             try
             {
-                bool isOneWay = IsOneWay(telemetry);
-                DuplexChannel.Send(message, timeout);
-                if ( isOneWay )
+                var isOneWay = IsOneWay(telemetry);
+                this.DuplexChannel.Send(message, timeout);
+                if (isOneWay)
                 {
                     // no matching receive
-                    StopSendTelemetry(telemetry, null, null, nameof(Send));
-                } else
-                {
-                    correlator.Add(message.Headers.MessageId, telemetry, timeout);
+                    this.StopSendTelemetry(telemetry, null, null, nameof(this.Send));
                 }
-            } catch ( Exception ex )
+                else
+                {
+                    this.correlator.Add(message.Headers.MessageId, telemetry, timeout);
+                }
+            }
+            catch (Exception ex)
             {
-                StopSendTelemetry(telemetry, null, ex, nameof(Send));
+                this.StopSendTelemetry(telemetry, null, ex, nameof(this.Send));
                 throw;
             }
         }
 
         public IAsyncResult BeginSend(Message message, AsyncCallback callback, object state)
         {
-            return BeginSend(message, ChannelManager.SendTimeout, callback, state);
+            return this.BeginSend(message, this.ChannelManager.SendTimeout, callback, state);
         }
 
         public IAsyncResult BeginSend(Message message, TimeSpan timeout, AsyncCallback callback, object state)
         {
-            if ( message == null )
+            if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginSend));
-            var telemetry = StartSendTelemetry(message, nameof(BeginSend));
+
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.BeginSend));
+            var telemetry = StartSendTelemetry(message, nameof(this.BeginSend));
             try
             {
-                var result = new SendAsyncResult(DuplexChannel, message, timeout, this.OnSendDone, callback, state, telemetry);
-                correlator.Add(message.Headers.MessageId, telemetry, timeout);
+                var result = new SendAsyncResult(this.DuplexChannel, message, timeout, this.OnSendDone, callback, state, telemetry);
+                this.correlator.Add(message.Headers.MessageId, telemetry, timeout);
                 return result;
-            } catch ( Exception ex )
+            }
+            catch (Exception ex)
             {
-                StopSendTelemetry(telemetry, null, ex, nameof(BeginSend));
+                this.StopSendTelemetry(telemetry, null, ex, nameof(this.BeginSend));
                 throw;
             }
         }
 
         public void EndSend(IAsyncResult result)
         {
-            if ( result == null )
+            if (result == null)
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndSend));
+
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.EndSend));
             SendAsyncResult.End<SendAsyncResult>(result);
         }
 
-        private void OnSendDone(IAsyncResult result)
-        {
-            SendAsyncResult sar = (SendAsyncResult)result;
-            
-            if ( IsOneWay(sar.Telemetry) || sar.LastException != null )
-            {
-                // not expecting reply
-                correlator.Remove(sar.RequestId);
-                StopSendTelemetry(sar.Telemetry, null, sar.LastException, nameof(OnSendDone));
-            }
-        }
-
-
-        //
+        // -------------------------------------------
         // Receive Side
-        //
-
+        // -------------------------------------------
         // Both Receive and Receive(timeout) should fail with a 
         // if we get a timeout, we have no way of knowing which
         // outstanding message it closed :(
         public Message Receive()
         {
-            return Receive(ChannelManager.ReceiveTimeout);
+            return this.Receive(this.ChannelManager.ReceiveTimeout);
         }
 
         public Message Receive(TimeSpan timeout)
         {
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(Receive));
-            var response = DuplexChannel.Receive(timeout);
-            if ( response != null )
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.Receive));
+            var response = this.DuplexChannel.Receive(timeout);
+            if (response != null)
             {
-                HandleReply(response);
+                this.HandleReply(response);
             }
+
             return response;
         }
 
         public bool TryReceive(TimeSpan timeout, out Message message)
         {
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(TryReceive));
-            bool success = DuplexChannel.TryReceive(timeout, out message);
-            if ( success && message != null )
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.TryReceive));
+            var success = this.DuplexChannel.TryReceive(timeout, out message);
+            if (success && message != null)
             {
-                HandleReply(message);
+                this.HandleReply(message);
             }
+
             return success;
         }
 
         public bool WaitForMessage(TimeSpan timeout)
         {
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(WaitForMessage));
-            return DuplexChannel.WaitForMessage(timeout);
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.WaitForMessage));
+            return this.DuplexChannel.WaitForMessage(timeout);
         }
 
         public IAsyncResult BeginReceive(AsyncCallback callback, object state)
         {
-            return BeginReceive(ChannelManager.ReceiveTimeout, callback, state);
+            return this.BeginReceive(this.ChannelManager.ReceiveTimeout, callback, state);
         }
 
         public IAsyncResult BeginReceive(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginReceive));
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.BeginReceive));
             return new ReceiveAsyncResult(this.DuplexChannel, timeout, null, callback, state);
         }
+
         public Message EndReceive(IAsyncResult result)
         {
-            if ( result == null )
+            if (result == null)
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndReceive));
+
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.EndReceive));
             var rar = ReceiveAsyncResult.End<ReceiveAsyncResult>(result);
-            if ( rar.Message != null )
+            if (rar.Message != null)
             {
                 this.HandleReply(rar.Message);
             }
+
             return rar.Message;
         }
 
         public IAsyncResult BeginTryReceive(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginTryReceive));
-            return new TryReceiveAsyncResult(DuplexChannel, timeout, null, callback, state);
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.BeginTryReceive));
+            return new TryReceiveAsyncResult(this.DuplexChannel, timeout, null, callback, state);
         }
+
         public bool EndTryReceive(IAsyncResult result, out Message message)
         {
-            if ( result == null )
+            if (result == null)
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndTryReceive));
+
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.EndTryReceive));
             var trar = TryReceiveAsyncResult.End<TryReceiveAsyncResult>(result);
             message = trar.Message;
-            if ( trar.Result && message != null )
+            if (trar.Result && message != null)
             {
                 this.HandleReply(message);
             }
+
             return trar.Result;
         }
 
-
         public IAsyncResult BeginWaitForMessage(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginWaitForMessage));
-            return DuplexChannel.BeginWaitForMessage(timeout, callback, state);
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.BeginWaitForMessage));
+            return this.DuplexChannel.BeginWaitForMessage(timeout, callback, state);
         }
+
         public bool EndWaitForMessage(IAsyncResult result)
         {
-            if ( result == null )
+            if (result == null)
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndWaitForMessage));
-            return DuplexChannel.EndWaitForMessage(result);
+
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.EndWaitForMessage));
+            return this.DuplexChannel.EndWaitForMessage(result);
         }
-
-
 
         protected override void OnClosed()
         {
-            correlator.Dispose();
+            this.correlator.Dispose();
             base.OnClosed();
         }
+        
+        private void OnSendDone(IAsyncResult result)
+        {
+            var sar = (SendAsyncResult)result;
+
+            if (this.IsOneWay(sar.Telemetry) || sar.LastException != null)
+            {
+                // not expecting reply
+                this.correlator.Remove(sar.RequestId);
+                this.StopSendTelemetry(sar.Telemetry, null, sar.LastException, nameof(this.OnSendDone));
+            }
+        }
+
         private void HandleReply(Message reply)
         {
             DependencyTelemetry telemetry = null;
-            if ( correlator.TryLookup(reply.Headers.RelatesTo, out telemetry) )
+            if (this.correlator.TryLookup(reply.Headers.RelatesTo, out telemetry))
             {
-                StopSendTelemetry(telemetry, reply, null, nameof(HandleReply));
+                this.StopSendTelemetry(telemetry, reply, null, nameof(this.HandleReply));
             }
+
             // not our message, leave it be
         }
+
         private void OnRequestTimeout(UniqueId messageId, DependencyTelemetry telemetry)
         {
-            StopSendTelemetry(telemetry, null, new TimeoutException(), nameof(OnRequestTimeout));
+            this.StopSendTelemetry(telemetry, null, new TimeoutException(), nameof(this.OnRequestTimeout));
         }
     }
 }

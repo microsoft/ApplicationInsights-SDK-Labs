@@ -1,15 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 {
-    class MockClientChannel : IRequestChannel, IOutputChannel, IDuplexChannel
+    using System;
+    using System.ServiceModel;
+    using System.ServiceModel.Channels;
+    using System.Threading;
+
+    internal class MockClientChannel : IRequestChannel, IOutputChannel, IDuplexChannel
     {
+        public MockClientChannel(string remoteUrl)
+        {
+            this.RemoteAddress = new EndpointAddress(remoteUrl);
+            this.ChangeState(CommunicationState.Created);
+        }
+
+        public event EventHandler Closed;
+
+        public event EventHandler Closing;
+
+        public event EventHandler Faulted;
+
+        public event EventHandler Opened;
+
+        public event EventHandler Opening;
+
+        public event EventHandler<UnknownMessageReceivedEventArgs> UnknownMessageReceived
+        {
+            add { }
+            remove { }
+        }
+
         public EndpointAddress LocalAddress { get; private set; }
 
         public TimeSpan OperationTimeout { get; set; }
@@ -22,141 +41,109 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 
         public Uri Via { get; private set; }
 
-        public event EventHandler Closed;
-        public event EventHandler Closing;
-        public event EventHandler Faulted;
-        public event EventHandler Opened;
-        public event EventHandler Opening;
-        public event EventHandler<UnknownMessageReceivedEventArgs> UnknownMessageReceived { add { } remove { } }
-
         public bool FailOpen { get; set; }
+
         public bool FailBeginOpen { get; set; }
+
         public bool ReturnSoapFault { get; set; }
+
         public bool FailRequest { get; set; }
+
         public bool FailEndRequest { get; set; }
+
         public Message LastMessageSent { get; private set; }
+
         public Message MessageToReceive { get; set; }
+
         public Exception ExceptionToThrowOnSend { get; set; }
-
-
-        public MockClientChannel(String remoteUrl)
-        {
-            this.RemoteAddress = new EndpointAddress(remoteUrl);
-            ChangeState(CommunicationState.Created);
-        }
 
         public void Open()
         {
-            SimulateOpen(TimeSpan.MaxValue, FailOpen);
-            if ( FailOpen )
-            {
-                throw new EndpointNotFoundException();
-            }
+            this.Open(TimeSpan.MaxValue);
         }
+
         public void Open(TimeSpan timeout)
         {
-            SimulateOpen(TimeSpan.Zero, FailOpen);
-            if ( FailOpen )
+            this.SimulateOpen(TimeSpan.Zero, this.FailOpen);
+            if (this.FailOpen)
             {
                 throw new EndpointNotFoundException();
             }
         }
+
         public void SimulateOpen(TimeSpan duration, bool fail)
         {
-            ChangeState(CommunicationState.Opening);
-            if ( !fail )
+            this.ChangeState(CommunicationState.Opening);
+            if (!fail)
             {
-                ChangeState(CommunicationState.Opened);
-            } else
+                this.ChangeState(CommunicationState.Opened);
+            }
+            else
             {
-                ChangeState(CommunicationState.Faulted);
+                this.ChangeState(CommunicationState.Faulted);
             }
         }
 
         public void Close()
         {
-            Close(TimeSpan.MaxValue);
+            this.Close(TimeSpan.MaxValue);
         }
 
         public void Close(TimeSpan timeout)
         {
-            ChangeState(CommunicationState.Closing);
-            ChangeState(CommunicationState.Closed);
+            this.ChangeState(CommunicationState.Closing);
+            this.ChangeState(CommunicationState.Closed);
         }
 
         public void Abort()
         {
-            Close();
+            this.Close();
         }
 
         public void Dispose()
         {
-            Close();
+            this.Close();
         }
 
         public bool OpeningIsHooked()
         {
-            return Opening != null && Opening.GetInvocationList().Length > 0;
-        }
-        public bool OpenedIsHooked()
-        {
-            return Opened != null && Opened.GetInvocationList().Length > 0;
-        }
-        public bool ClosingIsHooked()
-        {
-            return Closing != null && Closing.GetInvocationList().Length > 0;
-        }
-        public bool ClosedIsHooked()
-        {
-            return Closed != null && Closed.GetInvocationList().Length > 0;
-        }
-        public bool FaultedIsHooked()
-        {
-            return Faulted != null && Faulted.GetInvocationList().Length > 0;
+            return this.Opening != null && this.Opening.GetInvocationList().Length > 0;
         }
 
-        private void ChangeState(CommunicationState state)
+        public bool OpenedIsHooked()
         {
-            this.State = state;
-            switch ( state )
-            {
-            case CommunicationState.Opening:
-                Opening?.Invoke(this, EventArgs.Empty);
-                break;
-            case CommunicationState.Opened:
-                Opened?.Invoke(this, EventArgs.Empty);
-                break;
-            case CommunicationState.Closing:
-                Closing?.Invoke(this, EventArgs.Empty);
-                break;
-            case CommunicationState.Closed:
-                Closed?.Invoke(this, EventArgs.Empty);
-                break;
-            case CommunicationState.Faulted:
-                Faulted?.Invoke(this, EventArgs.Empty);
-                break;
-            }
+            return this.Opened != null && this.Opened.GetInvocationList().Length > 0;
+        }
+
+        public bool ClosingIsHooked()
+        {
+            return this.Closing != null && this.Closing.GetInvocationList().Length > 0;
+        }
+
+        public bool ClosedIsHooked()
+        {
+            return this.Closed != null && this.Closed.GetInvocationList().Length > 0;
+        }
+
+        public bool FaultedIsHooked()
+        {
+            return this.Faulted != null && this.Faulted.GetInvocationList().Length > 0;
         }
 
         public IAsyncResult BeginOpen(AsyncCallback callback, object state)
         {
-            ChangeState(CommunicationState.Opening);
-            if ( FailBeginOpen )
-            {
-                ChangeState(CommunicationState.Faulted);
-                throw new EndpointNotFoundException();
-            }
-            return new SyncAsyncResult(callback, state);
+            return this.BeginOpen(TimeSpan.MaxValue, callback, state);
         }
 
         public IAsyncResult BeginOpen(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            ChangeState(CommunicationState.Opening);
-            if ( FailBeginOpen )
+            this.ChangeState(CommunicationState.Opening);
+            if (this.FailBeginOpen)
             {
-                ChangeState(CommunicationState.Faulted);
+                this.ChangeState(CommunicationState.Faulted);
                 throw new EndpointNotFoundException();
             }
+
             return new SyncAsyncResult(callback, state);
         }
 
@@ -188,132 +175,119 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         // request channel methods
         public Message Request(Message message)
         {
-            return Request(message, TimeSpan.FromSeconds(10));
+            return this.Request(message, TimeSpan.FromSeconds(10));
         }
 
         public Message Request(Message message, TimeSpan timeout)
         {
-            if ( FailRequest)
+            if (this.FailRequest)
             {
                 throw new TimeoutException();
             }
-            return BuildMessage(message.Headers.Action);
+
+            return this.BuildMessage(message.Headers.Action);
         }
 
         public IAsyncResult BeginRequest(Message message, AsyncCallback callback, object state)
         {
-            return BeginRequest(message, TimeSpan.FromSeconds(10), callback, state);
+            return this.BeginRequest(message, TimeSpan.FromSeconds(10), callback, state);
         }
 
         public IAsyncResult BeginRequest(Message message, TimeSpan timeout, AsyncCallback callback, object state)
         {
-            LastMessageSent = message;
-            if ( FailRequest )
+            this.LastMessageSent = message;
+            if (this.FailRequest)
             {
-                if ( ExceptionToThrowOnSend != null )
+                if (this.ExceptionToThrowOnSend != null)
                 {
-                    throw ExceptionToThrowOnSend;
+                    throw this.ExceptionToThrowOnSend;
                 }
+
                 throw new TimeoutException();
             }
+
             return new SyncAsyncResult(callback, state);
         }
 
         public Message EndRequest(IAsyncResult result)
         {
             ((SyncAsyncResult)result).End();
-            if ( FailEndRequest )
+            if (this.FailEndRequest)
             {
                 throw new TimeoutException();
             }
-            return BuildMessage("*");
+
+            return this.BuildMessage("*");
         }
 
-
-        //
+        // -----------------------------------
         // Output Channel Impl
-        //
+        // -----------------------------------
         public void Send(Message message)
         {
-            Send(message, TimeSpan.FromSeconds(10));
+            this.Send(message, TimeSpan.FromSeconds(10));
         }
 
         public void Send(Message message, TimeSpan timeout)
         {
-            LastMessageSent = message;
-            if ( FailRequest )
+            this.LastMessageSent = message;
+            if (this.FailRequest)
             {
-                if ( ExceptionToThrowOnSend != null )
+                if (this.ExceptionToThrowOnSend != null)
                 {
-                    throw ExceptionToThrowOnSend;
+                    throw this.ExceptionToThrowOnSend;
                 }
+
                 throw new TimeoutException();
             }
         }
 
         public IAsyncResult BeginSend(Message message, AsyncCallback callback, object state)
         {
-            return BeginSend(message, TimeSpan.FromSeconds(10), callback, state);
+            return this.BeginSend(message, TimeSpan.FromSeconds(10), callback, state);
         }
 
         public IAsyncResult BeginSend(Message message, TimeSpan timeout, AsyncCallback callback, object state)
         {
-            LastMessageSent = message;
-            if ( FailRequest )
+            this.LastMessageSent = message;
+            if (this.FailRequest)
             {
                 throw new TimeoutException();
             }
+
             return new SyncAsyncResult(callback, state);
         }
 
         public void EndSend(IAsyncResult result)
         {
-            if ( FailEndRequest )
+            if (this.FailEndRequest)
             {
                 throw new TimeoutException();
             }
+
             ((SyncAsyncResult)result).End();
         }
 
-
-        private Message BuildMessage(String action)
-        {
-            if ( ReturnSoapFault )
-            {
-                return BuildFaultMessage(action);
-            }
-            return Message.CreateMessage(MessageVersion.Default, action, "<text/>");
-        }
-        private Message BuildFaultMessage(String action)
-        {
-            return Message.CreateMessage(
-                MessageVersion.Default,
-                MessageFault.CreateFault(
-                    FaultCode.CreateReceiverFaultCode("e1", "http://tempuri.org"),
-                    "There was an error processing the message"
-                    ),
-                action);
-        }
-
-        //
-        //
+        // -------------------------------------------
         // IDuplexChannel fields
-        //
+        // -------------------------------------------
         public Message Receive()
         {
-            if ( MessageToReceive != null )
+            if (this.MessageToReceive != null)
             {
-                return MessageToReceive;
+                return this.MessageToReceive;
             }
+
             throw new TimeoutException();
         }
 
         public Message Receive(TimeSpan timeout)
         {
-            if ( MessageToReceive != null )
+            if (this.MessageToReceive != null)
             {
-                return MessageToReceive;
+                return this.MessageToReceive;
             }
+
             throw new TimeoutException();
         }
 
@@ -330,16 +304,17 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public Message EndReceive(IAsyncResult result)
         {
             ((SyncAsyncResult)result).End();
-            if ( MessageToReceive != null )
+            if (this.MessageToReceive != null)
             {
-                return MessageToReceive;
+                return this.MessageToReceive;
             }
+
             throw new TimeoutException();
         }
 
         public bool TryReceive(TimeSpan timeout, out Message message)
         {
-            message = MessageToReceive;
+            message = this.MessageToReceive;
             return message != null;
         }
 
@@ -351,13 +326,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public bool EndTryReceive(IAsyncResult result, out Message message)
         {
             ((SyncAsyncResult)result).End();
-            message = MessageToReceive;
+            message = this.MessageToReceive;
             return message != null;
         }
 
         public bool WaitForMessage(TimeSpan timeout)
         {
-            return MessageToReceive != null;
+            return this.MessageToReceive != null;
         }
 
         public IAsyncResult BeginWaitForMessage(TimeSpan timeout, AsyncCallback callback, object state)
@@ -368,31 +343,76 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public bool EndWaitForMessage(IAsyncResult result)
         {
             ((SyncAsyncResult)result).End();
-            return MessageToReceive != null;
+            return this.MessageToReceive != null;
         }
 
-        class SyncAsyncResult : IAsyncResult, IDisposable
+        private void ChangeState(CommunicationState state)
+        {
+            this.State = state;
+            switch (state)
+            {
+                case CommunicationState.Opening:
+                    this.Opening?.Invoke(this, EventArgs.Empty);
+                    break;
+                case CommunicationState.Opened:
+                    this.Opened?.Invoke(this, EventArgs.Empty);
+                    break;
+                case CommunicationState.Closing:
+                    this.Closing?.Invoke(this, EventArgs.Empty);
+                    break;
+                case CommunicationState.Closed:
+                    this.Closed?.Invoke(this, EventArgs.Empty);
+                    break;
+                case CommunicationState.Faulted:
+                    this.Faulted?.Invoke(this, EventArgs.Empty);
+                    break;
+            }
+        }
+
+        private Message BuildMessage(string action)
+        {
+            if (this.ReturnSoapFault)
+            {
+                return this.BuildFaultMessage(action);
+            }
+
+            return Message.CreateMessage(MessageVersion.Default, action, "<text/>");
+        }
+
+        private Message BuildFaultMessage(string action)
+        {
+            var fault = MessageFault.CreateFault(
+                    FaultCode.CreateReceiverFaultCode("e1", "http://tempuri.org"),
+                    "There was an error processing the message");
+            return Message.CreateMessage(MessageVersion.Default, fault, action);
+        }
+
+        private class SyncAsyncResult : IAsyncResult, IDisposable
         {
             private EventWaitHandle waitHandle;
             private AsyncCallback callback;
             private Timer timer;
-            public object AsyncState { get; private set; }
-
-            public WaitHandle AsyncWaitHandle { get { return waitHandle; } }
-
-            public bool CompletedSynchronously { get; private set; }
-
-            public bool IsCompleted { get; private set; }
 
             public SyncAsyncResult(AsyncCallback callback, object state)
             {
                 this.AsyncState = state;
                 this.callback = callback;
-                waitHandle = new ManualResetEvent(false);
-                CompletedSynchronously = false;
-                IsCompleted = false;
-                timer = new Timer(this.OnDone, null, TimeSpan.FromMilliseconds(10), TimeSpan.FromMilliseconds(-1));
+                this.waitHandle = new ManualResetEvent(false);
+                this.CompletedSynchronously = false;
+                this.IsCompleted = false;
+                this.timer = new Timer(this.OnDone, null, TimeSpan.FromMilliseconds(10), TimeSpan.FromMilliseconds(-1));
             }
+
+            public object AsyncState { get; private set; }
+
+            public WaitHandle AsyncWaitHandle
+            {
+                get { return this.waitHandle; }
+            }
+
+            public bool CompletedSynchronously { get; private set; }
+
+            public bool IsCompleted { get; private set; }
 
             public void End()
             {
@@ -400,21 +420,22 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
                 this.waitHandle.Close();
                 this.timer.Dispose();
             }
+
+            void IDisposable.Dispose()
+            {
+                this.End();
+            }
+
             private void Complete()
             {
                 this.IsCompleted = true;
                 this.waitHandle.Set();
-                callback?.Invoke(this);
+                this.callback?.Invoke(this);
             }
 
             private void OnDone(object state)
             {
                 this.Complete();
-            }
-
-            void IDisposable.Dispose()
-            {
-                this.End();
             }
         }
     }

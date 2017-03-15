@@ -1,13 +1,9 @@
-﻿using Microsoft.ApplicationInsights.Channel;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests.Channels
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests.Channels
 {
+    using System;
+    using System.Collections.Generic;
+    using Microsoft.ApplicationInsights.Channel;
+
     public sealed class TestTelemetryChannel : ITelemetryChannel
     {
         private static List<ITelemetry> items = new List<ITelemetry>();
@@ -17,13 +13,30 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Channels
 
         public string EndpointAddress { get; set; }
 
+        public static void Clear()
+        {
+            lock (lockobj)
+            {
+                items.Clear();
+            }
+        }
+
+        public static IList<ITelemetry> CollectedData()
+        {
+            lock (lockobj)
+            {
+                List<ITelemetry> list = new List<ITelemetry>(items);
+                return list;
+            }
+        }
+
         public void Flush()
         {
         }
 
         public void Send(ITelemetry item)
         {
-            lock ( lockobj )
+            lock (lockobj)
             {
                 items.Add(item);
             }
@@ -31,22 +44,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Channels
 
         public void Dispose()
         {
-        }
-
-        public static void Clear()
-        {
-            lock ( lockobj )
-            {
-                items.Clear();
-            }
-        }
-        public static IList<ITelemetry> CollectedData()
-        {
-            lock ( lockobj )
-            {
-                List<ITelemetry> list = new List<ITelemetry>(items);
-                return list;
-            }
         }
     }
 }

@@ -1,36 +1,19 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
-using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
-using Microsoft.ApplicationInsights.Wcf.Tests.Integration;
-using Microsoft.ApplicationInsights.Wcf.Tests.Service;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.Linq;
+    using System.ServiceModel.Channels;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Integration;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Service;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class ClientTelemetryOutputChannelTests : ChannelTestBase<IOutputChannel>
     {
-        const String OneWayOp1 = "http://tempuri.org/IOneWayService/SuccessfullOneWayCall";
-
-        private IOutputChannel GetChannel(IChannel innerChannel, Type contract, TelemetryClient client)
-        {
-            return GetChannel(
-                new ClientChannelManager(client ?? new TelemetryClient(), contract),
-                innerChannel
-                );
-        }
-        internal override IOutputChannel GetChannel(IChannel innerChannel, Type contract)
-        {
-            return GetChannel(innerChannel, contract, null);
-        }
-        internal override IOutputChannel GetChannel(IChannelManager manager, IChannel innerChannel)
-        {
-            return new ClientTelemetryOutputChannel(manager, innerChannel);
-        }
+        private const string OneWayOp1 = "http://tempuri.org/IOneWayService/SuccessfullOneWayCall";
 
         [TestMethod]
         [TestCategory("Client")]
@@ -38,7 +21,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(IOneWayService));
+            var channel = this.GetChannel(innerChannel, typeof(IOneWayService));
 
             channel.Send(BuildMessage(OneWayOp1));
 
@@ -51,7 +34,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(IOneWayService));
+            var channel = this.GetChannel(innerChannel, typeof(IOneWayService));
 
             channel.Send(BuildMessage(OneWayOp1), TimeSpan.FromSeconds(10));
 
@@ -64,7 +47,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(IOneWayService));
+            var channel = this.GetChannel(innerChannel, typeof(IOneWayService));
 
             innerChannel.FailRequest = true;
 
@@ -72,10 +55,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             try
             {
                 channel.Send(BuildMessage(OneWayOp1));
-            } catch
+            }
+            catch
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "Send did not throw an exception");
 
             CheckOpDependencyWritten(DependencyConstants.WcfClientCall, typeof(IOneWayService), OneWayOp1, "SuccessfullOneWayCall", false);
@@ -87,7 +72,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(IOneWayService));
+            var channel = this.GetChannel(innerChannel, typeof(IOneWayService));
 
             innerChannel.FailRequest = true;
             innerChannel.ExceptionToThrowOnSend = new TimeoutException();
@@ -96,10 +81,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             try
             {
                 channel.Send(BuildMessage(OneWayOp1));
-            } catch ( TimeoutException )
+            }
+            catch (TimeoutException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "Send did not throw TimeoutException");
 
             var telemetry = TestTelemetryChannel.CollectedData().OfType<DependencyTelemetry>().First();
@@ -112,7 +99,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(IOneWayService));
+            var channel = this.GetChannel(innerChannel, typeof(IOneWayService));
 
             var result = channel.BeginSend(BuildMessage(OneWayOp1), null, null);
             channel.EndSend(result);
@@ -126,7 +113,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(IOneWayService));
+            var channel = this.GetChannel(innerChannel, typeof(IOneWayService));
 
             var result = channel.BeginSend(BuildMessage(OneWayOp1), TimeSpan.FromSeconds(10), null, null);
             channel.EndSend(result);
@@ -140,7 +127,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(IOneWayService));
+            var channel = this.GetChannel(innerChannel, typeof(IOneWayService));
 
             innerChannel.FailEndRequest = true;
 
@@ -149,19 +136,20 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             try
             {
                 channel.EndSend(result);
-            } catch
+            }
+            catch
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "EndSend did not throw an exception");
 
             CheckOpDependencyWritten(DependencyConstants.WcfClientCall, typeof(IOneWayService), OneWayOp1, "SuccessfullOneWayCall", false);
         }
 
-
-        //
+        // -----------------------
         // Other tests
-        //
+        // -----------------------
         [TestMethod]
         [TestCategory("Client")]
         public void WhenMessageIsSent_CorrelationHeadersAreSet()
@@ -171,7 +159,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
             var innerChannel = new MockClientChannel(SvcUrl);
             TestTelemetryChannel.Clear();
-            var channel = GetChannel(innerChannel, typeof(IOneWayService), client);
+            var channel = this.GetChannel(innerChannel, typeof(IOneWayService), client);
 
             channel.Send(BuildMessage(OneWayOp1));
 
@@ -183,33 +171,50 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.IsNotNull(GetSoapHeader(message, CorrelationHeaders.SoapStandardNamespace, CorrelationHeaders.SoapStandardParentIdHeader));
         }
 
-        private String GetSoapHeader(Message message, String ns, String headerName)
+        internal override IOutputChannel GetChannel(IChannel innerChannel, Type contract)
         {
-            return message.Headers.GetHeader<String>(headerName, ns);
+            return this.GetChannel(innerChannel, contract, null);
         }
 
-        private String GetHttpHeader(Message message, String headerName)
+        internal override IOutputChannel GetChannel(IChannelManager manager, IChannel innerChannel)
+        {
+            return new ClientTelemetryOutputChannel(manager, innerChannel);
+        }
+
+        private static string GetSoapHeader(Message message, string ns, string headerName)
+        {
+            return message.Headers.GetHeader<string>(headerName, ns);
+        }
+
+        private static string GetHttpHeader(Message message, string headerName)
         {
             var httpHeaders = message.GetHttpRequestHeaders();
             return httpHeaders.Headers[headerName];
         }
 
-        private Message BuildMessage(String action)
+        private static Message BuildMessage(string action)
         {
             return Message.CreateMessage(MessageVersion.Default, action, "<text/>");
         }
 
-        private void CheckOpDependencyWritten(String type, Type contract, String action, String method, bool success)
+        private static void CheckOpDependencyWritten(string type, Type contract, string action, string method, bool success)
         {
             var dependency = TestTelemetryChannel.CollectedData().OfType<DependencyTelemetry>().FirstOrDefault();
             Assert.IsNotNull(dependency, "Did not write dependency event");
-            Assert.AreEqual(SvcUrl, dependency.Data);
+            Assert.AreEqual(ClientTelemetryOutputChannelTests.SvcUrl, dependency.Data);
             Assert.AreEqual("localhost", dependency.Target);
             Assert.AreEqual(type, dependency.Type);
             Assert.AreEqual(contract.Name + "." + method, dependency.Name);
             Assert.AreEqual(action, dependency.Properties["soapAction"]);
             Assert.AreEqual("True", dependency.Properties["isOneWay"]);
             Assert.AreEqual(success, dependency.Success.Value);
+        }
+
+        private IOutputChannel GetChannel(IChannel innerChannel, Type contract, TelemetryClient client)
+        {
+            return this.GetChannel(
+                new ClientChannelManager(client ?? new TelemetryClient(), contract),
+                innerChannel);
         }
     }
 }

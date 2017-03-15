@@ -1,15 +1,15 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
-using Microsoft.ApplicationInsights.Wcf.Tests.Service;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-using System.Xml;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 {
+    using System;
+    using System.Linq;
+    using System.ServiceModel;
+    using System.ServiceModel.Channels;
+    using System.Xml;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Service;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class FullStackTests
     {
@@ -17,22 +17,23 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         [TestCategory("Integration"), TestCategory("Sync")]
         public void IsClientSideContextReturnsTrueForClientChannel()
         {
-            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            using (var host = new HostingContext<SimpleService, ISimpleService>())
             {
                 host.Open();
                 ISimpleService client = host.GetChannel();
 
-                using ( var scope = new OperationContextScope((IContextChannel)client) )
+                using (var scope = new OperationContextScope((IContextChannel)client))
                 {
                     Assert.IsTrue(OperationContext.Current.IsClientSideContext());
                 }
             }
         }
+
         [TestMethod]
         [TestCategory("Integration"), TestCategory("Sync")]
         public void IsClientSideContextReturnsFalseForServerChannel()
         {
-            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            using (var host = new HostingContext<SimpleService, ISimpleService>())
             {
                 host.Open();
                 ISimpleService client = host.GetChannel();
@@ -46,7 +47,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public void TelemetryEventsAreGeneratedOnServiceCall()
         {
             TestTelemetryChannel.Clear();
-            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            using (var host = new HostingContext<SimpleService, ISimpleService>())
             {
                 host.Open();
                 ISimpleService client = host.GetChannel();
@@ -60,12 +61,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public void OperationNameIsSetBasedOnOperationCalled()
         {
             TestTelemetryChannel.Clear();
-            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            using (var host = new HostingContext<SimpleService, ISimpleService>())
             {
                 host.Open();
                 ISimpleService client = host.GetChannel();
                 client.GetSimpleData();
             }
+
             var operationName = TestTelemetryChannel.CollectedData()
                                .Select(x => x.Context.Operation.Name)
                                .First();
@@ -78,12 +80,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public void AllTelemetryEventsFromOneCallHaveSameOperationId()
         {
             TestTelemetryChannel.Clear();
-            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            using (var host = new HostingContext<SimpleService, ISimpleService>())
             {
                 host.Open();
                 ISimpleService client = host.GetChannel();
                 client.GetSimpleData();
             }
+
             var ids = TestTelemetryChannel.CollectedData()
                     .Select(x => x.Context.Operation.Id)
                     .Distinct();
@@ -97,21 +100,21 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         {
             TestTelemetryChannel.Clear();
             var host = new HostingContext<SimpleService, ISimpleService>();
-            using ( host )
+            using (host)
             {
                 host.Open();
 
                 ISimpleService client = host.GetChannel();
-                using ( OperationContextScope scope = new OperationContextScope((IContextChannel)client) )
+                using (OperationContextScope scope = new OperationContextScope((IContextChannel)client))
                 {
                     OperationContext.Current.OutgoingMessageHeaders.Action = "http://someaction";
                     client.CatchAllOperation();
                 }
             }
+
             var evt = TestTelemetryChannel.CollectedData().First();
             Assert.AreEqual("ISimpleService.CatchAllOperation", evt.Context.Operation.Name);
         }
-
 
         [TestMethod]
         [TestCategory("Integration"), TestCategory("Sync")]
@@ -120,17 +123,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             TestTelemetryChannel.Clear();
             var host = new HostingContext<SimpleService, ISimpleService>()
                       .ShouldWaitForCompletion();
-            using ( host )
+            using (host)
             {
                 host.Open();
                 ISimpleService client = host.GetChannel();
                 try
                 {
                     client.CallFailsWithFault();
-                } catch
+                }
+                catch
                 {
                 }
             }
+
             var errors = from item in TestTelemetryChannel.CollectedData()
                          where item is ExceptionTelemetry
                          select item;
@@ -144,17 +149,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             TestTelemetryChannel.Clear();
             var host = new HostingContext<SimpleService, ISimpleService>()
                       .ShouldWaitForCompletion();
-            using ( host )
+            using (host)
             {
                 host.Open();
                 ISimpleService client = host.GetChannel();
                 try
                 {
                     client.CallFailsWithFault();
-                } catch
+                }
+                catch
                 {
                 }
             }
+
             var error = (from item in TestTelemetryChannel.CollectedData()
                          where item is ExceptionTelemetry
                          select item).Cast<ExceptionTelemetry>().First();
@@ -170,17 +177,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             TestTelemetryChannel.Clear();
             var host = new HostingContext<SimpleService, ISimpleService>()
                       .ShouldWaitForCompletion();
-            using ( host )
+            using (host)
             {
                 host.Open();
                 ISimpleService client = host.GetChannel();
                 try
                 {
                     client.CallFailsWithTypedFault();
-                } catch
+                }
+                catch
                 {
                 }
             }
+
             var error = (from item in TestTelemetryChannel.CollectedData()
                          where item is ExceptionTelemetry
                          select item).Cast<ExceptionTelemetry>().First();
@@ -189,7 +198,6 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             Assert.IsNotNull(error.Context.Operation.Name);
         }
 
-
         [TestMethod]
         [TestCategory("Integration"), TestCategory("Sync")]
         public void ErrorTelemetryEventsAreGeneratedOnExceptionAndIEDIF_False()
@@ -197,17 +205,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             TestTelemetryChannel.Clear();
             var host = new HostingContext<SimpleService, ISimpleService>()
                       .ShouldWaitForCompletion();
-            using ( host )
+            using (host)
             {
                 host.Open();
                 ISimpleService client = host.GetChannel();
                 try
                 {
                     client.CallFailsWithException();
-                } catch
+                }
+                catch
                 {
                 }
             }
+
             var errors = from item in TestTelemetryChannel.CollectedData()
                          where item is ExceptionTelemetry
                          select item;
@@ -222,7 +232,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             var host = new HostingContext<SimpleService, ISimpleService>()
                       .ShouldWaitForCompletion()
                       .IncludeDetailsInFaults();
-            using ( host )
+            using (host)
             {
                 host.Open();
 
@@ -230,10 +240,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
                 try
                 {
                     client.CallFailsWithException();
-                } catch
+                }
+                catch
                 {
                 }
             }
+
             var errors = from item in TestTelemetryChannel.CollectedData()
                          where item is ExceptionTelemetry
                          select item;
@@ -245,7 +257,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public void TelemetryEventsEmittedInsideServiceCallContainExpectedContext()
         {
             TestTelemetryChannel.Clear();
-            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            using (var host = new HostingContext<SimpleService, ISimpleService>())
             {
                 host.Open();
                 ISimpleService client = host.GetChannel();
@@ -264,20 +276,20 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             }
         }
 
-
         [TestMethod]
         [TestCategory("Integration"), TestCategory("Sync")]
         public void ErrorTelemetryEventsWrittenFromMethodAreLogged()
         {
             TestTelemetryChannel.Clear();
             var host = new HostingContext<SimpleService, ISimpleService>();
-            using ( host )
+            using (host)
             {
                 host.Open();
 
                 ISimpleService client = host.GetChannel();
                 client.CallWritesExceptionEvent();
             }
+
             var request = TestTelemetryChannel.CollectedData().OfType<RequestTelemetry>().First();
             var errors = from item in TestTelemetryChannel.CollectedData()
                          where item is ExceptionTelemetry
@@ -292,13 +304,14 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         {
             TestTelemetryChannel.Clear();
             var host = new HostingContext<SimpleService, ISimpleService>();
-            using ( host )
+            using (host)
             {
                 host.Open();
 
                 ISimpleService client = host.GetChannel();
                 client.CallMarksRequestAsFailed();
             }
+
             var request = TestTelemetryChannel.CollectedData().OfType<RequestTelemetry>().First();
             Assert.IsFalse(request.Success.Value);
         }
@@ -309,13 +322,14 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         {
             TestTelemetryChannel.Clear();
             var host = new HostingContext<SelectiveTelemetryService, ISelectiveTelemetryService>();
-            using ( host )
+            using (host)
             {
                 host.Open();
 
                 ISelectiveTelemetryService client = host.GetChannel();
                 client.OperationWithTelemetry();
             }
+
             Assert.IsTrue(TestTelemetryChannel.CollectedData().Count > 0);
         }
 
@@ -325,13 +339,14 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         {
             TestTelemetryChannel.Clear();
             var host = new HostingContext<SelectiveTelemetryService, ISelectiveTelemetryService>();
-            using ( host )
+            using (host)
             {
                 host.Open();
 
                 ISelectiveTelemetryService client = host.GetChannel();
                 client.OperationWithoutTelemetry();
             }
+
             Assert.AreEqual(0, TestTelemetryChannel.CollectedData().Count);
         }
 
@@ -341,12 +356,12 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         {
             TestTelemetryChannel.Clear();
             var host = new HostingContext<SelectiveTelemetryService, ISelectiveTelemetryService>();
-            using ( host )
+            using (host)
             {
                 host.Open();
 
                 ISelectiveTelemetryService client = host.GetChannel();
-                using ( var scope = new OperationContextScope((IContextChannel)client) )
+                using (var scope = new OperationContextScope((IContextChannel)client))
                 {
                     var rootId = new RootIdMessageHeader();
                     rootId.RootId = "rootId";
@@ -354,26 +369,28 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
                     client.OperationWithTelemetry();
                 }
             }
+
             Assert.AreEqual("rootId", TestTelemetryChannel.CollectedData().First().Context.Operation.Id);
         }
 
         public class RootIdMessageHeader : MessageHeader
         {
-            public override string Name {
+            public override string Name
+            {
                 get { return "requestRootId"; }
             }
 
-            public override string Namespace {
+            public override string Namespace
+            {
                 get { return "http://schemas.microsoft.com/application-insights"; }
             }
 
-            public String RootId { get; set; }
+            public string RootId { get; set; }
 
             protected override void OnWriteHeaderContents(XmlDictionaryWriter writer, MessageVersion messageVersion)
             {
-                writer.WriteString(RootId);
+                writer.WriteString(this.RootId);
             }
         }
-
     }
 }

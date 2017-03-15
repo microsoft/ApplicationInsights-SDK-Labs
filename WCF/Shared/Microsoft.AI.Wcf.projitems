@@ -13,6 +13,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryEndpointBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryExtensionElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CorrelationHeaders.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\TryReceiveAsyncResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ReceiveAsyncResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\RequestAsyncResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SendAsyncResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\OpenAsyncResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ChannelAsyncResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOperation.cs" />
