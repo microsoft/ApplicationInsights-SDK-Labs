@@ -1,35 +1,23 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
-using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
-using Microsoft.ApplicationInsights.Wcf.Tests.Integration;
-using Microsoft.ApplicationInsights.Wcf.Tests.Service;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
-using System.ServiceModel.Channels;
-using System.Threading;
-using System.Xml;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.Linq;
+    using System.ServiceModel.Channels;
+    using System.Threading;
+    using System.Xml;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Integration;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Service;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class ClientTelemetryDuplexChannelTests : ChannelTestBase<IDuplexChannel>
     {
-        const String TwoWayOp1 = "http://tempuri.org/ISimpleService/GetSimpleData";
-        const String TwoWayOp2 = "http://tempuri.org/ISimpleService/CallFailsWithFault";
-        const String OneWayOp1 = "http://tempuri.org/IOneWayService/SuccessfullOneWayCall";
-
-        internal override IDuplexChannel GetChannel(IChannel innerChannel, Type contract)
-        {
-            return GetChannel(
-                new ClientChannelManager(new TelemetryClient(), contract),
-                innerChannel
-                );
-        }
-        internal override IDuplexChannel GetChannel(IChannelManager manager, IChannel innerChannel)
-        {
-            return new ClientTelemetryDuplexChannel(manager, innerChannel);
-        }
+        private const string TwoWayOp1 = "http://tempuri.org/ISimpleService/GetSimpleData";
+        private const string TwoWayOp2 = "http://tempuri.org/ISimpleService/CallFailsWithFault";
+        private const string OneWayOp1 = "http://tempuri.org/IOneWayService/SuccessfullOneWayCall";
 
         [TestMethod]
         [TestCategory("Client")]
@@ -37,34 +25,39 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             TestTelemetryChannel.Clear();
             var innerChannel = new MockClientChannel(SvcUrl);
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
 
             bool failed = false;
             try
             {
                 channel.Send(null);
-            } catch ( ArgumentNullException )
+            }
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "Send did not throw an exception");
         }
+
         [TestMethod]
         [TestCategory("Client")]
         public void BeginSend_WhenMessageIsNull_ThrowsException()
         {
             TestTelemetryChannel.Clear();
             var innerChannel = new MockClientChannel(SvcUrl);
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
 
             bool failed = false;
             try
             {
                 channel.BeginSend(null, null, null);
-            } catch ( ArgumentNullException )
+            }
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
+
             Assert.IsTrue(failed, "BeginSend did not throw an exception");
         }
 
@@ -74,7 +67,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             TestTelemetryChannel.Clear();
             var innerChannel = new MockClientChannel(SvcUrl);
-            var channel = GetChannel(innerChannel, typeof(IOneWayService));
+            var channel = this.GetChannel(innerChannel, typeof(IOneWayService));
 
             var request = BuildMessage(OneWayOp1);
             request.Headers.MessageId = new UniqueId();
@@ -92,7 +85,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             TestTelemetryChannel.Clear();
             var innerChannel = new MockClientChannel(SvcUrl);
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
 
             var request = BuildMessage(TwoWayOp1);
             request.Headers.MessageId = new UniqueId();
@@ -115,7 +108,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             TestTelemetryChannel.Clear();
             var innerChannel = new MockClientChannel(SvcUrl);
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
 
             var request = BuildMessage(TwoWayOp1);
             request.Headers.MessageId = new UniqueId();
@@ -140,7 +133,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             TestTelemetryChannel.Clear();
             var innerChannel = new MockClientChannel(SvcUrl);
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
 
             var request = BuildMessage(TwoWayOp1);
             request.Headers.MessageId = new UniqueId();
@@ -166,7 +159,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         {
             TestTelemetryChannel.Clear();
             var innerChannel = new MockClientChannel(SvcUrl);
-            var channel = GetChannel(innerChannel, typeof(ISimpleService));
+            var channel = this.GetChannel(innerChannel, typeof(ISimpleService));
 
             var request = BuildMessage(TwoWayOp1);
             request.Headers.MessageId = new UniqueId();
@@ -177,12 +170,14 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             try
             {
                 channel.Receive();
-            } catch ( TimeoutException )
+            }
+            catch (TimeoutException)
             {
                 failed = true;
             }
 
             Assert.IsTrue(failed, "Receive did not fail with TimeoutException");
+
             // there's potentially some additional delay between our timeout firing internally,
             // and the callback firing so that telemetry can be written
             Thread.Sleep(200);
@@ -194,7 +189,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.IsFalse(telemetry.Success.Value, "Dependency call succeeded");
         }
 
-        private Message BuildMessage(String action)
+        internal override IDuplexChannel GetChannel(IChannel innerChannel, Type contract)
+        {
+            return this.GetChannel(
+                new ClientChannelManager(new TelemetryClient(), contract),
+                innerChannel);
+        }
+
+        internal override IDuplexChannel GetChannel(IChannelManager manager, IChannel innerChannel)
+        {
+            return new ClientTelemetryDuplexChannel(manager, innerChannel);
+        }
+
+        private static Message BuildMessage(string action)
         {
             return Message.CreateMessage(MessageVersion.Default, action, "<text/>");
         }

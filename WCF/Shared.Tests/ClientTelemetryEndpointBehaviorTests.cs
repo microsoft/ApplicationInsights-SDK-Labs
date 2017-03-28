@@ -1,16 +1,16 @@
-﻿using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
-using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
-using Microsoft.ApplicationInsights.Wcf.Tests.Integration;
-using Microsoft.ApplicationInsights.Wcf.Tests.Service;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Reflection;
-using System.Runtime.Remoting;
-using System.ServiceModel;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.Reflection;
+    using System.Runtime.Remoting;
+    using System.ServiceModel;
+    using Microsoft.ApplicationInsights.Extensibility;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Integration;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Service;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class ClientTelemetryEndpointBehaviorTests
     {
@@ -18,10 +18,9 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
         [TestCategory("Client")]
         public void BehaviorAddsCustomBinding()
         {
-            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            using (var host = new HostingContext<SimpleService, ISimpleService>())
             {
                 var binding = new NetTcpBinding();
-                //binding.TransferMode = TransferMode.Streamed;
                 var configuration = new TelemetryConfiguration();
                 var factory = new ChannelFactory<ISimpleService>(binding, host.GetServiceAddress());
                 ISimpleService channel = null;
@@ -40,30 +39,30 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                     factory.Close();
 
                     Assert.IsInstanceOfType(innerChannel, typeof(ClientTelemetryChannelBase), "Telemetry channel is missing");
-                } catch
+                }
+                catch
                 {
                     factory.Abort();
-                    if ( channel != null )
+                    if (channel != null)
                     {
                         ((IClientChannel)channel).Abort();
                     }
+
                     throw;
                 }
             }
         }
-
 
         [TestMethod]
         [TestCategory("Integration"), TestCategory("Client")]
         public void RequestReply_TelemetryIsWritten()
         {
             TestTelemetryChannel.Clear();
-            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
+            using (var host = new HostingContext<SimpleService, ISimpleService>())
             {
                 host.Open();
 
                 var binding = new NetTcpBinding();
-                //binding.TransferMode = TransferMode.Streamed;
                 var configuration = new TelemetryConfiguration();
                 var factory = new ChannelFactory<ISimpleService>(binding, host.GetServiceAddress());
                 ISimpleService channel = null;
@@ -82,18 +81,21 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
                     factory.Close();
 
                     Assert.IsTrue(TestTelemetryChannel.CollectedData().Count > 0, "No telemetry events written");
-                } catch
+                }
+                catch
                 {
-                    if ( channel != null )
+                    if (channel != null)
                     {
                         ((IClientChannel)channel).Abort();
                     }
+
                     factory.Abort();
                     throw;
                 }
             }
         }
-        private System.ServiceModel.Channels.IChannel GetInnerChannel(object proxy)
+
+        private static System.ServiceModel.Channels.IChannel GetInnerChannel(object proxy)
         {
             // TransparentProxy -> ServiceChannelProxy -> ServiceChannel
             var realProxy = RemotingServices.GetRealProxy(proxy);

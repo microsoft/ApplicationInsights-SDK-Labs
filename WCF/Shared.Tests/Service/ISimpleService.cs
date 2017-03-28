@@ -1,29 +1,38 @@
-﻿using System;
-using System.ServiceModel;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
 {
+    using System;
+    using System.ServiceModel;
+
     [ServiceContract]
     public interface ISimpleService
     {
         [OperationContract]
-        String GetSimpleData();
+        string GetSimpleData();
+
         [OperationContract]
         void CallFailsWithFault();
+
         [OperationContract]
         void CallFailsWithTypedFault();
+
         [OperationContract]
         void CallFailsWithException();
+
         [OperationContract]
         void CallWritesExceptionEvent();
+
         [OperationContract]
         void CallMarksRequestAsFailed();
-        [OperationContract(Action="*")]
+
+        [OperationContract(Action = "*")]
         void CatchAllOperation();
+
         [OperationContract]
         void CallThatEmitsEvent();
+
         [OperationContract]
-        void CallAnotherServiceAndLeakOperationContext(String address);
+        void CallAnotherServiceAndLeakOperationContext(string address);
+
         [OperationContract]
         bool CallIsClientSideContext();
     }

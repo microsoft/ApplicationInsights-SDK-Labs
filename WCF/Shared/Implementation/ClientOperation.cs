@@ -1,20 +1,23 @@
-﻿using System;
-using System.ServiceModel.Description;
-
-namespace Microsoft.ApplicationInsights.Wcf.Implementation
+﻿namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
+    using System;
+    using System.ServiceModel.Description;
+
     internal struct ClientOperation
     {
-        public String Action { get; private set; }
-        public String Name { get; private set; }
-        public bool IsOneWay { get; private set; }
-
-        public ClientOperation(String contractName, OperationDescription description)
+        public ClientOperation(string contractName, OperationDescription description)
         {
-            Action = description.Messages[0].Action;
-            IsOneWay = description.IsOneWay;
+            this.Action = description.Messages[0].Action;
+            this.IsOneWay = description.IsOneWay;
+
             // Doing this here means we won't need to concatenate on each service call
-            Name = contractName + "." + description.Name;
+            this.Name = contractName + "." + description.Name;
         }
+
+        public string Action { get; private set; }
+
+        public string Name { get; private set; }
+
+        public bool IsOneWay { get; private set; }
     }
 }

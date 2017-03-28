@@ -1,34 +1,38 @@
-﻿using System;
-using System.Linq;
-using System.ServiceModel;
-using System.ServiceModel.Description;
-
-namespace Microsoft.ApplicationInsights.Wcf.Implementation
+﻿namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
+    using System;
+    using System.Linq;
+    using System.ServiceModel;
+    using System.ServiceModel.Description;
+
     internal sealed class ProfilerWcfClientProcessing
     {
         private WcfDependencyTrackingTelemetryModule trackingModule;
 
         public ProfilerWcfClientProcessing(WcfDependencyTrackingTelemetryModule module)
         {
-            if ( module == null )
+            if (module == null)
             {
                 throw new ArgumentNullException(nameof(module));
             }
+
             this.trackingModule = module;
         }
+
         public object OnStartInitializeEndpoint1(object thisObj, object serviceEndpoint)
         {
             return null;
         }
+
         public object OnEndInitializeEndpoint1(object context, object returnValue, object thisObj, object serviceEndpoint)
         {
-            if ( thisObj == null )
+            if (thisObj == null)
             {
-                WcfClientEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint1), "thisObj == null");
+                WcfClientEventSource.Log.NotExpectedCallback(0, nameof(this.OnEndInitializeEndpoint1), "thisObj == null");
                 return returnValue;
             }
-            AddBehaviorIfNotPresent(((ChannelFactory)thisObj).Endpoint);
+
+            this.AddBehaviorIfNotPresent(((ChannelFactory)thisObj).Endpoint);
             return returnValue;
         }
 
@@ -37,14 +41,16 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
             Console.WriteLine("onStartInitializeEndpoint2");
             return null;
         }
+
         public object OnEndInitializeEndpoint2(object context, object returnValue, object thisObj, object configuratioNameOrBinding, object address)
         {
-            if ( thisObj == null )
+            if (thisObj == null)
             {
-                WcfClientEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint2), "thisObj == null");
+                WcfClientEventSource.Log.NotExpectedCallback(0, nameof(this.OnEndInitializeEndpoint2), "thisObj == null");
                 return returnValue;
             }
-            AddBehaviorIfNotPresent(((ChannelFactory)thisObj).Endpoint);
+
+            this.AddBehaviorIfNotPresent(((ChannelFactory)thisObj).Endpoint);
             return returnValue;
         }
 
@@ -52,25 +58,28 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
         {
             return null;
         }
+
         public object OnEndInitializeEndpoint3(object context, object returnValue, object thisObj, object configurationName, object address, object configuration)
         {
-            if ( thisObj == null )
+            if (thisObj == null)
             {
-                WcfClientEventSource.Log.NotExpectedCallback(0, nameof(OnEndInitializeEndpoint3), "thisObj == null");
+                WcfClientEventSource.Log.NotExpectedCallback(0, nameof(this.OnEndInitializeEndpoint3), "thisObj == null");
                 return returnValue;
             }
-            AddBehaviorIfNotPresent(((ChannelFactory)thisObj).Endpoint);
+
+            this.AddBehaviorIfNotPresent(((ChannelFactory)thisObj).Endpoint);
             return returnValue;
         }
 
         private void AddBehaviorIfNotPresent(ServiceEndpoint endpoint)
         {
-            if ( endpoint.Behaviors.OfType<ClientTelemetryEndpointBehavior>().Any() )
+            if (endpoint.Behaviors.OfType<ClientTelemetryEndpointBehavior>().Any())
             {
                 // don't add behavior if it's already been added by user code
                 // or the configuration
                 return;
             }
+
             var behavior = new ClientTelemetryEndpointBehavior(this.trackingModule.TelemetryClient)
             {
                 RootOperationIdHeaderName = this.trackingModule.RootOperationIdHeaderName,

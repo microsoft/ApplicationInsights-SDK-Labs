@@ -1,19 +1,19 @@
-﻿using System;
-using System.ServiceModel;
-using System.Threading.Tasks;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests.Service
 {
+    using System;
+    using System.ServiceModel;
+    using System.Threading.Tasks;
+
     [ServiceContract]
     public interface IAsyncService
     {
         [OperationContract]
-        Task<String> GetDataAsync();
+        Task<string> GetDataAsync();
         [OperationContract]
-        Task<String> FailWithFaultAsync();
+        Task<string> FailWithFaultAsync();
         [OperationContract]
-        Task<String> FailWithExceptionAsync();
+        Task<string> FailWithExceptionAsync();
         [OperationContract]
-        Task<String> WriteDependencyEventAsync();
+        Task<string> WriteDependencyEventAsync();
     }
 }

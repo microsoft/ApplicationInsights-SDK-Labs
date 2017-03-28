@@ -1,82 +1,95 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using System;
-using System.ServiceModel;
-
-namespace Microsoft.ApplicationInsights.Wcf
+﻿namespace Microsoft.ApplicationInsights.Wcf
 {
+    using System;
+    using System.ServiceModel;
+    using Microsoft.ApplicationInsights.DataContracts;
+
     /// <summary>
     /// Represents the context of the currently executing
     /// operation. Wraps the underlying
-    /// <c ref="System.ServiceModel.OperationContext">OperationContext</c>
+    /// <see cref="System.ServiceModel.OperationContext">OperationContext</see>.
     /// </summary>
     public interface IOperationContext
     {
         /// <summary>
-        /// The ID assigned to this request
+        /// Gets the ID assigned to this request.
         /// </summary>
-        String OperationId { get; }
+        string OperationId { get; }
+
         /// <summary>
-        /// The URI of the service endpoint
+        /// Gets the URI of the service endpoint.
         /// </summary>
         Uri EndpointUri { get; }
+
         /// <summary>
-        /// The URI the message was addressed to 
+        /// Gets the URI the message was addressed to.
         /// </summary>
         Uri ToHeader { get; }
+
         /// <summary>
-        /// The RequestTelemetry event
+        /// Gets the RequestTelemetry event.
         /// </summary>
         RequestTelemetry Request { get; }
+
         /// <summary>
-        /// True if WCF owns the Request telemetry object
+        /// Gets a value indicating whether WCF owns the Request telemetry object.
         /// </summary>
         bool OwnsRequest { get; }
+
         /// <summary>
-        /// Name of the service contract being invoked
+        /// Gets the name of the service contract being invoked.
         /// </summary>
-        String ContractName { get; }
+        string ContractName { get; }
+
         /// <summary>
-        /// Namespace of the service contract being invoked
+        /// Gets the namespace of the service contract being invoked.
         /// </summary>
-        String ContractNamespace { get; }
+        string ContractNamespace { get; }
+
         /// <summary>
-        /// The name of the operation being invoked
+        /// Gets the name of the operation being invoked.
         /// </summary>
-        String OperationName { get; }
+        string OperationName { get; }
+
         /// <summary>
-        /// The service security context
+        /// Gets the service security context.
         /// </summary>
         ServiceSecurityContext SecurityContext { get; }
+
         /// <summary>
-        /// Checks if the incoming message has a given property
+        /// Checks if the incoming message has a given property.
         /// </summary>
-        /// <param name="propertyName">The name of the property to be checked</param>
-        /// <returns>True if the property exists; false otherwise</returns>
-        bool HasIncomingMessageProperty(String propertyName);
+        /// <param name="propertyName">The name of the property to be checked.</param>
+        /// <returns>True if the property exists; false otherwise.</returns>
+        bool HasIncomingMessageProperty(string propertyName);
+
         /// <summary>
-        /// Returns the value of the given property in the incoming message
+        /// Returns the value of the given property in the incoming message.
         /// </summary>
-        /// <param name="propertyName">The name of the property to be checked</param>
-        /// <returns>The property value</returns>
-        object GetIncomingMessageProperty(String propertyName);
+        /// <param name="propertyName">The name of the property to be checked.</param>
+        /// <returns>The property value.</returns>
+        object GetIncomingMessageProperty(string propertyName);
+
         /// <summary>
-        /// Checks if the outgoing message has a given property
+        /// Checks if the outgoing message has a given property.
         /// </summary>
-        /// <param name="propertyName">The name of the property to be checked</param>
-        /// <returns>True if the property exists; false otherwise</returns>
-        bool HasOutgoingMessageProperty(String propertyName);
+        /// <param name="propertyName">The name of the property to be checked.</param>
+        /// <returns>True if the property exists; false otherwise.</returns>
+        bool HasOutgoingMessageProperty(string propertyName);
+
         /// <summary>
-        /// Returns the value of the given property in the outgoing message
+        /// Returns the value of the given property in the outgoing message.
         /// </summary>
-        /// <param name="propertyName">The name of the property</param>
-        /// <returns>The property value</returns>
-        object GetOutgoingMessageProperty(String propertyName);
+        /// <param name="propertyName">The name of the property.</param>
+        /// <returns>The property value.</returns>
+        object GetOutgoingMessageProperty(string propertyName);
+
         /// <summary>
-        /// Returns the specified SOAP header on the request message
+        /// Returns the specified SOAP header on the request message.
         /// </summary>
-        /// <param name="name">The header name</param>
-        /// <param name="ns">The header XML namespace</param>
-        /// <returns>The header, or null if it is not present</returns>
-        T GetIncomingMessageHeader<T>(String name, String ns);
+        /// <param name="name">The header name.</param>
+        /// <param name="ns">The header XML namespace.</param>
+        /// <returns>The header, or null if it is not present.</returns>
+        T GetIncomingMessageHeader<T>(string name, string ns);
     }
 }

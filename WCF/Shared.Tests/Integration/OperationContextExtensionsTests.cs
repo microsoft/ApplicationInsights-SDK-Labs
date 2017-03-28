@@ -1,12 +1,19 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.ServiceModel;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 {
+    using System;
+    using System.ServiceModel;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class OperationContextExtensionsTests
     {
+        [ServiceContract]
+        public interface IContextCheckService
+        {
+            [OperationContract]
+            bool CanGetRequestTelemetry();
+        }
+
         [TestMethod]
         public void WhenOperationContextIsNullReturnsNull()
         {
@@ -18,11 +25,11 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         [TestCategory("Integration")]
         public void WhenOperationContextIsClientContextReturnsNull()
         {
-            using ( var host = new HostingContext<ContextCheckService, IContextCheckService>() )
+            using (var host = new HostingContext<ContextCheckService, IContextCheckService>())
             {
                 host.Open();
                 var client = host.GetChannel();
-                using ( var scope = new OperationContextScope((IContextChannel)client) )
+                using (var scope = new OperationContextScope((IContextChannel)client))
                 {
                     Assert.IsNull(OperationContext.Current.GetRequestTelemetry());
                 }
@@ -33,27 +40,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         [TestCategory("Integration")]
         public void WhenOperationContextIsServiceContextReturnsRequest()
         {
-            using ( var host = new HostingContext<ContextCheckService, IContextCheckService>() )
+            using (var host = new HostingContext<ContextCheckService, IContextCheckService>())
             {
                 host.Open();
                 var client = host.GetChannel();
-                using ( var scope = new OperationContextScope((IContextChannel)client) )
+                using (var scope = new OperationContextScope((IContextChannel)client))
                 {
                     Assert.IsTrue(client.CanGetRequestTelemetry());
                 }
             }
         }
 
-
-        [ServiceContract]
-        public interface IContextCheckService
-        {
-            [OperationContract]
-            bool CanGetRequestTelemetry();
-        }
-
         [ServiceTelemetry]
-        class ContextCheckService : IContextCheckService
+        internal class ContextCheckService : IContextCheckService
         {
             public bool CanGetRequestTelemetry()
             {

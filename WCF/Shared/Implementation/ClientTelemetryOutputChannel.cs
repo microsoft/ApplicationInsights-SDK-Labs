@@ -1,100 +1,107 @@
-﻿using System;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-
-namespace Microsoft.ApplicationInsights.Wcf.Implementation
+﻿namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    sealed class ClientTelemetryOutputChannel : ClientTelemetryChannelBase, IOutputChannel, IOutputSessionChannel
+    using System;
+    using System.ServiceModel;
+    using System.ServiceModel.Channels;
+
+    internal sealed class ClientTelemetryOutputChannel : ClientTelemetryChannelBase, IOutputChannel, IOutputSessionChannel
     {
-        private IOutputChannel OutputChannel
-        {
-            get { return (IOutputChannel)InnerChannel; }
-        }
-
-        public override EndpointAddress RemoteAddress
-        {
-            get { return OutputChannel.RemoteAddress; }
-        }
-        public Uri Via
-        {
-            get { return OutputChannel.Via; }
-        }
-
-        public IOutputSession Session
-        {
-            get { return ((IOutputSessionChannel)InnerChannel).Session; }
-        }
-
         public ClientTelemetryOutputChannel(IChannelManager channelManager, IChannel channel)
             : base(channelManager, channel)
         {
         }
 
+        public override EndpointAddress RemoteAddress
+        {
+            get { return this.OutputChannel.RemoteAddress; }
+        }
+
+        public Uri Via
+        {
+            get { return this.OutputChannel.Via; }
+        }
+
+        public IOutputSession Session
+        {
+            get { return ((IOutputSessionChannel)this.InnerChannel).Session; }
+        }
+
+        private IOutputChannel OutputChannel
+        {
+            get { return (IOutputChannel)this.InnerChannel; }
+        }
+
         public void Send(Message message)
         {
-            Send(message, ChannelManager.SendTimeout);
+            this.Send(message, this.ChannelManager.SendTimeout);
         }
 
         public void Send(Message message, TimeSpan timeout)
         {
-            if ( message == null )
+            if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(Send));
-            var telemetry = StartSendTelemetry(message, nameof(Send));
+
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.Send));
+            var telemetry = StartSendTelemetry(message, nameof(this.Send));
             try
             {
-                OutputChannel.Send(message, timeout);
-                StopSendTelemetry(telemetry, null, null, nameof(Send));
-            } catch ( Exception ex )
+                this.OutputChannel.Send(message, timeout);
+                this.StopSendTelemetry(telemetry, null, null, nameof(this.Send));
+            }
+            catch (Exception ex)
             {
-                StopSendTelemetry(telemetry, null, ex, nameof(Send));
+                this.StopSendTelemetry(telemetry, null, ex, nameof(this.Send));
                 throw;
             }
         }
 
         public IAsyncResult BeginSend(Message message, AsyncCallback callback, object state)
         {
-            return BeginSend(message, ChannelManager.SendTimeout, callback, state);
+            return this.BeginSend(message, this.ChannelManager.SendTimeout, callback, state);
         }
 
         public IAsyncResult BeginSend(Message message, TimeSpan timeout, AsyncCallback callback, object state)
         {
-            if ( message == null )
+            if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(BeginSend));
-            var telemetry = StartSendTelemetry(message, nameof(BeginSend));
+
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.BeginSend));
+            var telemetry = StartSendTelemetry(message, nameof(this.BeginSend));
             try
             {
-                return new SendAsyncResult(OutputChannel, message, timeout, this.OnSendComplete, callback, state, telemetry);
-            } catch ( Exception ex )
+                return new SendAsyncResult(this.OutputChannel, message, timeout, this.OnSendComplete, callback, state, telemetry);
+            }
+            catch (Exception ex)
             {
-                StopSendTelemetry(telemetry, null, ex, nameof(BeginSend));
+                this.StopSendTelemetry(telemetry, null, ex, nameof(this.BeginSend));
                 throw;
             }
         }
 
         public void EndSend(IAsyncResult result)
         {
-            if ( result == null )
+            if (result == null)
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(EndSend));
+
+            WcfClientEventSource.Log.ChannelCalled(GetType().FullName, nameof(this.EndSend));
             SendAsyncResult.End<SendAsyncResult>(result);
         }
 
         private void OnSendComplete(IAsyncResult result)
         {
-            if ( result == null )
+            if (result == null)
             {
                 throw new ArgumentNullException(nameof(result));
             }
+
             var sar = (SendAsyncResult)result;
-            StopSendTelemetry(sar.Telemetry, null, sar.LastException, nameof(OnSendComplete));
+            this.StopSendTelemetry(sar.Telemetry, null, sar.LastException, nameof(this.OnSendComplete));
         }
     }
 }

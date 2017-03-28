@@ -1,10 +1,10 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.ServiceModel.Channels;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.ServiceModel.Channels;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class UserAgentTelemetryInitializerTests
     {
@@ -25,6 +25,7 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
 
             Assert.AreEqual("MyUserAgent", telemetry.Context.User.UserAgent);
         }
+
         [TestMethod]
         public void UserAgentIsCopiedFromRequestIfPresent()
         {

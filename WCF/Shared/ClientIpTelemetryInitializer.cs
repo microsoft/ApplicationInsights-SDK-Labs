@@ -1,37 +1,38 @@
-﻿using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
-using System;
-using System.ServiceModel.Channels;
-
-namespace Microsoft.ApplicationInsights.Wcf
+﻿namespace Microsoft.ApplicationInsights.Wcf
 {
+    using System;
+    using System.ServiceModel.Channels;
+    using Microsoft.ApplicationInsights.Channel;
+    using Microsoft.ApplicationInsights.Extensibility.Implementation;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+
     /// <summary>
-    /// Collects the IP of the client calling the WCF service
+    /// Collects the IP of the client calling the WCF service.
     /// </summary>
     public sealed class ClientIpTelemetryInitializer : WcfTelemetryInitializer
     {
         /// <summary>
-        /// Initialize the telemetry event with the client IP if available
+        /// Initialize the telemetry event with the client IP if available.
         /// </summary>
-        /// <param name="telemetry">The telemetry event</param>
-        /// <param name="operation">The WCF operation context</param>
+        /// <param name="telemetry">The telemetry event.</param>
+        /// <param name="operation">The WCF operation context.</param>
         protected override void OnInitialize(ITelemetry telemetry, IOperationContext operation)
         {
-            if ( String.IsNullOrEmpty(telemetry.Context.Location.Ip) )
+            if (string.IsNullOrEmpty(telemetry.Context.Location.Ip))
             {
                 var location = operation.Request.Context.Location;
-                if ( String.IsNullOrEmpty(location.Ip) )
+                if (string.IsNullOrEmpty(location.Ip))
                 {
-                    UpdateClientIp(location, operation);
+                    this.UpdateClientIp(location, operation);
                 }
+
                 telemetry.Context.Location.Ip = location.Ip;
             }
         }
 
         private void UpdateClientIp(LocationContext location, IOperationContext operation)
         {
-            if ( operation.HasIncomingMessageProperty(RemoteEndpointMessageProperty.Name) )
+            if (operation.HasIncomingMessageProperty(RemoteEndpointMessageProperty.Name))
             {
                 var property = (RemoteEndpointMessageProperty)
                     operation.GetIncomingMessageProperty(RemoteEndpointMessageProperty.Name);

@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ServiceModel.Description;
-
-namespace Microsoft.ApplicationInsights.Wcf.Implementation
+﻿namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ServiceModel.Description;
+
     internal class ClientContract
     {
-        private IDictionary<String, ClientOperation> dictionary;
-        public Type ContractType { get; private set; }
+        private IDictionary<string, ClientOperation> dictionary;
 
         public ClientContract(Type contractType)
             : this(ContractDescription.GetContract(contractType))
@@ -16,18 +15,20 @@ namespace Microsoft.ApplicationInsights.Wcf.Implementation
 
         public ClientContract(ContractDescription description)
         {
-            ContractType = description.ContractType;
-            dictionary = new Dictionary<String, ClientOperation>();
-            foreach ( var op in description.Operations )
+            this.ContractType = description.ContractType;
+            this.dictionary = new Dictionary<string, ClientOperation>();
+            foreach (var op in description.Operations)
             {
-                var opDesc = new ClientOperation(ContractType.Name, op);
-                dictionary.Add(opDesc.Action, opDesc);
+                var operationDesc = new ClientOperation(this.ContractType.Name, op);
+                this.dictionary.Add(operationDesc.Action, operationDesc);
             }
         }
 
-        public bool TryLookupByAction(String soapAction, out ClientOperation operation)
+        public Type ContractType { get; private set; }
+
+        public bool TryLookupByAction(string soapAction, out ClientOperation operation)
         {
-            return dictionary.TryGetValue(soapAction, out operation);
+            return this.dictionary.TryGetValue(soapAction, out operation);
         }
     }
 }
