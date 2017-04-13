@@ -121,35 +121,35 @@
             const string ClassName = "System.ServiceModel.ChannelFactory";
 
             // void InitializeEndpoint(ServiceEndpoint endpoint)
-            Decorator.Decorate(
+            Functions.Decorate(
                 Assembly,
                 Module,
                 ClassName + ".InitializeEndpoint",
-                1,
-                null,
+                this.wcfClientProcessing.OnStartInitializeEndpoint1,
                 this.wcfClientProcessing.OnEndInitializeEndpoint1,
-                null);
+                null,
+                false);
 
             // void InitializeEndpoint(Binding binding, EndpointAddress address)
             // void InitializeEndpoint(string configurationName, EndpointAddress address)
-            Decorator.Decorate(
+            Functions.Decorate(
                 Assembly,
                 Module,
                 ClassName + ".InitializeEndpoint",
-                2,
                 this.wcfClientProcessing.OnStartInitializeEndpoint2,
                 this.wcfClientProcessing.OnEndInitializeEndpoint2,
-                null);
+                null,
+                false);
 
             // void InitializeEndpoint(string configurationName, EndpointAddress address, Configuration configuration)
-            Decorator.Decorate(
+            Functions.Decorate(
                 Assembly,
                 Module,
                 ClassName + ".InitializeEndpoint",
-                3,
-                null,
+                this.wcfClientProcessing.OnStartInitializeEndpoint3,
                 this.wcfClientProcessing.OnEndInitializeEndpoint3,
-                null);
+                null,
+                false);
         }
     }
 }
