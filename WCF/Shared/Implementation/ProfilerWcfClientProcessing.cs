@@ -38,7 +38,6 @@
 
         public object OnStartInitializeEndpoint2(object thisObj, object configuratioNameOrBinding, object address)
         {
-            Console.WriteLine("onStartInitializeEndpoint2");
             return null;
         }
 

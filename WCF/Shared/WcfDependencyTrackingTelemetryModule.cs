@@ -125,7 +125,7 @@
                 Assembly,
                 Module,
                 ClassName + ".InitializeEndpoint",
-                null,
+                this.wcfClientProcessing.OnStartInitializeEndpoint1,
                 this.wcfClientProcessing.OnEndInitializeEndpoint1,
                 null,
                 false);
@@ -146,7 +146,7 @@
                 Assembly,
                 Module,
                 ClassName + ".InitializeEndpoint",
-                null,
+                this.wcfClientProcessing.OnStartInitializeEndpoint3,
                 this.wcfClientProcessing.OnEndInitializeEndpoint3,
                 null,
                 false);
