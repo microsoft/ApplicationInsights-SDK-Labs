@@ -35,6 +35,8 @@
             IOperationContext context = WcfOperationContext.Current;
             if (context != null)
             {
+                WcfOperationContext.StoreThreadContext(context);
+
                 if (!this.LogTelemetryFor(context))
                 {
                     WcfEventSource.Log.OperationIgnored(context.ContractName, context.ContractNamespace, context.OperationName);
@@ -77,6 +79,8 @@
             var context = WcfOperationContext.Current;
             if (context != null)
             {
+                WcfOperationContext.ClearThreadContext();
+
                 // Do not run OnEndRequest for stuff we're not interested in!
                 if (!this.LogTelemetryFor(context))
                 {
