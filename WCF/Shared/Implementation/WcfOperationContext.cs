@@ -109,6 +109,22 @@
             return context;
         }
 
+        public static void StoreThreadContext(IOperationContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            // backup in case we can't get to the server-side OperationContext later
+            CallContext.LogicalSetData(CallContextProperty, new ObjectHandle(context));
+        }
+
+        public static void ClearThreadContext()
+        {
+            CallContext.FreeNamedDataSlot(CallContextProperty);
+        }
+
         public bool HasIncomingMessageProperty(string propertyName)
         {
             if (string.IsNullOrEmpty(propertyName))
@@ -256,9 +272,6 @@
                 {
                     context = new WcfOperationContext(owner, PlatformContext.RequestFromHttpContext());
                     owner.Extensions.Add(context);
-
-                    // backup in case we can't get to the server-side OperationContext later
-                    CallContext.LogicalSetData(CallContextProperty, new ObjectHandle(context));
                 }
 
                 // no server-side OperationContext to attach to
