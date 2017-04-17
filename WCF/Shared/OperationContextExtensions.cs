@@ -19,11 +19,6 @@
         /// <returns>The request object or null.</returns>
         public static RequestTelemetry GetRequestTelemetry(this OperationContext context)
         {
-            if (context == null)
-            {
-                return null;
-            }
-
             var icontext = WcfOperationContext.FindContext(context);
             return icontext?.Request;
         }
