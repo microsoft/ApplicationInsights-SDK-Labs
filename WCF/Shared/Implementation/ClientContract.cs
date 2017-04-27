@@ -28,7 +28,14 @@
 
         public bool TryLookupByAction(string soapAction, out ClientOperation operation)
         {
-            return this.dictionary.TryGetValue(soapAction, out operation);
+            bool found = this.dictionary.TryGetValue(soapAction, out operation);
+            if (!found)
+            {
+                // if we don't find it, try the catch all operation
+                found = this.dictionary.TryGetValue("*", out operation);
+            }
+
+            return found;
         }
     }
 }
