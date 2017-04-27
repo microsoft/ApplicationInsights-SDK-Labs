@@ -52,6 +52,11 @@
         string OperationName { get; }
 
         /// <summary>
+        /// Gets the SOAP Action of the operation being invoked.
+        /// </summary>
+        string SoapAction { get; }
+
+        /// <summary>
         /// Gets the service security context.
         /// </summary>
         ServiceSecurityContext SecurityContext { get; }

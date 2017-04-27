@@ -19,6 +19,7 @@
             this.context = operationContext;
             this.stateDicctionary = new ConcurrentDictionary<string, object>();
             this.OperationName = this.DiscoverOperationName(operationContext);
+            this.SoapAction = operationContext.IncomingMessageHeaders.Action;
             if (httpCtxTelemetry != null)
             {
                 this.Request = httpCtxTelemetry;
@@ -45,6 +46,8 @@
         }
 
         public string OperationName { get; private set; }
+
+        public string SoapAction { get; private set; }
 
         public RequestTelemetry Request { get; private set; }
 

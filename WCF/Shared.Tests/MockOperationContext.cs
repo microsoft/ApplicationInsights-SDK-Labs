@@ -44,6 +44,8 @@
 
         public string OperationName { get; set; }
 
+        public string SoapAction { get; set; }
+
         public string ContractName { get; set; }
 
         public string ContractNamespace { get; set; }

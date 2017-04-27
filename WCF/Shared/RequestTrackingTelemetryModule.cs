@@ -50,6 +50,7 @@
 
             telemetry.Url = operation.EndpointUri;
             telemetry.Name = operation.OperationName;
+            telemetry.Properties["soapAction"] = operation.SoapAction;
 
             var httpHeaders = operation.GetHttpRequestHeaders();
             if (httpHeaders != null)
@@ -118,7 +119,7 @@
             telemetry.ResponseCode = responseCode.ToString("d");
             if (telemetry.Url != null)
             {
-                telemetry.Properties["Protocol"] = telemetry.Url.Scheme;
+                telemetry.Properties["protocol"] = telemetry.Url.Scheme;
             }
 
             // if the Microsoft.ApplicationInsights.Web package started
