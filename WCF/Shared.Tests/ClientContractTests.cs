@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
     using System;
+    using System.ServiceModel.Channels;
     using System.ServiceModel.Description;
     using Microsoft.ApplicationInsights.Wcf.Implementation;
     using Microsoft.ApplicationInsights.Wcf.Tests.Service;
@@ -35,6 +36,20 @@
             Assert.IsTrue(found);
             Assert.AreEqual(true, op.IsOneWay);
             Assert.AreEqual("IOneWayService.SuccessfullOneWayCall", op.Name);
+        }
+
+        [TestMethod]
+        public void CanBuildDescriptionForGenericService()
+        {
+            var cd = ContractDescription.GetContract(typeof(IRequestChannel));
+            var cc = new ClientContract(cd);
+            Assert.AreEqual(typeof(IRequestChannel), cc.ContractType);
+
+            // action doesn't exist, so we should get the generic one
+            ClientOperation op;
+            var found = cc.TryLookupByAction("http://tempuri.org/IOneWayService/SuccessfullOneWayCall", out op);
+            Assert.IsTrue(found);
+            Assert.AreEqual("IRequestChannel.Request", op.Name);
         }
     }
 }
