@@ -119,7 +119,7 @@
             telemetry.ResponseCode = responseCode.ToString("d");
             if (telemetry.Url != null)
             {
-                telemetry.Properties["Protocol"] = telemetry.Url.Scheme;
+                telemetry.Properties["protocol"] = telemetry.Url.Scheme;
             }
 
             // if the Microsoft.ApplicationInsights.Web package started
