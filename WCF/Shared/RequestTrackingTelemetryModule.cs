@@ -50,6 +50,7 @@
 
             telemetry.Url = operation.EndpointUri;
             telemetry.Name = operation.OperationName;
+            telemetry.Properties["soapAction"] = operation.SoapAction;
 
             var httpHeaders = operation.GetHttpRequestHeaders();
             if (httpHeaders != null)
