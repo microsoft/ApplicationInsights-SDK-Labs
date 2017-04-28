@@ -76,6 +76,11 @@
         /// </summary>
         public string SoapHeaderNamespace { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether channel events (such as channel open) should be emitted as dependencies.
+        /// </summary>
+        public bool IgnoreChannelEvents { get; set; }
+
         void IEndpointBehavior.AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
             var contract = endpoint.Contract.ContractType;
@@ -92,7 +97,7 @@
                 ParentOperationIdHeaderName = this.ParentOperationIdHeaderName,
                 SoapRootOperationIdHeaderName = this.SoapRootOperationIdHeaderName,
                 SoapParentOperationIdHeaderName = this.SoapParentOperationIdHeaderName,
-                SoapHeaderNamespace = this.SoapHeaderNamespace
+                SoapHeaderNamespace = this.SoapHeaderNamespace,
             };
             var collection = endpoint.Binding.CreateBindingElements();
             collection.Insert(0, element);

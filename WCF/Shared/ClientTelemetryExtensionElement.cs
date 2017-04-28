@@ -68,6 +68,15 @@
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether channel events (such as channel open) should be emitted as dependencies.
+        /// </summary>
+        public bool IgnoreChannelEvents
+        {
+            get { return (bool)base["ignoreChannelEvents"]; }
+            set { base["ignoreChannelEvents"] = value; }
+        }
+
+        /// <summary>
         /// The list of properties supported by this behavior.
         /// </summary>
         protected override ConfigurationPropertyCollection Properties
@@ -91,7 +100,8 @@
                 RootOperationIdHeaderName = this.RootOperationIdHeaderName,
                 SoapParentOperationIdHeaderName = this.SoapParentOperationIdHeaderName,
                 SoapRootOperationIdHeaderName = this.SoapRootOperationIdHeaderName,
-                SoapHeaderNamespace = this.SoapHeaderNamespace
+                SoapHeaderNamespace = this.SoapHeaderNamespace,
+                IgnoreChannelEvents = this.IgnoreChannelEvents
             };
             return behavior;
         }
@@ -104,7 +114,8 @@
                 new ConfigurationProperty("rootOperationIdHeaderName", typeof(string), CorrelationHeaders.HttpStandardRootIdHeader),
                 new ConfigurationProperty("soapParentOperationIdHeaderName", typeof(string), CorrelationHeaders.SoapStandardParentIdHeader),
                 new ConfigurationProperty("soapRootOperationIdHeaderName", typeof(string), CorrelationHeaders.SoapStandardRootIdHeader),
-                new ConfigurationProperty("soapHeaderNamespace", typeof(string), CorrelationHeaders.SoapStandardNamespace)
+                new ConfigurationProperty("soapHeaderNamespace", typeof(string), CorrelationHeaders.SoapStandardNamespace),
+                new ConfigurationProperty("ignoreChannelEvents", typeof(bool), false)
             };
             return props;
         }

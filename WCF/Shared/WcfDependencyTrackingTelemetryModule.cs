@@ -53,6 +53,11 @@
         public bool DisableRuntimeInstrumentation { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether channel events (such as channel open) should be emitted as dependencies.
+        /// </summary>
+        public bool IgnoreChannelEvents { get; set; }
+
+        /// <summary>
         /// Gets the Telemetry Client based on configuration we were initialized with.
         /// </summary>
         internal TelemetryClient TelemetryClient { get; private set; }
@@ -76,7 +81,6 @@
                     {
                         try
                         {
-                            this.TelemetryClient = new TelemetryClient(configuration);
                             this.DoInitialization(configuration);
                         }
                         catch (Exception ex)
@@ -92,11 +96,31 @@
 
         private void DoInitialization(TelemetryConfiguration configuration)
         {
-            this.RootOperationIdHeaderName = CorrelationHeaders.HttpStandardRootIdHeader;
-            this.ParentOperationIdHeaderName = CorrelationHeaders.HttpStandardParentIdHeader;
-            this.SoapHeaderNamespace = CorrelationHeaders.SoapStandardNamespace;
-            this.SoapParentOperationIdHeaderName = CorrelationHeaders.SoapStandardParentIdHeader;
-            this.SoapRootOperationIdHeaderName = CorrelationHeaders.SoapStandardRootIdHeader;
+            this.TelemetryClient = new TelemetryClient(configuration);
+            if (string.IsNullOrEmpty(this.RootOperationIdHeaderName))
+            {
+                this.RootOperationIdHeaderName = CorrelationHeaders.HttpStandardRootIdHeader;
+            }
+
+            if (string.IsNullOrEmpty(this.ParentOperationIdHeaderName))
+            {
+                this.ParentOperationIdHeaderName = CorrelationHeaders.HttpStandardParentIdHeader;
+            }
+
+            if (this.SoapHeaderNamespace == null)
+            {
+                this.SoapHeaderNamespace = CorrelationHeaders.SoapStandardNamespace;
+            }
+
+            if (string.IsNullOrEmpty(this.SoapParentOperationIdHeaderName))
+            {
+                this.SoapParentOperationIdHeaderName = CorrelationHeaders.SoapStandardParentIdHeader;
+            }
+
+            if (string.IsNullOrEmpty(this.SoapRootOperationIdHeaderName))
+            {
+                this.SoapRootOperationIdHeaderName = CorrelationHeaders.SoapStandardRootIdHeader;
+            }
 
             if (Decorator.IsHostEnabled())
             {

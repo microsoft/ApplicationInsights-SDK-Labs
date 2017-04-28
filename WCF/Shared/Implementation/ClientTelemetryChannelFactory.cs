@@ -47,6 +47,8 @@
 
         public string SoapHeaderNamespace { get; set; }
 
+        public bool IgnoreChannelEvents { get; set; }
+
         public override T GetProperty<T>()
         {
             return this.innerFactory.GetProperty<T>();

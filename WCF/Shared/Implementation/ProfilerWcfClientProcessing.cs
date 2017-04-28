@@ -85,7 +85,8 @@
                 ParentOperationIdHeaderName = this.trackingModule.ParentOperationIdHeaderName,
                 SoapRootOperationIdHeaderName = this.trackingModule.SoapRootOperationIdHeaderName,
                 SoapParentOperationIdHeaderName = this.trackingModule.SoapParentOperationIdHeaderName,
-                SoapHeaderNamespace = this.trackingModule.SoapHeaderNamespace
+                SoapHeaderNamespace = this.trackingModule.SoapHeaderNamespace,
+                IgnoreChannelEvents = this.trackingModule.IgnoreChannelEvents
             };
             endpoint.Behaviors.Add(behavior);
         }

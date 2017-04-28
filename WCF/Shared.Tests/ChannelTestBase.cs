@@ -237,6 +237,23 @@
 
         [TestMethod]
         [TestCategory("Client")]
+        public void WhenIgnoreChannelEventsTrue_And_ChannelIsOpened_NoTelemetryIsWritten()
+        {
+            var innerChannel = new MockClientChannel(SvcUrl);
+            TestTelemetryChannel.Clear();
+
+            var manager = new ClientChannelManager(new TelemetryClient(), typeof(ISimpleService))
+            {
+                IgnoreChannelEvents = true
+            };
+            var channel = this.GetChannel(manager, innerChannel);
+            channel.Open();
+
+            Assert.AreEqual(0, TestTelemetryChannel.CollectedData().Count, "Telemetry events were written");
+        }
+
+        [TestMethod]
+        [TestCategory("Client")]
         public void WhenChannelIsOpenedWithTimeout_TelemetryIsWritten()
         {
             var innerChannel = new MockClientChannel(SvcUrl);
@@ -258,6 +275,24 @@
             channel.EndOpen(result);
 
             CheckOpenDependencyWritten(typeof(ISimpleService), true);
+        }
+
+        [TestMethod]
+        [TestCategory("Client")]
+        public void WhenIgnoreChannelEventsTrue_And_ChannelIsOpenedAsync_NoTelemetryIsWritten()
+        {
+            var innerChannel = new MockClientChannel(SvcUrl);
+            TestTelemetryChannel.Clear();
+
+            var manager = new ClientChannelManager(new TelemetryClient(), typeof(ISimpleService))
+            {
+                IgnoreChannelEvents = true
+            };
+            var channel = this.GetChannel(manager, innerChannel);
+            var result = channel.BeginOpen(null, null);
+            channel.EndOpen(result);
+
+            Assert.AreEqual(0, TestTelemetryChannel.CollectedData().Count, "Telemetry events were written");
         }
 
         [TestMethod]
