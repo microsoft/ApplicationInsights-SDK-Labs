@@ -4,7 +4,7 @@ Application Insights experimental projects repository.
 # How to use
 All NuGet packages from this repository being hosted in the SDK Labs [NuGet gallery](https://www.myget.org/gallery/applicationinsights-sdk-labs). 
 
-##Install NuGet in Visual Studio
+## Install NuGet in Visual Studio
 
 If you’re using **Visual Studio to manage NuGet** package in your project, here’s what to do:
 
@@ -17,7 +17,7 @@ If you’re using **Visual Studio to manage NuGet** package in your project, her
 
   ![020](https://cloud.githubusercontent.com/assets/9950081/17712674/dd3fd61a-63ab-11e6-91fe-28b1c5bd9e99.png) 
 
-##Install NuGet in command line package manager
+## Install NuGet in command line package manager
 
 If you are using the **command line package manager** this is all you need:
 
