@@ -1,7 +1,6 @@
 ﻿namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
     using System;
-    using System.ServiceModel.Channels;
     using System.Threading;
     using Microsoft.ApplicationInsights.DataContracts;
 
@@ -13,12 +12,14 @@
         private AsyncCallback callback;
         private EventWaitHandle waitHandle;
         private AsyncCallback channelCompletionCallback;
+        private object lockObj;
         private int completed;
 
         public ChannelAsyncResult(AsyncCallback completeCallback, AsyncCallback callback, object state, DependencyTelemetry channelState)
         {
             this.AsyncState = state;
-            this.waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+            this.lockObj = new object();
+            this.waitHandle = null;
             this.Telemetry = channelState;
             this.channelCompletionCallback = completeCallback;
             this.callback = callback;
@@ -28,7 +29,21 @@
 
         public WaitHandle AsyncWaitHandle
         {
-            get { return this.waitHandle; }
+            get
+            {
+                if (this.waitHandle == null)
+                {
+                    lock (this.lockObj)
+                    {
+                        if (this.waitHandle == null)
+                        {
+                            this.waitHandle = new EventWaitHandle(this.IsCompleted, EventResetMode.ManualReset);
+                        }
+                    }
+                }
+
+                return this.waitHandle;
+            }
         }
 
         public bool CompletedSynchronously
@@ -77,6 +92,18 @@
             }
         }
 
+        protected void CompleteSynchronously()
+        {
+            try
+            {
+                this.Complete(true);
+            }
+            finally
+            {
+                ((IDisposable)this).Dispose();
+            }
+        }
+
         protected void Complete(bool completedSync, Exception exception = null)
         {
             this.LastException = exception;
@@ -95,7 +122,11 @@
 
             // set the waitHandle so that when callback() calls EndWhatever()
             // it doesn't hang
-            this.waitHandle.Set();
+            if (this.waitHandle != null)
+            {
+                this.waitHandle.Set();
+            }
+
             try
             {
                 this.callback?.Invoke(this);

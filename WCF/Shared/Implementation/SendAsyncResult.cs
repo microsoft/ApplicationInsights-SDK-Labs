@@ -17,7 +17,7 @@
             if (this.OriginalResult.CompletedSynchronously)
             {
                 innerChannel.EndSend(this.OriginalResult);
-                this.Complete(true);
+                this.CompleteSynchronously();
             }
         }
 

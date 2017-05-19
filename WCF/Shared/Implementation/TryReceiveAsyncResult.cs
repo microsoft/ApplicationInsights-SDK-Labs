@@ -16,7 +16,7 @@
                 Message message = null;
                 this.Result = innerChannel.EndTryReceive(this.OriginalResult, out message);
                 this.Message = message;
-                this.Complete(true);
+                this.CompleteSynchronously();
             }
         }
 
