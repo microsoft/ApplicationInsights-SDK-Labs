@@ -34,5 +34,7 @@
         public string SoapParentOperationIdHeaderName { get; set; }
 
         public string SoapHeaderNamespace { get; set; }
+
+        public bool IgnoreChannelEvents { get; set; }
     }
 }

@@ -57,10 +57,15 @@
             try
             {
                 this.InnerChannel.Open(timeout);
-                this.StopOpenTelemetry(telemetry, null, nameof(this.Open));
+
+                if (!this.ChannelManager.IgnoreChannelEvents)
+                {
+                    this.StopOpenTelemetry(telemetry, null, nameof(this.Open));
+                }
             }
             catch (Exception ex)
             {
+                // if an exception happened, we still want to report it
                 this.StopOpenTelemetry(telemetry, ex, nameof(this.Open));
                 throw;
             }
@@ -298,7 +303,16 @@
             }
 
             var oar = (OpenAsyncResult)result;
-            this.StopOpenTelemetry(oar.Telemetry, oar.LastException, nameof(this.OpenCompleted));
+            bool sendTelemetry = !this.ChannelManager.IgnoreChannelEvents;
+            if (oar.LastException != null)
+            {
+                sendTelemetry = true;
+            }
+
+            if (sendTelemetry)
+            {
+                this.StopOpenTelemetry(oar.Telemetry, oar.LastException, nameof(this.OpenCompleted));
+            }
         }
 
         private void OnChannelOpened(object sender, EventArgs e)

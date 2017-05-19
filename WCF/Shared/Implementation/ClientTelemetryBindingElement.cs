@@ -33,6 +33,8 @@
         public string SoapParentOperationIdHeaderName { get; set; }
 
         public string SoapHeaderNamespace { get; set; }
+        
+        public bool IgnoreChannelEvents { get; set; }
 
         public override BindingElement Clone()
         {
@@ -78,7 +80,8 @@
                 ParentOperationIdHeaderName = this.ParentOperationIdHeaderName,
                 SoapRootOperationIdHeaderName = this.SoapRootOperationIdHeaderName,
                 SoapParentOperationIdHeaderName = this.SoapParentOperationIdHeaderName,
-                SoapHeaderNamespace = this.SoapHeaderNamespace
+                SoapHeaderNamespace = this.SoapHeaderNamespace,
+                IgnoreChannelEvents = this.IgnoreChannelEvents
             };
             return factory;
         }

@@ -15,7 +15,7 @@
             if (this.OriginalResult.CompletedSynchronously)
             {
                 innerChannel.EndOpen(this.OriginalResult);
-                this.Complete(true);
+                this.CompleteSynchronously();
             }
         }
 

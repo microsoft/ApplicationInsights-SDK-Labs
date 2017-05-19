@@ -15,7 +15,7 @@
         {
             var element = new ClientTelemetryExtensionElement();
             var props = element.CreateProperties();
-            Assert.AreEqual(5, props.Count);
+            Assert.AreEqual(6, props.Count);
         }
 
         [TestMethod]
@@ -47,6 +47,9 @@
 
             prop = props.OfType<ConfigurationProperty>().First(x => x.Name == "soapHeaderNamespace");
             Assert.AreEqual(CorrelationHeaders.SoapStandardNamespace, prop.DefaultValue);
+
+            prop = props.OfType<ConfigurationProperty>().First(x => x.Name == "ignoreChannelEvents");
+            Assert.AreEqual(false, prop.DefaultValue);
         }
 
         [TestMethod]
@@ -60,6 +63,7 @@
             Assert.AreEqual(CorrelationHeaders.SoapStandardRootIdHeader, element.SoapRootOperationIdHeaderName);
             Assert.AreEqual(CorrelationHeaders.SoapStandardParentIdHeader, element.SoapParentOperationIdHeaderName);
             Assert.AreEqual(CorrelationHeaders.SoapStandardNamespace, element.SoapHeaderNamespace);
+            Assert.AreEqual(false, element.IgnoreChannelEvents);
         }
 
         [TestMethod]
@@ -72,6 +76,7 @@
             element.SoapParentOperationIdHeaderName = "soapMyParentId";
             element.SoapRootOperationIdHeaderName = "soapMyRootId";
             element.SoapHeaderNamespace = "urn:soapheader";
+            element.IgnoreChannelEvents = true;
 
             var behavior = element.CreateBehaviorInternal();
             Assert.AreEqual(element.ParentOperationIdHeaderName, behavior.ParentOperationIdHeaderName);
@@ -79,6 +84,7 @@
             Assert.AreEqual(element.SoapParentOperationIdHeaderName, behavior.SoapParentOperationIdHeaderName);
             Assert.AreEqual(element.SoapRootOperationIdHeaderName, behavior.SoapRootOperationIdHeaderName);
             Assert.AreEqual(element.SoapHeaderNamespace, behavior.SoapHeaderNamespace);
+            Assert.AreEqual(element.IgnoreChannelEvents, behavior.IgnoreChannelEvents);
         }
     }
 }
