@@ -327,7 +327,7 @@
 
         private void OnChannelClosed(object sender, EventArgs e)
         {
-            this.Closed?.Invoke(sender, e);
+            this.Closed?.Invoke(this, e);
         }
 
         private void OnChannelClosing(object sender, EventArgs e)
