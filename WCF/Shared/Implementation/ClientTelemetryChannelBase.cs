@@ -327,17 +327,17 @@
 
         private void OnChannelClosed(object sender, EventArgs e)
         {
-            this.Closed?.Invoke(sender, e);
+            this.Closed?.Invoke(this, e);
         }
 
         private void OnChannelClosing(object sender, EventArgs e)
         {
-            this.Closing?.Invoke(sender, e);
+            this.Closing?.Invoke(this, e);
         }
 
         private void OnChannelFaulted(object sender, EventArgs e)
         {
-            this.Faulted?.Invoke(sender, e);
+            this.Faulted?.Invoke(this, e);
         }
 
         private DependencyTelemetry StartOpenTelemetry(string method)
