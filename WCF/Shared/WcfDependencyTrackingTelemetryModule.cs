@@ -152,7 +152,8 @@
                 this.wcfClientProcessing.OnStartInitializeEndpoint1,
                 this.wcfClientProcessing.OnEndInitializeEndpoint1,
                 null,
-                false);
+                isStatic: false,
+                isSafe: true);
 
             // void InitializeEndpoint(Binding binding, EndpointAddress address)
             // void InitializeEndpoint(string configurationName, EndpointAddress address)
@@ -163,7 +164,8 @@
                 this.wcfClientProcessing.OnStartInitializeEndpoint2,
                 this.wcfClientProcessing.OnEndInitializeEndpoint2,
                 null,
-                false);
+                isStatic: false,
+                isSafe: true);
 
             // void InitializeEndpoint(string configurationName, EndpointAddress address, Configuration configuration)
             Functions.Decorate(
@@ -173,7 +175,8 @@
                 this.wcfClientProcessing.OnStartInitializeEndpoint3,
                 this.wcfClientProcessing.OnEndInitializeEndpoint3,
                 null,
-                false);
+                isStatic: false,
+                isSafe: true);
         }
     }
 }
