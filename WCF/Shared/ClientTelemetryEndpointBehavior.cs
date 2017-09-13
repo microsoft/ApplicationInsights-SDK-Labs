@@ -84,7 +84,7 @@
         void IEndpointBehavior.AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
             var contract = endpoint.Contract.ContractType;
-            if (IsNonSoapEndpoint(endpoint))
+            if (this.IsNonSoapEndpoint(endpoint))
             {
                 WcfClientEventSource.Log.ClientTelemetryIgnoreContract(contract.FullName);
                 return;
@@ -134,6 +134,5 @@
         {
             return endpoint.Binding.MessageVersion == MessageVersion.None;
         }
-
     }
 }
