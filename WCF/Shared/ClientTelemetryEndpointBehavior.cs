@@ -84,6 +84,11 @@
         void IEndpointBehavior.AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
             var contract = endpoint.Contract.ContractType;
+            if (IsNonSoapEndpoint(endpoint))
+            {
+                WcfClientEventSource.Log.ClientTelemetryIgnoreContract(contract.FullName);
+                return;
+            }
 
             WcfClientEventSource.Log.ClientTelemetryApplied(contract.FullName);
 
@@ -108,7 +113,7 @@
                 OpenTimeout = originalBinding.OpenTimeout,
                 SendTimeout = originalBinding.SendTimeout,
                 ReceiveTimeout = originalBinding.ReceiveTimeout,
-                CloseTimeout = originalBinding.CloseTimeout
+                CloseTimeout = originalBinding.CloseTimeout,
             };
         }
 
@@ -124,5 +129,11 @@
         void IEndpointBehavior.Validate(ServiceEndpoint endpoint)
         {
         }
+
+        private bool IsNonSoapEndpoint(ServiceEndpoint endpoint)
+        {
+            return endpoint.Binding.MessageVersion == MessageVersion.None;
+        }
+
     }
 }
