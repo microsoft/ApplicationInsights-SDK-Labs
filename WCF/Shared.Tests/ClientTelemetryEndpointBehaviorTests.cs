@@ -4,6 +4,8 @@
     using System.Reflection;
     using System.Runtime.Remoting;
     using System.ServiceModel;
+    using System.ServiceModel.Channels;
+    using System.ServiceModel.Description;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.ApplicationInsights.Wcf.Implementation;
     using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
@@ -14,6 +16,29 @@
     [TestClass]
     public class ClientTelemetryEndpointBehaviorTests
     {
+        [TestMethod]
+        [TestCategory("Client")]
+        public void BehaviorCreatesCustomBindingWithTimeouts()
+        {
+            var binding = new NetTcpBinding()
+            {
+                OpenTimeout = new TimeSpan(1, 0, 0),
+                SendTimeout = new TimeSpan(2, 0, 0),
+                ReceiveTimeout = new TimeSpan(3, 0, 0),
+                CloseTimeout = new TimeSpan(4, 0, 0)
+            };
+            var contract = ContractBuilder.CreateDescription(typeof(ISimpleService), typeof(SimpleService));
+            var ep = new ServiceEndpoint(contract, binding, new EndpointAddress("net.tcp://localhost:8765"));
+
+            IEndpointBehavior behavior = new ClientTelemetryEndpointBehavior();
+            behavior.AddBindingParameters(ep, new BindingParameterCollection());
+
+            Assert.AreEqual(binding.OpenTimeout, ep.Binding.OpenTimeout);
+            Assert.AreEqual(binding.SendTimeout, ep.Binding.SendTimeout);
+            Assert.AreEqual(binding.ReceiveTimeout, ep.Binding.ReceiveTimeout);
+            Assert.AreEqual(binding.CloseTimeout, ep.Binding.CloseTimeout);
+        }
+
         [TestMethod]
         [TestCategory("Client")]
         public void BehaviorAddsCustomBinding()

@@ -55,6 +55,12 @@
             this.WriteEvent(6, id, callbackName ?? string.Empty, reason ?? string.Empty, this.ApplicationName);
         }
 
+        [Event(7, Keywords = Keywords.DependencyTracking, Message = "Client Telemetry ignoring non-SOAP contract: {0}", Level = EventLevel.Informational)]
+        public void ClientTelemetryIgnoreContract(string contract, string appDomainName = "Invalid")
+        {
+            this.WriteEvent(7, contract, this.ApplicationName);
+        }
+
         [NonEvent]
         private string GetApplicationName()
         {
