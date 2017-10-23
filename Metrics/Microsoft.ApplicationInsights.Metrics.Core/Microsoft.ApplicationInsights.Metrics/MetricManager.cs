@@ -5,6 +5,7 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Metrics.Extensibility;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Microsoft.ApplicationInsights.Metrics
 {
@@ -15,19 +16,19 @@ namespace Microsoft.ApplicationInsights.Metrics
     {
         private readonly MetricAggregationManager _aggregationManager;
         private readonly DefaultAggregationPeriodCycle _aggregationCycle;
-        private readonly TelemetryClient _trackingClient;
+        private readonly IMetricTelemetryPipeline _telemetryPipeline;
 
-        private object _metricCache;
+        private object _extensionState;
         
         /// <summary>
         /// 
         /// </summary>
         /// <param name="telemetryPipeline"></param>
-        public MetricManager(TelemetryConfiguration telemetryPipeline)
+        public MetricManager(IMetricTelemetryPipeline telemetryPipeline)
         {
             Util.ValidateNotNull(telemetryPipeline, nameof(telemetryPipeline));
 
-            _trackingClient = new TelemetryClient(telemetryPipeline);
+            _telemetryPipeline = telemetryPipeline;
             _aggregationManager = new MetricAggregationManager();
             _aggregationCycle = new DefaultAggregationPeriodCycle(_aggregationManager, this);
 
@@ -39,7 +40,11 @@ namespace Microsoft.ApplicationInsights.Metrics
         /// </summary>
         ~MetricManager()
         {
-            Task fireAndForget = this.StopAsync();
+            DefaultAggregationPeriodCycle aggregationCycle = _aggregationCycle;
+            if (aggregationCycle != null)
+            {
+                Task fireAndForget = _aggregationCycle.StopAsync();
+            }
         }
 
         internal MetricAggregationManager AggregationManager { get { return _aggregationManager; } }
@@ -67,25 +72,38 @@ namespace Microsoft.ApplicationInsights.Metrics
         public void Flush()
         {
             DateTimeOffset now = DateTimeOffset.Now;
-            AggregationPeriodSummary aggregates = _aggregationManager.CycleAggregators(MetricConsumerKind.Default, updatedFilter: null, tactTimestamp: now);
-            TrackMetricAggregates(aggregates);
+            AggregationPeriodSummary aggregates = _aggregationManager.StartOrCycleAggregators(MetricAggregationCycleKind.Default, futureFilter: null, tactTimestamp: now);
+            TrackMetricAggregates(aggregates, flush: true);
         }
 
 
-        internal void TrackMetricAggregates(AggregationPeriodSummary aggregates)
+        internal void TrackMetricAggregates(AggregationPeriodSummary aggregates, bool flush)
         {
-            if (aggregates == null)
+            int nonpersistentAggregatesCount = (aggregates?.NonpersistentAggregates == null)
+                                                    ? 0
+                                                    : aggregates.NonpersistentAggregates.Count;
+
+            int persistentAggregatesCount = (aggregates?.PersistentAggregates == null)
+                                                    ? 0
+                                                    : aggregates.PersistentAggregates.Count;
+
+            int totalAggregatesCount = nonpersistentAggregatesCount + persistentAggregatesCount;
+            if (totalAggregatesCount == 0)
             {
                 return;
             }
 
-            if (aggregates.NonpersistentAggregates != null && aggregates.NonpersistentAggregates.Count != 0)
+            Task[] trackTasks = new Task[totalAggregatesCount];
+            int taskIndex = 0;
+
+            if (nonpersistentAggregatesCount != 0)
             {
                 foreach (ITelemetry telemetryItem in aggregates.NonpersistentAggregates)
                 {
                     if (telemetryItem != null)
                     {
-                        _trackingClient.Track(telemetryItem);
+                        Task trackTask = _telemetryPipeline.TrackAsync(telemetryItem, CancellationToken.None);
+                        trackTasks[taskIndex++] = trackTask;
                     }
                 }
             }
@@ -96,40 +114,49 @@ namespace Microsoft.ApplicationInsights.Metrics
                 {
                     if (telemetryItem != null)
                     {
-                        _trackingClient.Track(telemetryItem);
+                        Task trackTask = _telemetryPipeline.TrackAsync(telemetryItem, CancellationToken.None);
+                        trackTasks[taskIndex++] = trackTask;
                     }
                 }
             }
+
+            Task.WaitAll(trackTasks);
+
+            if (flush)
+            {
+                Task flushTask = _telemetryPipeline.FlushAsync(CancellationToken.None);
+                flushTask.Wait();
+            }
         }
 
-        internal object GetOrCreateCacheUnsafe(Func<MetricManager, object> newCacheInstanceFactory)
+        internal object GetOrCreateExtensionStateUnsafe(Func<MetricManager, object> newExtensionStateInstanceFactory)
         {
-            object cache = _metricCache;
+            object extensionState = _extensionState;
 
-            if (cache != null)
+            if (extensionState != null)
             {
-                return cache;
+                return extensionState;
             }
 
-            Util.ValidateNotNull(newCacheInstanceFactory, nameof(newCacheInstanceFactory));
+            Util.ValidateNotNull(newExtensionStateInstanceFactory, nameof(newExtensionStateInstanceFactory));
 
-            object newCache = null;
+            object newExtensionState = null;
             try
             {
-                newCache = newCacheInstanceFactory(this);
+                newExtensionState = newExtensionStateInstanceFactory(this);
             }
             catch
             {
-                newCache = null;
+                newExtensionState = null;
             }
 
-            if (newCache != null)
+            if (newExtensionState != null)
             {
-                object prevCache = Interlocked.CompareExchange(ref _metricCache, newCache, null);
-                cache = prevCache ?? newCache;
+                object prevExtensionState = Interlocked.CompareExchange(ref _extensionState, newExtensionState, null);
+                extensionState = prevExtensionState ?? newExtensionState;
             }
 
-            return cache;
+            return extensionState;
         }
     }
 }

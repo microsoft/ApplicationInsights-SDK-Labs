@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
+using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Metrics.Extensibility;
 
 namespace Microsoft.ApplicationInsights.Metrics
@@ -32,6 +33,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                 string dimension2Name,
                                 IMetricConfiguration metricConfiguration)
         {
+            metricId = metricId?.Trim();
             Util.ValidateNotNullOrWhitespace(metricId, nameof(metricId));
             
             string metricObjectId = Metric.GetObjectId(metricId, dimension1Name, dimension2Name);
@@ -40,8 +42,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                                                                 metricId,
                                                                                 dimension1Name,
                                                                                 dimension2Name,
-                                                                                metricConfiguration ?? MetricConfiguration.Default));
-            
+                                                                                metricConfiguration ?? MetricConfigurations.Default));
 
             if (metricConfiguration != null && ! metric._configuration.Equals(metricConfiguration))
             {
@@ -49,8 +50,8 @@ namespace Microsoft.ApplicationInsights.Metrics
                                           + " that is different from the specified configuration. You may not change configurations once a"
                                           + " metric was created for the first time. Either specify the same configuration every time, or"
                                           + " specify 'null' during every invocation except the first one. 'Null' will match against any"
-                                          + " previously specified configuration when retrieving existing metrics, of fall back to"
-                                          +$" {nameof(MetricConfiguration.Default)} when creating new metrics. (Metric Object Id: \"{metricObjectId}\".)");
+                                          + " previously specified configuration when retrieving existing metrics, or fall back to"
+                                          +$" {nameof(MetricConfigurations.Default)} when creating new metrics. (Metric Object Id: \"{metricObjectId}\".)");
             }
 
             return metric;

@@ -3,6 +3,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.Metrics.Extensibility;
+using System.Threading.Tasks;
 
 namespace Microsoft.ApplicationInsights.Metrics
 {
@@ -32,9 +34,19 @@ namespace Microsoft.ApplicationInsights.Metrics
                 MetricManager manager = s_defaultMetricManager;
                 if (manager == null)
                 {
-                    MetricManager newManager = new MetricManager(telemetryPipeline);
+                    var pipelineAdapter = new ApplicationInsightsTelemetryPipeline(telemetryPipeline);
+                    MetricManager newManager = new MetricManager(pipelineAdapter);
                     MetricManager prevManager = Interlocked.CompareExchange(ref s_defaultMetricManager, newManager, null);
-                    manager = prevManager ?? newManager;
+
+                    if (prevManager == null)
+                    {
+                        return newManager;
+                    }
+                    else
+                    {
+                        Task fireAndForget = newManager.StopDefaultAggregationCycleAsync();
+                        return prevManager;
+                    }
                 }
 
                 return manager;
@@ -52,9 +64,33 @@ namespace Microsoft.ApplicationInsights.Metrics
 
             // Get the manager from the table:
             {
-                MetricManager manager = metricManagers.GetValue(telemetryPipeline, (tp) => new MetricManager(tp));
+                MetricManager manager = GetOrGreateFromTable(telemetryPipeline, metricManagers);
                 return manager;
             }
+        }
+
+        private static MetricManager GetOrGreateFromTable(
+                                                TelemetryConfiguration telemetryPipeline,
+                                                ConditionalWeakTable<TelemetryConfiguration, MetricManager> metricManagers)
+        {
+            MetricManager createdManager = null;
+
+            MetricManager chosenManager = metricManagers.GetValue(
+                                                            telemetryPipeline,
+                                                            (tp) =>
+                                                            {
+                                                                createdManager = new MetricManager(new ApplicationInsightsTelemetryPipeline(tp));
+                                                                return createdManager;
+                                                            });
+
+            // If there was a race and we did not end up returning the manager we just created, we will notify it to give up its agregation cycle thread.
+            if (createdManager != null && false == Object.ReferenceEquals(createdManager, chosenManager))
+            {
+                Task fireAndForget = createdManager.StopDefaultAggregationCycleAsync();
+            }
+
+            return chosenManager;
+
         }
     }
 }

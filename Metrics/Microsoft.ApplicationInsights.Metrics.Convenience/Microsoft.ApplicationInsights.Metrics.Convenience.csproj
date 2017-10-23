@@ -17,6 +17,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.ApplicationInsights.Datastructures\Microsoft.ApplicationInsights.Datastructures.csproj" />
     <ProjectReference Include="..\Microsoft.ApplicationInsights.Metrics.Core\Microsoft.ApplicationInsights.Metrics.Core.csproj" />
   </ItemGroup>
   
