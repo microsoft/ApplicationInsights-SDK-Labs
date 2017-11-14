@@ -11,8 +11,7 @@ namespace Microsoft.ApplicationInsights.Metrics.Extensibility
         private readonly ApplicationInsights.TelemetryClient _trackingClient;
         private readonly Task _completedTask = Task.FromResult(true);
 
-        /// <summary>
-        /// </summary>
+        /// <summary />
         /// <param name="telemetryPipeline"></param>
         public ApplicationInsightsTelemetryPipeline(ApplicationInsights.Extensibility.TelemetryConfiguration telemetryPipeline)
         {
@@ -21,8 +20,7 @@ namespace Microsoft.ApplicationInsights.Metrics.Extensibility
             _trackingClient = new ApplicationInsights.TelemetryClient(telemetryPipeline);
         }
 
-        /// <summary>
-        /// </summary>
+        /// <summary />
         /// <param name="telemetryClient"></param>
         public ApplicationInsightsTelemetryPipeline(ApplicationInsights.TelemetryClient telemetryClient)
         {
@@ -31,32 +29,39 @@ namespace Microsoft.ApplicationInsights.Metrics.Extensibility
             _trackingClient = telemetryClient;
         }
 
-        /// <summary>
-        /// </summary>
+        /// <summary />
         /// <param name="metricAggregate"></param>
         /// <param name="cancelToken"></param>
         /// <returns></returns>
-        public Task TrackAsync(object metricAggregate, CancellationToken cancelToken)
+        public Task TrackAsync(MetricAggregate metricAggregate, CancellationToken cancelToken)
         {
             Util.ValidateNotNull(metricAggregate, nameof(metricAggregate));
-
-            var telemetryItem = metricAggregate as ApplicationInsights.Channel.ITelemetry;
-            if (telemetryItem == null)
-            {
-                throw new ArgumentException($"This instance of {nameof(IMetricTelemetryPipeline)} is of runtime class {nameof(ApplicationInsightsTelemetryPipeline)}."
-                                          + $" It can only track metric aggregates of type {nameof(Microsoft.ApplicationInsights.Channel.ITelemetry)}."
-                                          + $" However, the specified {nameof(metricAggregate)} is on runtime type {metricAggregate.GetType().Name}.");
-            }
+            Util.ValidateNotNull(metricAggregate.AggregationKindMoniker, nameof(metricAggregate.AggregationKindMoniker));
 
             cancelToken.ThrowIfCancellationRequested();
 
-            _trackingClient.Track(telemetryItem);
+            IMetricAggregateToTelemetryPipelineConverter converter;
+            bool hasConverter = MetricAggregateToTelemetryPipelineConverters.Registry.TryGet(
+                                                                                            typeof(ApplicationInsightsTelemetryPipeline),
+                                                                                            metricAggregate.AggregationKindMoniker,
+                                                                                            out converter);
+            if (! hasConverter)
+            {
+                throw new ArgumentException($"Cannot track the specified {metricAggregate}, because there is no {nameof(IMetricAggregateToTelemetryPipelineConverter)}"
+                                          + $" registered for it. A converter must be added to {nameof(MetricAggregateToTelemetryPipelineConverters)}"
+                                          + $".{nameof(MetricAggregateToTelemetryPipelineConverters.Registry)} for the pipeline type"
+                                          + $" '{typeof(ApplicationInsightsTelemetryPipeline).Name}' and {nameof(metricAggregate.AggregationKindMoniker)}"
+                                          + $" '{metricAggregate.AggregationKindMoniker}'.");
+            }
+
+            object telemetryItem = converter.Convert(metricAggregate);
+            var metricTelemetryItem = (ApplicationInsights.DataContracts.MetricTelemetry) telemetryItem;
+            _trackingClient.Track(metricTelemetryItem);
 
             return _completedTask;
         }
 
-        /// <summary>
-        /// </summary>
+        /// <summary />
         /// <param name="cancelToken"></param>
         /// <returns></returns>
         public Task FlushAsync(CancellationToken cancelToken)

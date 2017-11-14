@@ -55,11 +55,11 @@ namespace Microsoft.ApplicationInsights.Metrics
                 sentTelemetry.Clear();
             }
             {
-                Metric metric = client.GetMetric("CowsSold", "Color", MetricConfigurations.Counter);
+                Metric metric = client.GetMetric("CowsSold", "Color", MetricConfigurations.Accumulator);
                 Assert.IsNotNull(metric);
                 Assert.AreEqual(1, metric.DimensionsCount);
                 Assert.AreEqual("CowsSold", metric.MetricId);
-                Assert.AreEqual(MetricConfigurations.Counter, metric.GetConfiguration());
+                Assert.AreEqual(MetricConfigurations.Accumulator, metric.GetConfiguration());
 
                 metric.TryTrackValue(0.5, "Purple");
                 metric.TryTrackValue(0.6, "Purple");
@@ -67,7 +67,7 @@ namespace Microsoft.ApplicationInsights.Metrics
 
                 telemetryPipeline.Metrics().Flush();
                 Assert.AreEqual(1, sentTelemetry.Count);
-                Util.ValidateNumericAggregateValues(sentTelemetry[0], "CowsSold", 2, 1.1, 0.6, 0.5, 0.05);
+                Util.ValidateNumericAggregateValues(sentTelemetry[0], "CowsSold", 1, 1.1, 1.1, 0.5, null);
                 Assert.AreEqual(2, sentTelemetry[0].Context.Properties.Count);
                 Assert.IsTrue(sentTelemetry[0].Context.Properties.ContainsKey(Util.AggregationIntervalMonikerPropertyKey));
                 Assert.AreEqual("Purple", sentTelemetry[0].Context.Properties["Color"]);
@@ -78,18 +78,18 @@ namespace Microsoft.ApplicationInsights.Metrics
 
                 telemetryPipeline.Metrics().Flush();
                 Assert.AreEqual(1, sentTelemetry.Count);
-                Util.ValidateNumericAggregateValues(sentTelemetry[0], "CowsSold", 4, 2.6, 0.8, 0.5, 0.11180339887499);
+                Util.ValidateNumericAggregateValues(sentTelemetry[0], "CowsSold", 1, 2.6, 2.6, 0.5, null);
                 Assert.AreEqual(2, sentTelemetry[0].Context.Properties.Count);
                 Assert.IsTrue(sentTelemetry[0].Context.Properties.ContainsKey(Util.AggregationIntervalMonikerPropertyKey));
                 Assert.AreEqual("Purple", sentTelemetry[0].Context.Properties["Color"]);
                 sentTelemetry.Clear();
             }
             {
-                Metric metric = client.GetMetric("CowsSold", "Color", "Size", MetricConfigurations.Counter);
+                Metric metric = client.GetMetric("CowsSold", "Color", "Size", MetricConfigurations.Accumulator);
                 Assert.IsNotNull(metric);
                 Assert.AreEqual(2, metric.DimensionsCount);
                 Assert.AreEqual("CowsSold", metric.MetricId);
-                Assert.AreEqual(MetricConfigurations.Counter, metric.GetConfiguration());
+                Assert.AreEqual(MetricConfigurations.Accumulator, metric.GetConfiguration());
 
                 metric.TryTrackValue(0.5, "Purple", "Large");
                 metric.TryTrackValue(0.6, "Purple", "Large");
@@ -103,12 +103,12 @@ namespace Microsoft.ApplicationInsights.Metrics
                                                         .ToArray();
 
                 // This one is from the prev section:
-                Util.ValidateNumericAggregateValues(orderedTelemetry[0], "CowsSold", 4, 2.6, 0.8, 0.5, 0.11180339887499);
+                Util.ValidateNumericAggregateValues(orderedTelemetry[0], "CowsSold", 1, 2.6, 2.6, 0.5, null);
                 Assert.AreEqual(2, orderedTelemetry[0].Context.Properties.Count);
                 Assert.IsTrue(orderedTelemetry[0].Context.Properties.ContainsKey(Util.AggregationIntervalMonikerPropertyKey));
                 Assert.AreEqual("Purple", orderedTelemetry[0].Context.Properties["Color"]);
 
-                Util.ValidateNumericAggregateValues(orderedTelemetry[1], "CowsSold", 2, 1.1, 0.6, 0.5, 0.05);
+                Util.ValidateNumericAggregateValues(orderedTelemetry[1], "CowsSold", 1, 1.1, 1.1, 0.5, null);
                 Assert.AreEqual(3, orderedTelemetry[1].Context.Properties.Count);
                 Assert.IsTrue(orderedTelemetry[1].Context.Properties.ContainsKey(Util.AggregationIntervalMonikerPropertyKey));
                 Assert.AreEqual("Purple", orderedTelemetry[1].Context.Properties["Color"]);
@@ -127,18 +127,18 @@ namespace Microsoft.ApplicationInsights.Metrics
                                             .ToArray();
 
                 // This one is from the prev section:
-                Util.ValidateNumericAggregateValues(orderedTelemetry[0], "CowsSold", 4, 2.6, 0.8, 0.5, 0.11180339887499);
+                Util.ValidateNumericAggregateValues(orderedTelemetry[0], "CowsSold", 1, 2.6, 2.6, 0.5, null);
                 Assert.AreEqual(2, orderedTelemetry[0].Context.Properties.Count);
                 Assert.IsTrue(orderedTelemetry[0].Context.Properties.ContainsKey(Util.AggregationIntervalMonikerPropertyKey));
                 Assert.AreEqual("Purple", orderedTelemetry[0].Context.Properties["Color"]);
 
-                Util.ValidateNumericAggregateValues(orderedTelemetry[1], "CowsSold", 3, 1.8, 0.7, 0.5, 0.0816496580927732);
+                Util.ValidateNumericAggregateValues(orderedTelemetry[1], "CowsSold", 1, 1.8, 1.8, 0.5, null);
                 Assert.AreEqual(3, orderedTelemetry[1].Context.Properties.Count);
                 Assert.IsTrue(orderedTelemetry[1].Context.Properties.ContainsKey(Util.AggregationIntervalMonikerPropertyKey));
                 Assert.AreEqual("Purple", orderedTelemetry[1].Context.Properties["Color"]);
                 Assert.AreEqual("Large", orderedTelemetry[1].Context.Properties["Size"]);
 
-                Util.ValidateNumericAggregateValues(orderedTelemetry[2], "CowsSold", 1, 0.8, 0.8, 0.8, 0);
+                Util.ValidateNumericAggregateValues(orderedTelemetry[2], "CowsSold", 1, 0.8, 0.8, 0.8, null);
                 Assert.AreEqual(3, orderedTelemetry[2].Context.Properties.Count);
                 Assert.IsTrue(orderedTelemetry[2].Context.Properties.ContainsKey(Util.AggregationIntervalMonikerPropertyKey));
                 Assert.AreEqual("Purple", orderedTelemetry[2].Context.Properties["Color"]);
@@ -146,8 +146,6 @@ namespace Microsoft.ApplicationInsights.Metrics
 
                 sentTelemetry.Clear();
             }
-
-
 
             Util.CompleteDefaultAggregationCycle(telemetryPipeline.Metrics());
             telemetryPipeline.Dispose();
@@ -189,20 +187,20 @@ namespace Microsoft.ApplicationInsights.Metrics
                 Assert.AreSame(MetricConfigurations.Measurement.SeriesConfig, series.GetConfiguration());
             }
             {
-                Metric metric = client.GetMetric("M3", MetricConfigurations.Counter);
+                Metric metric = client.GetMetric("M3", MetricConfigurations.Accumulator);
                 Assert.IsNotNull(metric);
                 Assert.AreEqual(0, metric.DimensionsCount);
                 Assert.AreEqual("M3", metric.MetricId);
-                Assert.AreEqual(MetricConfigurations.Counter, metric.GetConfiguration());
-                Assert.AreSame(MetricConfigurations.Counter, metric.GetConfiguration());
+                Assert.AreEqual(MetricConfigurations.Accumulator, metric.GetConfiguration());
+                Assert.AreSame(MetricConfigurations.Accumulator, metric.GetConfiguration());
 
                 MetricSeries series;
                 Assert.IsTrue(metric.TryGetDataSeries(out series));
-                Assert.AreEqual(MetricConfigurations.Counter.SeriesConfig, series.GetConfiguration());
-                Assert.AreSame(MetricConfigurations.Counter.SeriesConfig, series.GetConfiguration());
+                Assert.AreEqual(MetricConfigurations.Accumulator.SeriesConfig, series.GetConfiguration());
+                Assert.AreSame(MetricConfigurations.Accumulator.SeriesConfig, series.GetConfiguration());
             }
             {
-                IMetricConfiguration config = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(true, true));
+                IMetricConfiguration config = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(true));
                 Metric metric = client.GetMetric("M4", config);
                 Assert.IsNotNull(metric);
                 Assert.AreEqual(0, metric.DimensionsCount);
@@ -212,8 +210,8 @@ namespace Microsoft.ApplicationInsights.Metrics
 
                 MetricSeries series;
                 Assert.IsTrue(metric.TryGetDataSeries(out series));
-                Assert.AreEqual(new SimpleMetricSeriesConfiguration(true, true), series.GetConfiguration());
-                Assert.AreNotSame(new SimpleMetricSeriesConfiguration(true, true), series.GetConfiguration());
+                Assert.AreEqual(new SimpleMetricSeriesConfiguration(true), series.GetConfiguration());
+                Assert.AreNotSame(new SimpleMetricSeriesConfiguration(true), series.GetConfiguration());
             }
             {
                 Metric metric = client.GetMetric("M5", "Dim1");
@@ -250,24 +248,24 @@ namespace Microsoft.ApplicationInsights.Metrics
                 Assert.AreSame(MetricConfigurations.Measurement.SeriesConfig, series.GetConfiguration());
             }
             {
-                Metric metric = client.GetMetric("M7", "Dim1", MetricConfigurations.Counter);
+                Metric metric = client.GetMetric("M7", "Dim1", MetricConfigurations.Accumulator);
                 Assert.IsNotNull(metric);
                 Assert.AreEqual(1, metric.DimensionsCount);
                 Assert.AreEqual("Dim1", metric.GetDimensionName(1));
                 Assert.AreEqual("M7", metric.MetricId);
-                Assert.AreEqual(MetricConfigurations.Counter, metric.GetConfiguration());
-                Assert.AreSame(MetricConfigurations.Counter, metric.GetConfiguration());
+                Assert.AreEqual(MetricConfigurations.Accumulator, metric.GetConfiguration());
+                Assert.AreSame(MetricConfigurations.Accumulator, metric.GetConfiguration());
 
                 MetricSeries series;
                 Assert.IsTrue(metric.TryGetDataSeries(out series));
-                Assert.AreEqual(MetricConfigurations.Counter.SeriesConfig, series.GetConfiguration());
-                Assert.AreSame(MetricConfigurations.Counter.SeriesConfig, series.GetConfiguration());
+                Assert.AreEqual(MetricConfigurations.Accumulator.SeriesConfig, series.GetConfiguration());
+                Assert.AreSame(MetricConfigurations.Accumulator.SeriesConfig, series.GetConfiguration());
                 Assert.IsTrue(metric.TryGetDataSeries(out series, "Dim1Val"));
-                Assert.AreEqual(MetricConfigurations.Counter.SeriesConfig, series.GetConfiguration());
-                Assert.AreSame(MetricConfigurations.Counter.SeriesConfig, series.GetConfiguration());
+                Assert.AreEqual(MetricConfigurations.Accumulator.SeriesConfig, series.GetConfiguration());
+                Assert.AreSame(MetricConfigurations.Accumulator.SeriesConfig, series.GetConfiguration());
             }
             {
-                IMetricConfiguration config = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(true, true));
+                IMetricConfiguration config = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(true));
                 Metric metric = client.GetMetric("M8", "Dim1", config);
                 Assert.IsNotNull(metric);
                 Assert.AreEqual(1, metric.DimensionsCount);
@@ -281,8 +279,8 @@ namespace Microsoft.ApplicationInsights.Metrics
                 Assert.AreEqual(config.SeriesConfig, series.GetConfiguration());
                 Assert.AreSame(config.SeriesConfig, series.GetConfiguration());
                 Assert.IsTrue(metric.TryGetDataSeries(out series, "Dim1Val"));
-                Assert.AreEqual(new SimpleMetricSeriesConfiguration(true, true), series.GetConfiguration());
-                Assert.AreNotSame(new SimpleMetricSeriesConfiguration(true, true), series.GetConfiguration());
+                Assert.AreEqual(new SimpleMetricSeriesConfiguration(true), series.GetConfiguration());
+                Assert.AreNotSame(new SimpleMetricSeriesConfiguration(true), series.GetConfiguration());
             }
             {
                 Metric metric = client.GetMetric("M9", "Dim1", "Dim2");
@@ -321,25 +319,25 @@ namespace Microsoft.ApplicationInsights.Metrics
                 Assert.AreSame(MetricConfigurations.Measurement.SeriesConfig, series.GetConfiguration());
             }
             {
-                Metric metric = client.GetMetric("M11", "Dim1", "Dim2", MetricConfigurations.Counter);
+                Metric metric = client.GetMetric("M11", "Dim1", "Dim2", MetricConfigurations.Accumulator);
                 Assert.IsNotNull(metric);
                 Assert.AreEqual(2, metric.DimensionsCount);
                 Assert.AreEqual("Dim1", metric.GetDimensionName(1));
                 Assert.AreEqual("Dim2", metric.GetDimensionName(2));
                 Assert.AreEqual("M11", metric.MetricId);
-                Assert.AreEqual(MetricConfigurations.Counter, metric.GetConfiguration());
-                Assert.AreSame(MetricConfigurations.Counter, metric.GetConfiguration());
+                Assert.AreEqual(MetricConfigurations.Accumulator, metric.GetConfiguration());
+                Assert.AreSame(MetricConfigurations.Accumulator, metric.GetConfiguration());
 
                 MetricSeries series;
                 Assert.IsTrue(metric.TryGetDataSeries(out series));
-                Assert.AreEqual(MetricConfigurations.Counter.SeriesConfig, series.GetConfiguration());
-                Assert.AreSame(MetricConfigurations.Counter.SeriesConfig, series.GetConfiguration());
+                Assert.AreEqual(MetricConfigurations.Accumulator.SeriesConfig, series.GetConfiguration());
+                Assert.AreSame(MetricConfigurations.Accumulator.SeriesConfig, series.GetConfiguration());
                 Assert.IsTrue(metric.TryGetDataSeries(out series, "Dim1Val", "Dim2val"));
-                Assert.AreEqual(MetricConfigurations.Counter.SeriesConfig, series.GetConfiguration());
-                Assert.AreSame(MetricConfigurations.Counter.SeriesConfig, series.GetConfiguration());
+                Assert.AreEqual(MetricConfigurations.Accumulator.SeriesConfig, series.GetConfiguration());
+                Assert.AreSame(MetricConfigurations.Accumulator.SeriesConfig, series.GetConfiguration());
             }
             {
-                IMetricConfiguration config = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(true, true));
+                IMetricConfiguration config = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(true));
                 Metric metric = client.GetMetric("M12", "Dim1", "Dim2", config);
                 Assert.IsNotNull(metric);
                 Assert.AreEqual(2, metric.DimensionsCount);
@@ -354,8 +352,8 @@ namespace Microsoft.ApplicationInsights.Metrics
                 Assert.AreEqual(config.SeriesConfig, series.GetConfiguration());
                 Assert.AreSame(config.SeriesConfig, series.GetConfiguration());
                 Assert.IsTrue(metric.TryGetDataSeries(out series, "Dim1Val", "Dim2val"));
-                Assert.AreEqual(new SimpleMetricSeriesConfiguration(true, true), series.GetConfiguration());
-                Assert.AreNotSame(new SimpleMetricSeriesConfiguration(true, true), series.GetConfiguration());
+                Assert.AreEqual(new SimpleMetricSeriesConfiguration(true), series.GetConfiguration());
+                Assert.AreNotSame(new SimpleMetricSeriesConfiguration(true), series.GetConfiguration());
                 Assert.AreSame(config.SeriesConfig, series.GetConfiguration());
             }
 
@@ -387,10 +385,10 @@ namespace Microsoft.ApplicationInsights.Metrics
                 m2 = client.GetMetric("M01", metricConfiguration: null);
                 Assert.AreSame(m1, m2);
 
-                Assert.ThrowsException<ArgumentException>(() => client.GetMetric("M01", MetricConfigurations.Counter));
+                Assert.ThrowsException<ArgumentException>(() => client.GetMetric("M01", MetricConfigurations.Accumulator));
 
-                IMetricConfiguration config1 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false, false));
-                IMetricConfiguration config2 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false, false));
+                IMetricConfiguration config1 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false));
+                IMetricConfiguration config2 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false));
                 Assert.AreEqual(config1, config2);
                 Assert.AreNotSame(config1, config2);
 
@@ -403,7 +401,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 m2 = client.GetMetric("M02", metricConfiguration: null);
                 Assert.AreSame(m1, m2);
 
-                config2 = new SimpleMetricConfiguration(10, 101, new SimpleMetricSeriesConfiguration(false, false));
+                config2 = new SimpleMetricConfiguration(10, 101, new SimpleMetricSeriesConfiguration(false));
                 Assert.AreNotEqual(config1, config2);
                 Assert.AreNotSame(config1, config2);
 
@@ -429,10 +427,10 @@ namespace Microsoft.ApplicationInsights.Metrics
                 m2 = client.GetMetric("M11", "Dim1", metricConfiguration: null);
                 Assert.AreSame(m1, m2);
 
-                Assert.ThrowsException<ArgumentException>(() => client.GetMetric("M11", "Dim1 ", MetricConfigurations.Counter));
+                Assert.ThrowsException<ArgumentException>(() => client.GetMetric("M11", "Dim1 ", MetricConfigurations.Accumulator));
 
-                IMetricConfiguration config1 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false, false));
-                IMetricConfiguration config2 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false, false));
+                IMetricConfiguration config1 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false));
+                IMetricConfiguration config2 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false));
                 Assert.AreEqual(config1, config2);
                 Assert.AreNotSame(config1, config2);
 
@@ -445,7 +443,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 m2 = client.GetMetric("M12", "Dim1", metricConfiguration: null);
                 Assert.AreSame(m1, m2);
 
-                config2 = new SimpleMetricConfiguration(10, 101, new SimpleMetricSeriesConfiguration(false, false));
+                config2 = new SimpleMetricConfiguration(10, 101, new SimpleMetricSeriesConfiguration(false));
                 Assert.AreNotEqual(config1, config2);
                 Assert.AreNotSame(config1, config2);
 
@@ -474,10 +472,10 @@ namespace Microsoft.ApplicationInsights.Metrics
                 m2 = client.GetMetric("M21", "Dim1", "Dim2 ", metricConfiguration: null);
                 Assert.AreSame(m1, m2);
 
-                Assert.ThrowsException<ArgumentException>(() => client.GetMetric("M21", "Dim1 ", "Dim2", MetricConfigurations.Counter));
+                Assert.ThrowsException<ArgumentException>(() => client.GetMetric("M21", "Dim1 ", "Dim2", MetricConfigurations.Accumulator));
 
-                IMetricConfiguration config1 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false, false));
-                IMetricConfiguration config2 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false, false));
+                IMetricConfiguration config1 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false));
+                IMetricConfiguration config2 = new SimpleMetricConfiguration(10, 10, new SimpleMetricSeriesConfiguration(false));
                 Assert.AreEqual(config1, config2);
                 Assert.AreNotSame(config1, config2);
 
@@ -490,7 +488,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 m2 = client.GetMetric("M22", "Dim1", "Dim2", metricConfiguration: null);
                 Assert.AreSame(m1, m2);
 
-                config2 = new SimpleMetricConfiguration(10, 101, new SimpleMetricSeriesConfiguration(false, false));
+                config2 = new SimpleMetricConfiguration(10, 101, new SimpleMetricSeriesConfiguration(false));
                 Assert.AreNotEqual(config1, config2);
                 Assert.AreNotSame(config1, config2);
 
@@ -681,8 +679,8 @@ namespace Microsoft.ApplicationInsights.Metrics
             TelemetryClient client23 = new TelemetryClient(telemetryPipeline2);
             Assert.AreNotSame(metricB21c1, client22.GetMetric("Metric B", MetricConfigurations.Measurement, MetricAggregationScope.TelemetryClient));
             Assert.AreSame(metricB21c1, client21.GetMetric("Metric B", MetricConfigurations.Measurement, MetricAggregationScope.TelemetryClient));
-            Assert.ThrowsException<ArgumentException>( () => client21.GetMetric("Metric B", MetricConfigurations.Counter, MetricAggregationScope.TelemetryClient) );
-            Assert.IsNotNull(client23.GetMetric("Metric B", MetricConfigurations.Counter, MetricAggregationScope.TelemetryClient));
+            Assert.ThrowsException<ArgumentException>( () => client21.GetMetric("Metric B", MetricConfigurations.Accumulator, MetricAggregationScope.TelemetryClient) );
+            Assert.IsNotNull(client23.GetMetric("Metric B", MetricConfigurations.Accumulator, MetricAggregationScope.TelemetryClient));
 
             Metric metricB211 = client21.GetMetric("Metric B", MetricConfigurations.Measurement, MetricAggregationScope.TelemetryConfiguration);
 
@@ -690,10 +688,10 @@ namespace Microsoft.ApplicationInsights.Metrics
             TelemetryClient client25 = new TelemetryClient(telemetryPipeline2);
             Assert.AreSame(metricB211, client24.GetMetric("Metric B", MetricConfigurations.Measurement, MetricAggregationScope.TelemetryConfiguration));
             Assert.AreSame(metricB211, client21.GetMetric("Metric B", MetricConfigurations.Measurement, MetricAggregationScope.TelemetryConfiguration));
-            Assert.ThrowsException<ArgumentException>( () => client21.GetMetric("Metric B", MetricConfigurations.Counter, MetricAggregationScope.TelemetryConfiguration) );
-            Assert.ThrowsException<ArgumentException>( () => client25.GetMetric("Metric B", MetricConfigurations.Counter, MetricAggregationScope.TelemetryConfiguration) );
+            Assert.ThrowsException<ArgumentException>( () => client21.GetMetric("Metric B", MetricConfigurations.Accumulator, MetricAggregationScope.TelemetryConfiguration) );
+            Assert.ThrowsException<ArgumentException>( () => client25.GetMetric("Metric B", MetricConfigurations.Accumulator, MetricAggregationScope.TelemetryConfiguration) );
 
-            Assert.ThrowsException<ArgumentException>( () => client11.GetMetric("Metric C", MetricConfigurations.Counter, (MetricAggregationScope) 42) );
+            Assert.ThrowsException<ArgumentException>( () => client11.GetMetric("Metric C", MetricConfigurations.Accumulator, (MetricAggregationScope) 42) );
 
             Util.CompleteDefaultAggregationCycle(
                         client11.Metrics(MetricAggregationScope.TelemetryClient),

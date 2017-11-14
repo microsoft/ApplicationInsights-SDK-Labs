@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Metrics.Extensibility;
-using System.Collections.Concurrent;
 using System.Threading;
+
+using Microsoft.ApplicationInsights.Metrics.Extensibility;
+using System.Runtime.CompilerServices;
 
 namespace Microsoft.ApplicationInsights.Metrics
 {
@@ -27,83 +25,110 @@ namespace Microsoft.ApplicationInsights.Metrics
     /// process any object, but it will convert it to a string (using .ToString()) before tracking. Numbers are also
     /// converted to strings in this manner. Nulls are tracked using the string <c>"null"</c>.
     /// </summary>
-    internal class NaiveDistinctCountMetricSeriesAggregator : DataSeriesAggregatorBase, IMetricSeriesAggregator
+    internal class NaiveDistinctCountMetricSeriesAggregator : MetricSeriesAggregatorBase<object>
     {
+        private static readonly Func<MetricValuesBufferBase<object>> MetricValuesBufferFactory = () => new MetricValuesBuffer_Object(capacity: 500);
+
         private readonly bool _caseSensitive;
-        private readonly ConcurrentDictionary<string, bool> _uniqueValues = new ConcurrentDictionary<string, bool>();
+
+        private readonly object _updateLock = new object();
+
+        private readonly HashSet<string> _uniqueValues = new HashSet<string>();
         private int _totalValuesCount = 0;
 
         public NaiveDistinctCountMetricSeriesAggregator(
                                     NaiveDistinctCountMetricSeriesConfiguration configuration,
                                     MetricSeries dataSeries,
                                     MetricAggregationCycleKind aggregationCycleKind)
-            : base(configuration, dataSeries, aggregationCycleKind)
+            : base(MetricValuesBufferFactory, configuration, dataSeries, aggregationCycleKind)
         {
             _caseSensitive = configuration.IsCaseSensitiveDistinctions;
         }
 
-        public override ITelemetry CreateAggregateUnsafe(DateTimeOffset periodEnd)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override object ConvertMetricValue(double metricValue)
         {
-            int uniqueValuesCount = _uniqueValues.Count;
-            int totalValuesCount = Volatile.Read(ref _totalValuesCount);
+            return metricValue.ToString();
+        }
 
-            MetricTelemetry aggregate = new MetricTelemetry(
-                                                    name: DataSeries?.MetricId ?? Util.NullString,
-                                                    count: totalValuesCount,
-                                                    sum: uniqueValuesCount,
-                                                    min: 0,
-                                                    max: 0,
-                                                    standardDeviation: 0);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override object ConvertMetricValue(object metricValue)
+        {
+            if (metricValue == null)
+            {
+                return Util.NullString;
+            }
 
-            StampTimingInfo(aggregate, periodEnd);
-            StampVersionAndContextInfo(aggregate);
+            string stringValue = metricValue as string;
+
+            if (stringValue == null)
+            {
+                stringValue = metricValue.ToString();
+            }
+
+            return stringValue;
+        }
+
+        protected override MetricAggregate CreateAggregate(DateTimeOffset periodEnd)
+        {
+            int uniqueValuesCount, totalValuesCount;
+            lock (_updateLock)
+            {
+                uniqueValuesCount = _uniqueValues.Count;
+                totalValuesCount = _totalValuesCount;
+            }
+
+            MetricAggregate aggregate = new MetricAggregate(
+                                                DataSeries?.MetricId ?? Util.NullString,
+                                                MetricAggregateKinds.NaiveDistinctCount.Moniker);
+
+            aggregate.AggregateData[MetricAggregateKinds.NaiveDistinctCount.DataKeys.TotalCount] = totalValuesCount;
+            aggregate.AggregateData[MetricAggregateKinds.NaiveDistinctCount.DataKeys.DistinctCount] = uniqueValuesCount;
+
+            AddInfo_Timing_Dimensions_Context(aggregate, periodEnd);
 
             return aggregate;
         }
 
-
-        protected override void ReinitializeAggregation()
+        protected override void ResetAggregate()
         {
-            _uniqueValues.Clear();
-            Volatile.Write(ref _totalValuesCount, 0);
-        }
-
-        protected override void TrackFilteredValue(double metricValue)
-        {
-            TrackFilteredValue(metricValue.ToString());
-        }
-
-        protected override void TrackFilteredValue(object metricValue)
-        {
-            if (metricValue == null)
+            lock (_updateLock)
             {
-                TrackFilteredValue((string) null);
-            }
-            else
-            {
-                string stringValue = metricValue as string;
-                TrackFilteredValue(stringValue ?? metricValue.ToString());
+                _uniqueValues.Clear();
+                _totalValuesCount = 0;
             }
         }
 
-        private void TrackFilteredValue(string metricValue)
+        protected override object UpdateAggregate_Stage1(MetricValuesBufferBase<object> buffer, int minFlushIndex, int maxFlushIndex)
         {
-            if (metricValue == null)
+            lock (_updateLock)
             {
-                metricValue = Util.NullString;
-            }
-            else
-            {
-                metricValue = metricValue.Trim();
+                for (int index = minFlushIndex; index <= maxFlushIndex; index++)
+                {
+                    object metricValue = buffer.GetAndResetValue(index);
+
+                    if (metricValue == null)
+                    {
+                        continue;
+                    }
+
+                    string stringValue = metricValue.ToString();
+
+                    if (!_caseSensitive)
+                    {
+                        stringValue = stringValue.ToLowerInvariant();
+                    }
+
+                    _uniqueValues.Add(stringValue);
+                    Interlocked.Increment(ref _totalValuesCount);
+                }
             }
 
-            if (! _caseSensitive)
-            {
-                metricValue = metricValue.ToLowerInvariant();
-            }
-            
-            _uniqueValues.TryAdd(metricValue, true);
-            Interlocked.Increment(ref _totalValuesCount);
+            return null;
+        }
+
+        protected override void UpdateAggregate_Stage2(object stage1Result)
+        {
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Microsoft.ApplicationInsights.Metrics
         {
         }
 
-        public override ITelemetry CreateAggregateUnsafe(DateTimeOffset periodEnd)
+        public override MetricAggregate CreateAggregateUnsafe(DateTimeOffset periodEnd)
         {
             int count = _count;
             double sum = _sum;
@@ -51,11 +51,18 @@ namespace Microsoft.ApplicationInsights.Metrics
             }
 
             sum = Util.EnsureConcreteValue(sum);
+            
+            MetricAggregate aggregate = new MetricAggregate(
+                                                DataSeries?.MetricId ?? Util.NullString,
+                                                MetricAggregateKinds.SimpleStatistics.Moniker);
 
-            MetricTelemetry aggregate = new MetricTelemetry(DataSeries?.MetricId ?? Util.NullString, count, sum, min, max, stdDev); ;
+            aggregate.AggregateData[MetricAggregateKinds.SimpleStatistics.DataKeys.Count] = count;
+            aggregate.AggregateData[MetricAggregateKinds.SimpleStatistics.DataKeys.Sum] = sum;
+            aggregate.AggregateData[MetricAggregateKinds.SimpleStatistics.DataKeys.Min] = min;
+            aggregate.AggregateData[MetricAggregateKinds.SimpleStatistics.DataKeys.Max] = max;
+            aggregate.AggregateData[MetricAggregateKinds.SimpleStatistics.DataKeys.StdDev] = stdDev;
 
-            StampTimingInfo(aggregate, periodEnd);
-            StampVersionAndContextInfo(aggregate);
+            AddInfo_Timing_Dimensions_Context(aggregate, periodEnd);
 
             return aggregate;
         }

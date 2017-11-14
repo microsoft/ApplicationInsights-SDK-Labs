@@ -216,9 +216,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 IMetricConfiguration customConfig = new SimpleMetricConfiguration(
                                                                     seriesCountLimit: 10,
                                                                     valuesPerDimensionLimit: 10,
-                                                                    seriesConfig: new SimpleMetricSeriesConfiguration(
-                                                                                                            lifetimeCounter: true,
-                                                                                                            restrictToUInt32Values: true));
+                                                                    seriesConfig: new AccumulatorMetricSeriesConfiguration(restrictToUInt32Values: true));
 
                 Metric metric = InvokeMetricCtor(
                                     metricManager,
@@ -357,7 +355,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 IMetricConfiguration config = new SimpleMetricConfiguration(
                                                             5,
                                                             1000,
-                                                            new SimpleMetricSeriesConfiguration(lifetimeCounter: false, restrictToUInt32Values: false));
+                                                            new SimpleMetricSeriesConfiguration(restrictToUInt32Values: false));
 
                 Metric metric = InvokeMetricCtor(
                                         metricManager,
@@ -464,7 +462,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                         metricId: "Foo",
                                         dimension1Name: "D1",
                                         dimension2Name: "D2",
-                                        configuration: MetricConfigurations.Counter);
+                                        configuration: MetricConfigurations.Accumulator);
 
                 Assert.ThrowsException<ArgumentOutOfRangeException>( () => metric.GetDimensionValues(-1) );
                 Assert.ThrowsException<ArgumentOutOfRangeException>( () => metric.GetDimensionValues(0) );
@@ -512,7 +510,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                         metricId: "Foo",
                                         dimension1Name: "D1",
                                         dimension2Name: null,
-                                        configuration: MetricConfigurations.Counter);
+                                        configuration: MetricConfigurations.Accumulator);
 
                 Assert.ThrowsException<ArgumentOutOfRangeException>( () => metric.GetDimensionValues(-1) );
                 Assert.ThrowsException<ArgumentOutOfRangeException>( () => metric.GetDimensionValues(0) );
@@ -550,7 +548,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 IMetricConfiguration config = new SimpleMetricConfiguration(
                                                             4,
                                                             1000,
-                                                            new SimpleMetricSeriesConfiguration(lifetimeCounter: true, restrictToUInt32Values: false));
+                                                            new AccumulatorMetricSeriesConfiguration(restrictToUInt32Values: false));
                 Metric metric = InvokeMetricCtor(
                                         metricManager,
                                         metricId: "Foo",
@@ -586,7 +584,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 IMetricConfiguration config = new SimpleMetricConfiguration(
                                                             4,
                                                             1000,
-                                                            new SimpleMetricSeriesConfiguration(lifetimeCounter: true, restrictToUInt32Values: false));
+                                                            new AccumulatorMetricSeriesConfiguration(restrictToUInt32Values: false));
                 Metric metric = InvokeMetricCtor(
                                         metricManager,
                                         metricId: "Foo",
@@ -619,7 +617,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 IMetricConfiguration config = new SimpleMetricConfiguration(
                                                             1000,
                                                             2,
-                                                            new SimpleMetricSeriesConfiguration(lifetimeCounter: true, restrictToUInt32Values: false));
+                                                            new AccumulatorMetricSeriesConfiguration(restrictToUInt32Values: false));
                 Metric metric = InvokeMetricCtor(
                                         metricManager,
                                         metricId: "Foo",
@@ -656,7 +654,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 IMetricConfiguration config = new SimpleMetricConfiguration(
                                                             1000,
                                                             2,
-                                                            new SimpleMetricSeriesConfiguration(lifetimeCounter: true, restrictToUInt32Values: false));
+                                                            new AccumulatorMetricSeriesConfiguration(restrictToUInt32Values: false));
                 Metric metric = InvokeMetricCtor(
                                         metricManager,
                                         metricId: "Foo",
@@ -697,7 +695,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 IMetricConfiguration config = new SimpleMetricConfiguration(
                                                             5,
                                                             1000,
-                                                            new SimpleMetricSeriesConfiguration(lifetimeCounter: true, restrictToUInt32Values: false));
+                                                            new SimpleMetricSeriesConfiguration(restrictToUInt32Values: false));
 
                 Metric metric = InvokeMetricCtor(
                                         metricManager,
@@ -710,11 +708,11 @@ namespace Microsoft.ApplicationInsights.Metrics
                 Assert.AreEqual(1, series.Count);
                 AssertSeries(
                             series[0],
-                            expectedKeys:               new string[0],
-                            expectedMetricId:           "Foo",
-                            expectedContextProperties:  new Dictionary<string, string> { },
-                            expectedCount:              null,
-                            expectedSum:                null);
+                            expectedKeys:                       new string[0],
+                            expectedMetricId:                   "Foo",
+                            expectedDimensionNamesAndValues:    new Dictionary<string, string> { },
+                            expectedCount:                      null,
+                            expectedSum:                        null);
 
 
                 metric.TrackValue(1);
@@ -733,43 +731,43 @@ namespace Microsoft.ApplicationInsights.Metrics
 
                 AssertSeries(
                             sortedSeries[0],
-                            expectedKeys:               new string[0],
-                            expectedMetricId:           "Foo",
-                            expectedContextProperties:  new Dictionary<string, string> { },
-                            expectedCount:              2,
-                            expectedSum:                3);
+                            expectedKeys:                       new string[0],
+                            expectedMetricId:                   "Foo",
+                            expectedDimensionNamesAndValues:    new Dictionary<string, string> { },
+                            expectedCount:                      2,
+                            expectedSum:                        3);
 
                  AssertSeries(
                             sortedSeries[1],
-                            expectedKeys:               new string[] { "a", "B" },
-                            expectedMetricId:           "Foo",
-                            expectedContextProperties:  new Dictionary<string, string> { ["D1"] = "a", ["D2"] = "B" },
-                            expectedCount:              1,
-                            expectedSum:                4);
+                            expectedKeys:                       new string[] { "a", "B" },
+                            expectedMetricId:                   "Foo",
+                            expectedDimensionNamesAndValues:    new Dictionary<string, string> { ["D1"] = "a", ["D2"] = "B" },
+                            expectedCount:                      1,
+                            expectedSum:                        4);
 
                 AssertSeries(
                             sortedSeries[2],
-                            expectedKeys:               new string[] { "A", "B" },
-                            expectedMetricId:           "Foo",
-                            expectedContextProperties:  new Dictionary<string, string> { ["D1"] = "A", ["D2"] = "B" },
-                            expectedCount:              2,
-                            expectedSum:                11);
+                            expectedKeys:                       new string[] { "A", "B" },
+                            expectedMetricId:                   "Foo",
+                            expectedDimensionNamesAndValues:    new Dictionary<string, string> { ["D1"] = "A", ["D2"] = "B" },
+                            expectedCount:                      2,
+                            expectedSum:                        11);
 
                 AssertSeries(
                             sortedSeries[3],
-                            expectedKeys:               new string[] { "X", "B" },
-                            expectedMetricId:           "Foo",
-                            expectedContextProperties:  new Dictionary<string, string> { ["D1"] = "X", ["D2"] = "B" },
-                            expectedCount:              1,
-                            expectedSum:                5);
+                            expectedKeys:                       new string[] { "X", "B" },
+                            expectedMetricId:                   "Foo",
+                            expectedDimensionNamesAndValues:    new Dictionary<string, string> { ["D1"] = "X", ["D2"] = "B" },
+                            expectedCount:                      1,
+                            expectedSum:                        5);
 
                 AssertSeries(
                             sortedSeries[4],
-                            expectedKeys:               new string[] { "Y", "C" },
-                            expectedMetricId:           "Foo",
-                            expectedContextProperties:  new Dictionary<string, string> { ["D1"] = "Y", ["D2"] = "C" },
-                            expectedCount:              1,
-                            expectedSum:                7);
+                            expectedKeys:                       new string[] { "Y", "C" },
+                            expectedMetricId:                   "Foo",
+                            expectedDimensionNamesAndValues:    new Dictionary<string, string> { ["D1"] = "Y", ["D2"] = "C" },
+                            expectedCount:                      1,
+                            expectedSum:                        7);
             }
 
             Util.CompleteDefaultAggregationCycle(metricManager);
@@ -779,7 +777,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     KeyValuePair<string[], MetricSeries> series,
                                     string[] expectedKeys,
                                     string expectedMetricId,
-                                    IDictionary<string, string> expectedContextProperties,
+                                    IDictionary<string, string> expectedDimensionNamesAndValues,
                                     int? expectedCount,
                                     double? expectedSum)
         {
@@ -793,14 +791,16 @@ namespace Microsoft.ApplicationInsights.Metrics
             
             Assert.AreEqual(expectedMetricId, series.Value.MetricId);
 
-            Assert.AreEqual(expectedContextProperties.Count, series.Value.Context.Properties.Count);
-            foreach (KeyValuePair<string, string> dimNameValue in expectedContextProperties)
+            Assert.AreEqual(expectedDimensionNamesAndValues.Count, series.Value.DimensionNamesAndValues.Count);
+            foreach (KeyValuePair<string, string> dimNameValue in expectedDimensionNamesAndValues)
             {
-                Assert.AreEqual(dimNameValue.Value, series.Value.Context.Properties[dimNameValue.Key]);
+                Assert.AreEqual(dimNameValue.Value, series.Value.DimensionNamesAndValues[dimNameValue.Key]);
             }
 
-            Assert.AreEqual(expectedCount, (series.Value.GetCurrentAggregateUnsafe() as MetricTelemetry)?.Count);
-            Assert.AreEqual(expectedSum, (series.Value.GetCurrentAggregateUnsafe() as MetricTelemetry)?.Sum);
+            MetricAggregate currentAggregate = series.Value.GetCurrentAggregateUnsafe();
+
+            Assert.AreEqual(expectedCount, series.Value.GetCurrentAggregateUnsafe()?.AggregateData?["Count"]);
+            Assert.AreEqual(expectedSum, series.Value.GetCurrentAggregateUnsafe()?.AggregateData?["Sum"]);
         }
 
         /// <summary />
@@ -827,7 +827,6 @@ namespace Microsoft.ApplicationInsights.Metrics
                 Assert.IsTrue(success);
                 Assert.IsNotNull(series);
                 Assert.AreEqual("Foo", series.MetricId);
-                Assert.AreEqual(0, series.Context?.Properties?.Count);
 
                 Assert.AreEqual(0, telemetryCollector.Count);
 
@@ -835,12 +834,11 @@ namespace Microsoft.ApplicationInsights.Metrics
                 metricManager.Flush();
 
                 Assert.AreEqual(1, telemetryCollector.Count);
-                Assert.IsInstanceOfType(telemetryCollector[0], typeof(MetricTelemetry));
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[0]).Count);
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[0]).Sum);
-                Assert.AreEqual("Foo", ((MetricTelemetry) telemetryCollector[0]).Name);
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.Count);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.ContainsKey(Util.AggregationIntervalMonikerPropertyKey) ?? false);
+                Assert.IsNotNull(telemetryCollector[0]);
+                Assert.AreEqual(1, telemetryCollector[0].AggregateData["Count"]);
+                Assert.AreEqual(1.0, telemetryCollector[0].AggregateData["Sum"]);
+                Assert.AreEqual("Foo", telemetryCollector[0].MetricId);
+                Assert.AreEqual(0, telemetryCollector[0].Dimensions.Count);
 
                 Assert.ThrowsException<InvalidOperationException>( () => metric.TryGetDataSeries(out series, "Dim1Value") );
                 Assert.ThrowsException<InvalidOperationException>( () => metric.TryGetDataSeries(out series, "Dim1Value", createIfNotExists: true) );
@@ -867,7 +865,6 @@ namespace Microsoft.ApplicationInsights.Metrics
                 Assert.IsTrue(success);
                 Assert.IsNotNull(series);
                 Assert.AreEqual("Foo", series.MetricId);
-                Assert.AreEqual(0, series.Context?.Properties?.Count);
 
                 Assert.AreEqual(0, telemetryCollector.Count);
 
@@ -875,12 +872,11 @@ namespace Microsoft.ApplicationInsights.Metrics
                 metricManager.Flush();
 
                 Assert.AreEqual(1, telemetryCollector.Count);
-                Assert.IsInstanceOfType(telemetryCollector[0], typeof(MetricTelemetry));
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[0]).Count);
-                Assert.AreEqual(2, ((MetricTelemetry) telemetryCollector[0]).Sum);
-                Assert.AreEqual("Foo", ((MetricTelemetry) telemetryCollector[0]).Name);
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.Count);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.ContainsKey(Util.AggregationIntervalMonikerPropertyKey) ?? false);
+                Assert.IsNotNull(telemetryCollector[0]);
+                Assert.AreEqual(1, telemetryCollector[0].AggregateData["Count"]);
+                Assert.AreEqual(2.0, telemetryCollector[0].AggregateData["Sum"]);
+                Assert.AreEqual("Foo", telemetryCollector[0].MetricId);
+                Assert.AreEqual(0, telemetryCollector[0].Dimensions.Count);
 
                 telemetryCollector.Clear();
                 MetricSeries series1, series2, series3, series4;
@@ -924,26 +920,24 @@ namespace Microsoft.ApplicationInsights.Metrics
                 metricManager.Flush();
 
                 Assert.AreEqual(2, telemetryCollector.Count);
-                Assert.IsInstanceOfType(telemetryCollector[0], typeof(MetricTelemetry));
-                Assert.IsInstanceOfType(telemetryCollector[1], typeof(MetricTelemetry));
+                Assert.IsNotNull(telemetryCollector[0]);
+                Assert.IsNotNull(telemetryCollector[1]);
 
-                Assert.AreEqual("Foo", ((MetricTelemetry) telemetryCollector[0]).Name);
-                Assert.AreEqual(3, ((MetricTelemetry) telemetryCollector[0]).Count);
-                Assert.AreEqual(60, ((MetricTelemetry) telemetryCollector[0]).Sum);
-                
-                Assert.AreEqual(2, ((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.Count);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.ContainsKey(Util.AggregationIntervalMonikerPropertyKey) ?? false);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.ContainsKey("Bar") ?? false);
-                Assert.AreEqual("Dim1Value", ((MetricTelemetry) telemetryCollector[0]).Context?.Properties?["Bar"]);
+                Assert.AreEqual("Foo", telemetryCollector[0].MetricId);
+                Assert.AreEqual(3, telemetryCollector[0].AggregateData["Count"]);
+                Assert.AreEqual(60.0, telemetryCollector[0].AggregateData["Sum"]);
 
-                Assert.AreEqual("Foo", ((MetricTelemetry) telemetryCollector[1]).Name);
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[1]).Count);
-                Assert.AreEqual(40, ((MetricTelemetry) telemetryCollector[1]).Sum);
+                Assert.AreEqual(1, telemetryCollector[0].Dimensions.Count);
+                Assert.IsTrue(telemetryCollector[0].Dimensions.ContainsKey("Bar"));
+                Assert.AreEqual("Dim1Value", telemetryCollector[0].Dimensions["Bar"]);
 
-                Assert.AreEqual(2, ((MetricTelemetry) telemetryCollector[1]).Context?.Properties?.Count);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[1]).Context?.Properties?.ContainsKey(Util.AggregationIntervalMonikerPropertyKey) ?? false);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[1]).Context?.Properties?.ContainsKey("Bar") ?? false);
-                Assert.AreEqual("Dim1ValueX", ((MetricTelemetry) telemetryCollector[1]).Context?.Properties?["Bar"]);
+                Assert.AreEqual("Foo", telemetryCollector[1].MetricId);
+                Assert.AreEqual(1, telemetryCollector[1].AggregateData["Count"]);
+                Assert.AreEqual(40.0, telemetryCollector[1].AggregateData["Sum"]);
+
+                Assert.AreEqual(1, telemetryCollector[1].Dimensions.Count);
+                Assert.IsTrue(telemetryCollector[1].Dimensions.ContainsKey("Bar"));
+                Assert.AreEqual("Dim1ValueX", telemetryCollector[1].Dimensions["Bar"]);
 
                 Assert.ThrowsException<InvalidOperationException>( () => metric.TryGetDataSeries(out series, "Dim1", "Dim2") );
                 Assert.ThrowsException<InvalidOperationException>( () => metric.TryGetDataSeries(out series, "Dim1", "Dim2", createIfNotExists: true) );
@@ -966,7 +960,6 @@ namespace Microsoft.ApplicationInsights.Metrics
                 Assert.IsTrue(success);
                 Assert.IsNotNull(series);
                 Assert.AreEqual("Foo", series.MetricId);
-                Assert.AreEqual(0, series.Context?.Properties?.Count);
 
                 Assert.AreEqual(0, telemetryCollector.Count);
 
@@ -974,12 +967,11 @@ namespace Microsoft.ApplicationInsights.Metrics
                 metricManager.Flush();
 
                 Assert.AreEqual(1, telemetryCollector.Count);
-                Assert.IsInstanceOfType(telemetryCollector[0], typeof(MetricTelemetry));
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[0]).Count);
-                Assert.AreEqual(2, ((MetricTelemetry) telemetryCollector[0]).Sum);
-                Assert.AreEqual("Foo", ((MetricTelemetry) telemetryCollector[0]).Name);
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.Count);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.ContainsKey(Util.AggregationIntervalMonikerPropertyKey) ?? false);
+                Assert.IsNotNull(telemetryCollector[0]);
+                Assert.AreEqual(1, telemetryCollector[0].AggregateData["Count"]);
+                Assert.AreEqual(2.0, telemetryCollector[0].AggregateData["Sum"]);
+                Assert.AreEqual("Foo", telemetryCollector[0].MetricId);
+                Assert.AreEqual(0, telemetryCollector[0].Dimensions.Count);
 
                 Assert.ThrowsException<InvalidOperationException>( () => metric.TryGetDataSeries(out series, "Dim1Value") );
                 Assert.ThrowsException<InvalidOperationException>( () => metric.TryGetDataSeries(out series, "Dim1Value", createIfNotExists: true) );
@@ -1047,54 +1039,46 @@ namespace Microsoft.ApplicationInsights.Metrics
                 metricManager.Flush();
 
                 Assert.AreEqual(4, telemetryCollector.Count);
-                Assert.IsInstanceOfType(telemetryCollector[0], typeof(MetricTelemetry));
-                Assert.IsInstanceOfType(telemetryCollector[1], typeof(MetricTelemetry));
-                Assert.IsInstanceOfType(telemetryCollector[2], typeof(MetricTelemetry));
-                Assert.IsInstanceOfType(telemetryCollector[3], typeof(MetricTelemetry));
+                Assert.IsNotNull(telemetryCollector[0]);
+                Assert.IsNotNull(telemetryCollector[1]);
+                Assert.IsNotNull(telemetryCollector[2]);
+                Assert.IsNotNull(telemetryCollector[3]);
 
-                Assert.AreEqual("Foo", ((MetricTelemetry) telemetryCollector[0]).Name);
-                Assert.AreEqual(3, ((MetricTelemetry) telemetryCollector[0]).Count);
-                Assert.AreEqual(60, ((MetricTelemetry) telemetryCollector[0]).Sum);
+                Assert.AreEqual("Foo", telemetryCollector[0].MetricId);
+                Assert.AreEqual(3, telemetryCollector[0].AggregateData["Count"]);
+                Assert.AreEqual(60.0, telemetryCollector[0].AggregateData["Sum"]);
                 
-                Assert.AreEqual(3, ((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.Count);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.ContainsKey(Util.AggregationIntervalMonikerPropertyKey) ?? false);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.ContainsKey("Bar") ?? false);
-                Assert.AreEqual("Dim1Value", ((MetricTelemetry) telemetryCollector[0]).Context?.Properties?["Bar"]);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.ContainsKey("Poo") ?? false);
-                Assert.AreEqual("Dim2Value", ((MetricTelemetry) telemetryCollector[0]).Context?.Properties?["Poo"]);
+                Assert.AreEqual(2, telemetryCollector[0].Dimensions.Count);
+                Assert.IsTrue(telemetryCollector[0].Dimensions.ContainsKey("Bar"));
+                Assert.AreEqual("Dim1Value", telemetryCollector[0].Dimensions["Bar"]);
+                Assert.AreEqual("Dim2Value", telemetryCollector[0].Dimensions["Poo"]);
 
-                Assert.AreEqual("Foo", ((MetricTelemetry) telemetryCollector[1]).Name);
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[1]).Count);
-                Assert.AreEqual(40, ((MetricTelemetry) telemetryCollector[1]).Sum);
+                Assert.AreEqual("Foo", telemetryCollector[1].MetricId);
+                Assert.AreEqual(1, telemetryCollector[1].AggregateData["Count"]);
+                Assert.AreEqual(40.0, telemetryCollector[1].AggregateData["Sum"]);
 
-                Assert.AreEqual(3, ((MetricTelemetry) telemetryCollector[1]).Context?.Properties?.Count);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[1]).Context?.Properties?.ContainsKey(Util.AggregationIntervalMonikerPropertyKey) ?? false);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[1]).Context?.Properties?.ContainsKey("Bar") ?? false);
-                Assert.AreEqual("Dim1ValueX", ((MetricTelemetry) telemetryCollector[1]).Context?.Properties?["Bar"]);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[1]).Context?.Properties?.ContainsKey("Poo") ?? false);
-                Assert.AreEqual("Dim2ValueX", ((MetricTelemetry) telemetryCollector[1]).Context?.Properties?["Poo"]);
+                Assert.AreEqual(2, telemetryCollector[1].Dimensions.Count);
+                Assert.IsTrue(telemetryCollector[1].Dimensions.ContainsKey("Bar"));
+                Assert.AreEqual("Dim1ValueX", telemetryCollector[1].Dimensions["Bar"]);
+                Assert.AreEqual("Dim2ValueX", telemetryCollector[1].Dimensions["Poo"]);
 
-                Assert.AreEqual("Foo", ((MetricTelemetry) telemetryCollector[2]).Name);
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[2]).Count);
-                Assert.AreEqual(50, ((MetricTelemetry) telemetryCollector[2]).Sum);
+                Assert.AreEqual("Foo", telemetryCollector[2].MetricId);
+                Assert.AreEqual(1, telemetryCollector[2].AggregateData["Count"]);
+                Assert.AreEqual(50.0, telemetryCollector[2].AggregateData["Sum"]);
 
-                Assert.AreEqual(3, ((MetricTelemetry) telemetryCollector[2]).Context?.Properties?.Count);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[2]).Context?.Properties?.ContainsKey(Util.AggregationIntervalMonikerPropertyKey) ?? false);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[2]).Context?.Properties?.ContainsKey("Bar") ?? false);
-                Assert.AreEqual("Dim1ValueX", ((MetricTelemetry) telemetryCollector[2]).Context?.Properties?["Bar"]);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[2]).Context?.Properties?.ContainsKey("Poo") ?? false);
-                Assert.AreEqual("Dim2Value", ((MetricTelemetry) telemetryCollector[2]).Context?.Properties?["Poo"]);
+                Assert.AreEqual(2, telemetryCollector[2].Dimensions.Count);
+                Assert.IsTrue(telemetryCollector[2].Dimensions.ContainsKey("Bar"));
+                Assert.AreEqual("Dim1ValueX", telemetryCollector[2].Dimensions["Bar"]);
+                Assert.AreEqual("Dim2Value", telemetryCollector[2].Dimensions["Poo"]);
 
-                Assert.AreEqual("Foo", ((MetricTelemetry) telemetryCollector[3]).Name);
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[3]).Count);
-                Assert.AreEqual(60, ((MetricTelemetry) telemetryCollector[3]).Sum);
+                Assert.AreEqual("Foo", telemetryCollector[3].MetricId);
+                Assert.AreEqual(1, telemetryCollector[3].AggregateData["Count"]);
+                Assert.AreEqual(60.0, telemetryCollector[3].AggregateData["Sum"]);
 
-                Assert.AreEqual(3, ((MetricTelemetry) telemetryCollector[3]).Context?.Properties?.Count);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[3]).Context?.Properties?.ContainsKey(Util.AggregationIntervalMonikerPropertyKey) ?? false);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[3]).Context?.Properties?.ContainsKey("Bar") ?? false);
-                Assert.AreEqual("Dim1Value", ((MetricTelemetry) telemetryCollector[3]).Context?.Properties?["Bar"]);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[3]).Context?.Properties?.ContainsKey("Poo") ?? false);
-                Assert.AreEqual("Dim2ValueX", ((MetricTelemetry) telemetryCollector[3]).Context?.Properties?["Poo"]);
+                Assert.AreEqual(2, telemetryCollector[3].Dimensions.Count);
+                Assert.IsTrue(telemetryCollector[3].Dimensions.ContainsKey("Bar"));
+                Assert.AreEqual("Dim1Value", telemetryCollector[3].Dimensions["Bar"]);
+                Assert.AreEqual("Dim2ValueX", telemetryCollector[3].Dimensions["Poo"]);
             }
 
             Util.CompleteDefaultAggregationCycle(metricManager);
@@ -1131,14 +1115,13 @@ namespace Microsoft.ApplicationInsights.Metrics
                 metricManager.Flush();
 
                 Assert.AreEqual(1, telemetryCollector.Count);
-                Assert.IsInstanceOfType(telemetryCollector[0], typeof(MetricTelemetry));
+                Assert.IsNotNull(telemetryCollector[0]);
 
-                Assert.AreEqual("Foo", ((MetricTelemetry) telemetryCollector[0]).Name);
-                Assert.AreEqual(3, ((MetricTelemetry) telemetryCollector[0]).Count);
-                Assert.AreEqual(-57.3, ((MetricTelemetry) telemetryCollector[0]).Sum);
+                Assert.AreEqual("Foo", telemetryCollector[0].MetricId);
+                Assert.AreEqual(3, telemetryCollector[0].AggregateData["Count"]);
+                Assert.AreEqual(-57.3, telemetryCollector[0].AggregateData["Sum"]);
 
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.Count);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.ContainsKey(Util.AggregationIntervalMonikerPropertyKey) ?? false);
+                Assert.AreEqual(0, telemetryCollector[0].Dimensions.Count);
             }
             telemetryCollector.Clear();
             {
@@ -1158,14 +1141,13 @@ namespace Microsoft.ApplicationInsights.Metrics
                 metricManager.Flush();
 
                 Assert.AreEqual(1, telemetryCollector.Count);
-                Assert.IsInstanceOfType(telemetryCollector[0], typeof(MetricTelemetry));
+                Assert.IsNotNull(telemetryCollector[0]);
 
-                Assert.AreEqual("Foo", ((MetricTelemetry) telemetryCollector[0]).Name);
-                Assert.AreEqual(3, ((MetricTelemetry) telemetryCollector[0]).Count);
-                Assert.AreEqual(-57.3, ((MetricTelemetry) telemetryCollector[0]).Sum);
+                Assert.AreEqual("Foo", telemetryCollector[0].MetricId);
+                Assert.AreEqual(3, telemetryCollector[0].AggregateData["Count"]);
+                Assert.AreEqual(-57.3, telemetryCollector[0].AggregateData["Sum"]);
 
-                Assert.AreEqual(1, ((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.Count);
-                Assert.IsTrue(((MetricTelemetry) telemetryCollector[0]).Context?.Properties?.ContainsKey(Util.AggregationIntervalMonikerPropertyKey) ?? false);
+                Assert.AreEqual(0, telemetryCollector[0].Dimensions.Count);
             }
 
             Util.CompleteDefaultAggregationCycle(metricManager);
@@ -1183,7 +1165,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 IMetricConfiguration config = new SimpleMetricConfiguration(
                                                     seriesCountLimit: 10,
                                                     valuesPerDimensionLimit: 2,
-                                                    seriesConfig: new SimpleMetricSeriesConfiguration(lifetimeCounter: false, restrictToUInt32Values: false));
+                                                    seriesConfig: new SimpleMetricSeriesConfiguration(restrictToUInt32Values: false));
                 Metric metric = InvokeMetricCtor(
                                         metricManager,
                                         metricId: "Foo",
@@ -1240,24 +1222,24 @@ namespace Microsoft.ApplicationInsights.Metrics
 
                 for (int i = 0; i < telemetryCollector.Count; i++)
                 {
-                    Assert.IsInstanceOfType(telemetryCollector[i], typeof(MetricTelemetry));
-                    MetricTelemetry aggregate = (MetricTelemetry) telemetryCollector[i];
+                    Assert.IsNotNull(telemetryCollector[i]);
+                    MetricAggregate aggregate = telemetryCollector[i];
 
-                    Assert.AreEqual("Foo", aggregate.Name);
-                    Assert.AreEqual(1, aggregate.Count);
-                    Assert.AreEqual(42, aggregate.Sum);
+                    Assert.AreEqual("Foo", aggregate.MetricId);
+                    Assert.AreEqual(1, aggregate.AggregateData["Count"]);
+                    Assert.AreEqual(42.0, aggregate.AggregateData["Sum"]);
 
-                    if (1 == aggregate.Context?.Properties?.Count)
+                    if (0 == aggregate.Dimensions.Count)
                     {
                         results.Add("-");
                     }
-                    else if (3 == aggregate.Context?.Properties?.Count)
+                    else if (2 == aggregate.Dimensions.Count)
                     {
-                        results.Add($"{aggregate?.Context?.Properties?["D1"]}-{aggregate.Context?.Properties?["D2"]}");
+                        results.Add($"{aggregate.Dimensions["D1"]}-{aggregate.Dimensions["D2"]}");
                     }
                     else
                     {
-                        Assert.Fail($"Unexpected number of context properties: {aggregate.Context?.Properties?.Count}.");
+                        Assert.Fail($"Unexpected number of dimensions: {aggregate.Dimensions.Count}.");
                     }
                 }
 
@@ -1273,7 +1255,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 IMetricConfiguration config = new SimpleMetricConfiguration(
                                                     seriesCountLimit: 4,
                                                     valuesPerDimensionLimit: 25,
-                                                    seriesConfig: new SimpleMetricSeriesConfiguration(lifetimeCounter: false, restrictToUInt32Values: false));
+                                                    seriesConfig: new SimpleMetricSeriesConfiguration(restrictToUInt32Values: false));
                 Metric metric = InvokeMetricCtor(
                                         metricManager,
                                         metricId: "Foo",
@@ -1318,36 +1300,36 @@ namespace Microsoft.ApplicationInsights.Metrics
 
                 for (int i = 0; i < telemetryCollector.Count; i++)
                 {
-                    Assert.IsInstanceOfType(telemetryCollector[i], typeof(MetricTelemetry));
-                    MetricTelemetry aggregate = (MetricTelemetry) telemetryCollector[i];
+                    Assert.IsNotNull(telemetryCollector[i]);
+                    MetricAggregate aggregate = telemetryCollector[i];
 
-                    Assert.AreEqual("Foo", aggregate.Name);
+                    Assert.AreEqual("Foo", aggregate.MetricId);
 
                     bool isC = false;
-                    if (1 == aggregate.Context?.Properties?.Count)
+                    if (0 == aggregate.Dimensions.Count)
                     {
                         results.Add("-");
                     }
-                    else if (2 == aggregate.Context?.Properties?.Count)
+                    else if (1 == aggregate.Dimensions.Count)
                     {
-                        string dimVal = aggregate?.Context?.Properties?["D1"];
+                        string dimVal = aggregate.Dimensions["D1"];
                         isC = "C".Equals(dimVal);
                         results.Add(dimVal);
                     }
                     else
                     {
-                        Assert.Fail($"Unexpected number of context properties: {aggregate.Context?.Properties?.Count}.");
+                        Assert.Fail($"Unexpected number of dimensions: {aggregate.Dimensions.Count}.");
                     }
 
                     if (! isC)
                     {
-                        Assert.AreEqual(1, aggregate.Count);
-                        Assert.AreEqual(42, aggregate.Sum);
+                        Assert.AreEqual(1, aggregate.AggregateData["Count"]);
+                        Assert.AreEqual(42.0, aggregate.AggregateData["Sum"]);
                     }
                     else
                     {
-                        Assert.AreEqual(2, aggregate.Count);
-                        Assert.AreEqual(84, aggregate.Sum);
+                        Assert.AreEqual(2, aggregate.AggregateData["Count"]);
+                        Assert.AreEqual(84.0, aggregate.AggregateData["Sum"]);
                     }
                 }
 
@@ -1392,7 +1374,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1",
                                     dimension2Name: "D2",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.IsFalse(metric1.Equals(null));
             Assert.IsFalse(metric1.Equals("some object"));
@@ -1403,7 +1385,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1",
                                     dimension2Name: "D2",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.IsTrue(metric1.Equals(metric2));
             Assert.IsTrue(metric2.Equals(metric1));
@@ -1413,7 +1395,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1",
                                     dimension2Name: "D2x",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.IsFalse(metric1.Equals(metric2));
             Assert.IsFalse(metric2.Equals(metric1));
@@ -1423,7 +1405,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1",
                                     dimension2Name: null,
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.IsFalse(metric1.Equals(metric2));
             Assert.IsFalse(metric2.Equals(metric1));
@@ -1433,7 +1415,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                    metricId: "Foo",
                                    dimension1Name: null,
                                    dimension2Name: null,
-                                   configuration: MetricConfigurations.Counter);
+                                   configuration: MetricConfigurations.Accumulator);
 
             Assert.IsFalse(metric1.Equals(metric2));
             Assert.IsFalse(metric2.Equals(metric1));
@@ -1443,7 +1425,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1x",
                                     dimension2Name: "D2",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.IsFalse(metric1.Equals(metric2));
             Assert.IsFalse(metric2.Equals(metric1));
@@ -1453,7 +1435,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foox",
                                     dimension1Name: "D1",
                                     dimension2Name: "D2",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.IsFalse(metric1.Equals(metric2));
             Assert.IsFalse(metric2.Equals(metric1));
@@ -1474,7 +1456,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1",
                                     dimension2Name: "D2",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.IsTrue(metric1.Equals(metric2));
             Assert.IsTrue(metric2.Equals(metric1));
@@ -1495,7 +1477,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1",
                                     dimension2Name: "D2",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.AreNotEqual(0, metric1.GetHashCode());
             Assert.AreEqual(metric1.GetHashCode(), metric1.GetHashCode());
@@ -1505,7 +1487,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1",
                                     dimension2Name: "D2",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.AreEqual(metric1.GetHashCode(), metric2.GetHashCode());
             Assert.AreNotEqual(0, metric1.GetHashCode());
@@ -1516,7 +1498,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1",
                                     dimension2Name: "D2x",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.AreNotEqual(metric1.GetHashCode(), metric2.GetHashCode());
             Assert.AreNotEqual(0, metric1.GetHashCode());
@@ -1527,7 +1509,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1",
                                     dimension2Name: null,
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.AreNotEqual(metric1.GetHashCode(), metric2.GetHashCode());
             Assert.AreNotEqual(0, metric1.GetHashCode());
@@ -1538,7 +1520,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: null,
                                     dimension2Name: null,
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.AreNotEqual(metric1.GetHashCode(), metric2.GetHashCode());
             Assert.AreNotEqual(0, metric1.GetHashCode());
@@ -1549,7 +1531,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1x",
                                     dimension2Name: "D2",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.AreNotEqual(metric1.GetHashCode(), metric2.GetHashCode());
             Assert.AreNotEqual(0, metric1.GetHashCode());
@@ -1560,7 +1542,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foox",
                                     dimension1Name: "D1",
                                     dimension2Name: "D2",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.AreNotEqual(metric1.GetHashCode(), metric2.GetHashCode());
             Assert.AreNotEqual(0, metric1.GetHashCode());
@@ -1583,7 +1565,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                                     metricId: "Foo",
                                     dimension1Name: "D1",
                                     dimension2Name: "D2",
-                                    configuration: MetricConfigurations.Counter);
+                                    configuration: MetricConfigurations.Accumulator);
 
             Assert.AreEqual(metric1.GetHashCode(), metric2.GetHashCode());
             Assert.AreNotEqual(0, metric1.GetHashCode());

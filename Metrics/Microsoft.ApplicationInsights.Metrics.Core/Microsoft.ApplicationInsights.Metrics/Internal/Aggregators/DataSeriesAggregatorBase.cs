@@ -18,8 +18,6 @@ namespace Microsoft.ApplicationInsights.Metrics
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming Rules", "SA1310: C# Field must not contain an underscore", Justification = "By design: Structured name.")]
         private const int InternalExecutionState_Ready = 0;
 
-        public const string AggregationIntervalMonikerPropertyKey = "_MS.AggregationIntervalMs";
-
         private readonly MetricSeries _dataSeries;
         private readonly MetricAggregationCycleKind _aggregationCycleKind;
         private readonly bool _isPersistent;
@@ -56,12 +54,12 @@ namespace Microsoft.ApplicationInsights.Metrics
             Reset(periodStart);
         }
 
-        public virtual ITelemetry CompleteAggregation(DateTimeOffset periodEnd)
+        public virtual MetricAggregate CompleteAggregation(DateTimeOffset periodEnd)
         {
             // Aggregators may transiently have inconsistent state in order to avoid locking.
             // We wait until ongoing updates are complete and then prevent the aggregator from further updating.
             // However, we do NOT do this for persistent aggregators, so they may transinetly inconsistent aggregates.
-            // However this is benign. For example, a persistent counter may have sum and count mismatching because the one was updated and the other not yet.
+            // However this is benign. For example, a persistent accumulator may have sum and count mismatching because the one was updated and the other not yet.
             // But each atomic internal value should be valid. So derived statistics (like Average) may be transiently incorrect, however:
             //  - In the context of large numbers errors tend to be insignificant
             //  - The small differences in potential errors at different time periods make them look like minimal noise rather than a significant error.
@@ -70,7 +68,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                 EnsureUpdatesComplete(periodEnd);
             }
 
-            ITelemetry aggregate = CreateAggregateUnsafe(periodEnd);
+            MetricAggregate aggregate = CreateAggregateUnsafe(periodEnd);
             return aggregate;
         }
 
@@ -177,7 +175,7 @@ namespace Microsoft.ApplicationInsights.Metrics
             }
         }
 
-        public abstract ITelemetry CreateAggregateUnsafe(DateTimeOffset periodEnd);
+        public abstract MetricAggregate CreateAggregateUnsafe(DateTimeOffset periodEnd);
 
         protected abstract void ReinitializeAggregation();
 
@@ -185,44 +183,30 @@ namespace Microsoft.ApplicationInsights.Metrics
 
         protected abstract void TrackFilteredValue(object metricValue);
 
-        protected void StampVersionAndContextInfo(ITelemetry aggregate)
+        protected void AddInfo_Timing_Dimensions_Context(MetricAggregate aggregate, DateTimeOffset periodEnd)
         {
             if (aggregate == null)
             {
                 return;
             }
+
+            // Stamp Timing Info: 
+
+            aggregate.AggregationPeriodStart = _periodStart;
+            aggregate.AggregationPeriodDuration = periodEnd - _periodStart;
 
             if (DataSeries != null)
             {
-                Util.CopyTelemetryContext(DataSeries.Context, aggregate.Context);
+                // Stamp dimensions:
+
+                if (DataSeries.DimensionNamesAndValues != null)
+                {
+                    foreach(KeyValuePair<string, string> dimNameVal in DataSeries.DimensionNamesAndValues)
+                    {
+                        aggregate.Dimensions[dimNameVal.Key] = dimNameVal.Value;
+                    }
+                }
             }
-
-            Util.StampSdkVersionToContext(aggregate);
-        }
-
-        protected void StampTimingInfo(ITelemetry aggregate, DateTimeOffset periodEnd)
-        {
-            if (aggregate == null)
-            {
-                return;
-            }
-
-            var metricAggregate = aggregate as MetricTelemetry;
-            if (metricAggregate == null)
-            {
-                return;
-            }
-
-            TimeSpan period = periodEnd - _periodStart;
-            long periodMillis = (long) period.TotalMilliseconds;
-
-            IDictionary<string, string> props = metricAggregate.Properties;
-            if (props != null)
-            {
-                props.Add(AggregationIntervalMonikerPropertyKey, periodMillis.ToString(CultureInfo.InvariantCulture));
-            }
-
-            metricAggregate.Timestamp = _periodStart;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage(

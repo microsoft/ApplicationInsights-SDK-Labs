@@ -4,23 +4,26 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 
-using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Metrics.Extensibility;
-using Microsoft.ApplicationInsights.Channel;
 
 using CycleKind = Microsoft.ApplicationInsights.Metrics.Extensibility.MetricAggregationCycleKind;
 
 namespace Microsoft.ApplicationInsights.Metrics
 {
     /// <summary>
-    /// 
+    /// Represents a data time series of metric values.
+    /// One or more <c>MetricSeries</c> are grouped into a single <c>Metric</c>.
+    /// Use <c>MetricSeries</c> to track, aggregate and send values without the overhead of looking them up from the
+    /// corresponding <c>Metric</c> object.
+    /// Each <c>Metric</c> object contains a special zero-dimension series, plus, for multi-dimensional metrics, one
+    /// series per unique dimension-values combination.
     /// </summary>
     public sealed class MetricSeries
     {
         private readonly MetricAggregationManager _aggregationManager;
         private readonly bool _requiresPersistentAggregator;
         private readonly string _metricId;
-        private readonly TelemetryContext _context;
+        private readonly IReadOnlyDictionary<string, string> _dimensionNamesAndValues;
 
         private IMetricSeriesAggregator _aggregatorPersistent;
         private WeakReference<IMetricSeriesAggregator> _aggregatorDefault;
@@ -33,7 +36,11 @@ namespace Microsoft.ApplicationInsights.Metrics
 
         internal readonly IMetricSeriesConfiguration _configuration;
 
-        internal MetricSeries(MetricAggregationManager aggregationManager, string metricId, IMetricSeriesConfiguration configuration)
+        internal MetricSeries(
+                            MetricAggregationManager aggregationManager,
+                            string metricId,
+                            IEnumerable<KeyValuePair<string, string>> dimensionNamesAndValues,
+                            IMetricSeriesConfiguration configuration)
         {
             Util.ValidateNotNull(aggregationManager, nameof(aggregationManager));
             Util.ValidateNotNull(metricId, nameof(metricId));
@@ -43,7 +50,38 @@ namespace Microsoft.ApplicationInsights.Metrics
             _metricId = metricId;
             _configuration = configuration;
             _requiresPersistentAggregator = configuration.RequiresPersistentAggregation;
-            _context = new TelemetryContext();
+
+            var dimNameVals = new Dictionary<string, string>();
+            if (dimensionNamesAndValues != null)
+            {
+                int dimIndex = 0;
+                foreach(KeyValuePair<string, string> dimNameVal in dimensionNamesAndValues)
+                {
+                    if (dimNameVal.Key == null)
+                    {
+                        throw new ArgumentNullException($"The name for dimension at 0-based index '{dimIndex}' is null.");
+                    }
+
+                    if (String.IsNullOrWhiteSpace(dimNameVal.Key))
+                    {
+                        throw new ArgumentException($"The name for dimension at 0-based index '{dimIndex}' is empty or white-space");
+                    }
+
+                    if (dimNameVal.Value == null)
+                    {
+                        throw new ArgumentNullException($"The value for dimension '{dimNameVal.Key}' number is null.");
+                    }
+
+                    if (String.IsNullOrWhiteSpace(dimNameVal.Value))
+                    {
+                        throw new ArgumentNullException($"The value for dimension '{dimNameVal.Key}' is empty or white-space.");
+                    }
+
+                    dimNameVals[dimNameVal.Key] = dimNameVal.Value;
+                    dimIndex++;
+                }
+            }
+            _dimensionNamesAndValues = dimNameVals;
 
             _aggregatorPersistent = null;
             _aggregatorDefault = null;
@@ -54,7 +92,7 @@ namespace Microsoft.ApplicationInsights.Metrics
         /// <summary>
         /// 
         /// </summary>
-        public TelemetryContext Context { get { return _context; } }
+        public IReadOnlyDictionary<string, string> DimensionNamesAndValues { get { return _dimensionNamesAndValues; } }
 
         /// <summary>
         /// 
@@ -62,9 +100,12 @@ namespace Microsoft.ApplicationInsights.Metrics
         public string MetricId { get { return _metricId; } }
 
         /// <summary>
-        /// 
+        /// Tracks the specified value.<br />
+        /// An aggregate representing tracked values will be automatically sent to the cloud ingestion endpoint at the end of each aggregation period.<br />
+        /// <para>When non-default aggregation cycles are active, additional aggregates may be obtained by cycling respective aggregators.
+        /// See @ToDo to learn more about this advanced use case.</para>
         /// </summary>
-        /// <param name="metricValue"></param>
+        /// <param name="metricValue">The value to be aggregated.</param>
         public void TrackValue(double metricValue)
         {
             List<Exception> errors = null;
@@ -101,9 +142,12 @@ namespace Microsoft.ApplicationInsights.Metrics
         }
 
         /// <summary>
-        /// 
+        /// Tracks the specified value.<br />
+        /// An aggregate representing tracked values will be automatically sent to the cloud ingestion endpoint at the end of each aggregation period.<br />
+        /// <para>When non-default aggregation cycles are active, additional aggregates may be obtained by cycling respective aggregators.
+        /// See @ToDo to learn more about this advanced use case.</para>
         /// </summary>
-        /// <param name="metricValue"></param>
+        /// <param name="metricValue">The value to be aggregated.</param>
         public void TrackValue(object metricValue)
         {
             List<Exception> errors = null;
@@ -181,7 +225,7 @@ namespace Microsoft.ApplicationInsights.Metrics
         /// 
         /// </summary>
         /// <returns></returns>
-        public ITelemetry GetCurrentAggregateUnsafe()
+        public MetricAggregate GetCurrentAggregateUnsafe()
         {
             return GetCurrentAggregateUnsafe(CycleKind.Default, DateTimeOffset.Now);
         }
@@ -192,7 +236,7 @@ namespace Microsoft.ApplicationInsights.Metrics
         /// <param name="aggregationCycleKind"></param>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        public ITelemetry GetCurrentAggregateUnsafe(MetricAggregationCycleKind aggregationCycleKind, DateTimeOffset dateTime)
+        public MetricAggregate GetCurrentAggregateUnsafe(MetricAggregationCycleKind aggregationCycleKind, DateTimeOffset dateTime)
         {
             IMetricSeriesAggregator aggregator = null;
 
@@ -222,7 +266,7 @@ namespace Microsoft.ApplicationInsights.Metrics
             }
 
             dateTime = Util.RoundDownToSecond(dateTime);
-            ITelemetry aggregate = aggregator?.CreateAggregateUnsafe(dateTime);
+            MetricAggregate aggregate = aggregator?.CreateAggregateUnsafe(dateTime);
             return aggregate;
         }
 
