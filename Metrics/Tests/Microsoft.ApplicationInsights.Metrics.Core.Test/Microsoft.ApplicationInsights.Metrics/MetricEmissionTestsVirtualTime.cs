@@ -30,25 +30,25 @@ namespace SomeCustomerNamespace
             using (telemetryPipeline)
             {
                 RecordNormalMetric(telemetryPipeline);
-                Util.CompleteDefaultAggregationCycle(telemetryPipeline.Metrics());
+                Util.CompleteDefaultAggregationCycle(telemetryPipeline.GetMetricManager());
             }
         }
 
 
         private void RecordNormalMetric(TelemetryConfiguration telemetryPipeline)
         {
-            MetricSeries durationMeric = telemetryPipeline.Metrics().CreateNewSeries(
+            MetricSeries durationMeric = telemetryPipeline.GetMetricManager().CreateNewSeries(
                                                                         "Item Add duration",
-                                                                        new SimpleMetricSeriesConfiguration(restrictToUInt32Values: false));
+                                                                        new MetricSeriesConfigurationForMeasurement(restrictToUInt32Values: false));
 
             MockContainerDataStructure dataStructure = new MockContainerDataStructure((c) => TimeSpan.FromSeconds(c));
 
             DateTimeOffset experimentStart = new DateTimeOffset(2017, 9, 14, 0, 0, 0, TimeSpan.Zero);
 
             // Stop the default minute-ly cycle so that it does not interfere with our virtual time debugging:
-            Task fireAndForget = telemetryPipeline.Metrics().StopDefaultAggregationCycleAsync();   
+            Task fireAndForget = telemetryPipeline.GetMetricManager().StopDefaultAggregationCycleAsync();   
 
-            telemetryPipeline.Metrics().StartOrCycleAggregators(CycleKind.Custom, experimentStart, futureFilter: null);
+            telemetryPipeline.GetMetricManager().StartOrCycleAggregators(CycleKind.Custom, experimentStart, futureFilter: null);
 
             const int ExperimentLengthSecs = 60 * 10;
             const int IntervalLengthSecs = 60;
@@ -95,7 +95,7 @@ namespace SomeCustomerNamespace
 
                 if (intervalSecs >= IntervalLengthSecs)
                 {
-                    AggregationPeriodSummary aggregatedMetrics = telemetryPipeline.Metrics().StartOrCycleAggregators(
+                    AggregationPeriodSummary aggregatedMetrics = telemetryPipeline.GetMetricManager().StartOrCycleAggregators(
                                                                                                     CycleKind.Custom,
                                                                                                     experimentStart.AddSeconds(totalSecs),
                                                                                                     futureFilter: null);
@@ -108,13 +108,13 @@ namespace SomeCustomerNamespace
                     MetricAggregate aggregate = aggregates[0];
                     Assert.IsNotNull(aggregates);
 
-                    Assert.AreEqual(1.0, aggregate.AggregateData["Min"]);
-                    Assert.AreEqual(4.0, aggregate.AggregateData["Max"]);
-                    Assert.AreEqual(operationsCount, aggregate.AggregateData["Count"]);
+                    Assert.AreEqual(1.0, aggregate.Data["Min"]);
+                    Assert.AreEqual(4.0, aggregate.Data["Max"]);
+                    Assert.AreEqual(operationsCount, aggregate.Data["Count"]);
                     Assert.AreEqual("Item Add duration", aggregate.MetricId);
                     Assert.IsNotNull(aggregate.Dimensions);
                     Assert.AreEqual(0, aggregate.Dimensions.Count);
-                    Assert.AreEqual((double) intervalSecs, aggregate.AggregateData["Sum"]);
+                    Assert.AreEqual((double) intervalSecs, aggregate.Data["Sum"]);
                     Assert.AreEqual(experimentStart.AddSeconds(totalSecs - intervalSecs), aggregate.AggregationPeriodStart);
 
                     intervalSecs %= IntervalLengthSecs;
@@ -124,7 +124,7 @@ namespace SomeCustomerNamespace
                 }
             }
             {
-                AggregationPeriodSummary aggregatedMetrics = telemetryPipeline.Metrics().StartOrCycleAggregators(
+                AggregationPeriodSummary aggregatedMetrics = telemetryPipeline.GetMetricManager().StartOrCycleAggregators(
                                                                                                         CycleKind.Custom,
                                                                                                         experimentStart.AddSeconds(totalSecs),
                                                                                                         futureFilter: null);
@@ -141,7 +141,7 @@ namespace SomeCustomerNamespace
                 totalSecs += 24;
             }
             {
-                AggregationPeriodSummary aggregatedMetrics = telemetryPipeline.Metrics().StopAggregators(
+                AggregationPeriodSummary aggregatedMetrics = telemetryPipeline.GetMetricManager().StopAggregators(
                                                                                                     CycleKind.Custom,
                                                                                                     experimentStart.AddSeconds(totalSecs));
                 Assert.IsNotNull(aggregatedMetrics);
@@ -152,13 +152,13 @@ namespace SomeCustomerNamespace
                 MetricAggregate aggregate = aggregates[0];
                 Assert.IsNotNull(aggregates);
 
-                Assert.AreEqual(7.0, aggregate.AggregateData["Min"]);
-                Assert.AreEqual(9.0, aggregate.AggregateData["Max"]);
-                Assert.AreEqual(3, aggregate.AggregateData["Count"]);
+                Assert.AreEqual(7.0, aggregate.Data["Min"]);
+                Assert.AreEqual(9.0, aggregate.Data["Max"]);
+                Assert.AreEqual(3, aggregate.Data["Count"]);
                 Assert.AreEqual("Item Add duration", aggregate.MetricId);
                 Assert.IsNotNull(aggregate.Dimensions);
                 Assert.AreEqual(0, aggregate.Dimensions.Count);
-                Assert.AreEqual(24.0, aggregate.AggregateData["Sum"]);
+                Assert.AreEqual(24.0, aggregate.Data["Sum"]);
                 Assert.AreEqual(experimentStart.AddSeconds(totalSecs - 24), aggregate.AggregationPeriodStart);
             }
         }

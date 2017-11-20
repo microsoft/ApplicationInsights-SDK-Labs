@@ -27,7 +27,7 @@ namespace SomeCustomerNamespace
             using (defaultTelemetryPipeline)
             {
                 Metrics_SpecifiedPipeline(defaultTelemetryPipeline);
-                Util.CompleteDefaultAggregationCycle(defaultTelemetryPipeline.Metrics());
+                Util.CompleteDefaultAggregationCycle(defaultTelemetryPipeline.GetMetricManager());
             }
         }
 
@@ -46,9 +46,9 @@ namespace SomeCustomerNamespace
                 Assert.IsFalse(Object.ReferenceEquals(defaultTelemetryPipeline, customTelemetryPipeline2));
                 Assert.IsFalse(Object.ReferenceEquals(customTelemetryPipeline1, customTelemetryPipeline2));
 
-                MetricManager managerDef = defaultTelemetryPipeline.Metrics();
-                MetricManager managerCust1 = customTelemetryPipeline1.Metrics();
-                MetricManager managerCust2 = customTelemetryPipeline2.Metrics();
+                MetricManager managerDef = defaultTelemetryPipeline.GetMetricManager();
+                MetricManager managerCust1 = customTelemetryPipeline1.GetMetricManager();
+                MetricManager managerCust2 = customTelemetryPipeline2.GetMetricManager();
 
                 Assert.IsNotNull(managerDef);
                 Assert.IsNotNull(managerCust1);
@@ -79,10 +79,10 @@ namespace SomeCustomerNamespace
         { 
             telemetryPipeline.InstrumentationKey = Guid.NewGuid().ToString("D");
 
-            MetricManager manager1 = telemetryPipeline.Metrics();
+            MetricManager manager1 = telemetryPipeline.GetMetricManager();
             Assert.IsNotNull(manager1);
 
-            MetricManager manager2 = telemetryPipeline.Metrics();
+            MetricManager manager2 = telemetryPipeline.GetMetricManager();
             Assert.IsNotNull(manager2);
 
             Assert.AreEqual(manager1, manager2);
@@ -96,7 +96,7 @@ namespace SomeCustomerNamespace
             //CollectingTelemetryInitializer telemetryCollector = new CollectingTelemetryInitializer();
             //defaultTelemetryPipeline.TelemetryInitializers.Add(coll);
 
-            IMetricSeriesConfiguration seriesConfig = new SimpleMetricSeriesConfiguration(restrictToUInt32Values: false);
+            IMetricSeriesConfiguration seriesConfig = new MetricSeriesConfigurationForMeasurement(restrictToUInt32Values: false);
 
             manager1.CreateNewSeries("Metric A", seriesConfig).TrackValue(42);
             manager1.CreateNewSeries("Metric A", seriesConfig).TrackValue("18");
