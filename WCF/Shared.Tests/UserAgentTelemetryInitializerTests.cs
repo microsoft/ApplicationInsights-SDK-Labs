@@ -40,5 +40,21 @@
 
             Assert.AreEqual(context.Request.Context.User.UserAgent, telemetry.Context.User.UserAgent);
         }
+
+        [TestMethod]
+        public void UserAgentIsObtainedFromOperationContextIfPresent()
+        {
+            var context = new MockOperationContext();
+            context.SetState("UATI_UserAgent", "MyAgent");
+
+            context.EndpointUri = new Uri("http://localhost/Service1.svc");
+            context.OperationName = "GetData";
+
+            var initializer = new UserAgentTelemetryInitializer();
+            var telemetry = new EventTelemetry();
+            initializer.Initialize(telemetry, context);
+
+            Assert.AreEqual("MyAgent", telemetry.Context.User.UserAgent);
+        }
     }
 }
