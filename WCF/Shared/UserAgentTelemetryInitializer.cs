@@ -38,7 +38,7 @@
             string knownAgent = null;
             if (contextState.TryGetState(UserAgent, out knownAgent))
             {
-                userContext.Id = knownAgent;
+                userContext.UserAgent = knownAgent;
                 return;
             }
 
