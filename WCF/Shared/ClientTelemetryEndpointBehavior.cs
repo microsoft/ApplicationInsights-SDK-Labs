@@ -84,6 +84,11 @@
         void IEndpointBehavior.AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
             var contract = endpoint.Contract.ContractType;
+            if (this.IsNonSoapEndpoint(endpoint))
+            {
+                WcfClientEventSource.Log.ClientTelemetryIgnoreContract(contract.FullName);
+                return;
+            }
 
             WcfClientEventSource.Log.ClientTelemetryApplied(contract.FullName);
 
@@ -99,9 +104,17 @@
                 SoapParentOperationIdHeaderName = this.SoapParentOperationIdHeaderName,
                 SoapHeaderNamespace = this.SoapHeaderNamespace,
             };
-            var collection = endpoint.Binding.CreateBindingElements();
+            var originalBinding = endpoint.Binding;
+
+            var collection = originalBinding.CreateBindingElements();
             collection.Insert(0, element);
-            endpoint.Binding = new CustomBinding(collection);
+            endpoint.Binding = new CustomBinding(collection)
+            {
+                OpenTimeout = originalBinding.OpenTimeout,
+                SendTimeout = originalBinding.SendTimeout,
+                ReceiveTimeout = originalBinding.ReceiveTimeout,
+                CloseTimeout = originalBinding.CloseTimeout,
+            };
         }
 
         void IEndpointBehavior.ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
@@ -115,6 +128,11 @@
 
         void IEndpointBehavior.Validate(ServiceEndpoint endpoint)
         {
+        }
+
+        private bool IsNonSoapEndpoint(ServiceEndpoint endpoint)
+        {
+            return endpoint.Binding.MessageVersion == MessageVersion.None;
         }
     }
 }
