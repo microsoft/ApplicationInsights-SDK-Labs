@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace vent
+namespace Vent
 {
     public class Startup
     {
@@ -23,7 +23,6 @@ namespace vent
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,9 +33,7 @@ namespace vent
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMiddleware<RequestCultureMiddleware>();
-
-            app.UseMvc();
+            app.UseMiddleware<ApplicationInsightsEventsParsingMiddleware>();
         }
     }
 }

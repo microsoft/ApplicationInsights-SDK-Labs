@@ -3,26 +3,23 @@ namespace E2ETests.Helpers
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Threading.Tasks;
     using AI;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    internal static class TelemetryItemFactory
+    internal static class TelemetryItemsFactory
     {
-        public static IList<Envelope> GetTelemetryItems(string content)
+        public static async Task<IList<Envelope>> GetTelemetryItems(Stream body)
         {
+            var streamReader = new StreamReader(body);
+
             var items = new List<Envelope>();
 
-            if (string.IsNullOrWhiteSpace(content))
+            while (!streamReader.EndOfStream)
             {
-                return items;
-            }
+                var line = await streamReader.ReadLineAsync();
 
-            var newLines = new[] { "\r\n", "\n" };
-
-            string[] lines = content.Split(newLines, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string line in lines)
-            {
                 JsonReader reader = new JsonTextReader(new StringReader(line));
                 reader.DateParseHandling = DateParseHandling.None;
                 JObject obj = JObject.Load(reader);
