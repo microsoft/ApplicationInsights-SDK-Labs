@@ -14,8 +14,8 @@
     <tags>Analytics ApplicationInsights Telemetry AppInsights</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.5">
-        <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.4.1" />
-        <dependency id="Microsoft.ApplicationInsights.Agent.Intercept" version="2.4.0" />
+        <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.5.0" />
+        <dependency id="Microsoft.ApplicationInsights.DependencyCollector" version="2.5.0" />
       </group>
     </dependencies>
   </metadata>
