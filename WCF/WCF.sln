@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D928C78D-DB5B-4145-A174-DCF0A4A1D64C}"
 EndProject
@@ -17,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.AI.Wcf", "Shared\Microsoft.AI.Wcf.shproj", "{A9362B74-DDDA-4EAF-8BD8-E165BE426883}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.AI.Wcf.Net40", "net40\Microsoft.AI.Wcf.Net40.csproj", "{A43C7E00-0F6D-41EA-982B-870DBC08B8C9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.AI.Wcf.Net45", "net45\Microsoft.AI.Wcf.Net45.csproj", "{2DBB5FB7-F219-4999-BDBB-25EB6355C808}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{271B8126-6261-4C26-92A7-83AD5729F26C}"
@@ -29,26 +27,18 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.AI.Wcf.Tests", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.AI.Wcf.Tests.Net45", "net45.tests\Microsoft.AI.Wcf.Tests.Net45.csproj", "{62BC21BD-6A9B-4CEF-8F31-5DF2570A0EEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.AI.Wcf.Tests.Net40", "net40.tests\Microsoft.AI.Wcf.Tests.Net40.csproj", "{FC52AD4B-4679-44B8-838C-9780FC459488}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared\Microsoft.AI.Wcf.projitems*{2dbb5fb7-f219-4999-bdbb-25eb6355c808}*SharedItemsImports = 4
 		Shared.Tests\Microsoft.AI.Wcf.Tests.projitems*{62bc21bd-6a9b-4cef-8f31-5df2570a0eea}*SharedItemsImports = 4
-		Shared\Microsoft.AI.Wcf.projitems*{a43c7e00-0f6d-41ea-982b-870dbc08b8c9}*SharedItemsImports = 4
 		Shared\Microsoft.AI.Wcf.projitems*{a9362b74-ddda-4eaf-8bd8-e165be426883}*SharedItemsImports = 13
 		Shared.Tests\Microsoft.AI.Wcf.Tests.projitems*{fa34505d-857b-4cc2-9d5d-c5fb74a75cb1}*SharedItemsImports = 13
-		Shared.Tests\Microsoft.AI.Wcf.Tests.projitems*{fc52ad4b-4679-44b8-838c-9780fc459488}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A43C7E00-0F6D-41EA-982B-870DBC08B8C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A43C7E00-0F6D-41EA-982B-870DBC08B8C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A43C7E00-0F6D-41EA-982B-870DBC08B8C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A43C7E00-0F6D-41EA-982B-870DBC08B8C9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2DBB5FB7-F219-4999-BDBB-25EB6355C808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2DBB5FB7-F219-4999-BDBB-25EB6355C808}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DBB5FB7-F219-4999-BDBB-25EB6355C808}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -61,21 +51,18 @@ Global
 		{62BC21BD-6A9B-4CEF-8F31-5DF2570A0EEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62BC21BD-6A9B-4CEF-8F31-5DF2570A0EEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62BC21BD-6A9B-4CEF-8F31-5DF2570A0EEA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC52AD4B-4679-44B8-838C-9780FC459488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC52AD4B-4679-44B8-838C-9780FC459488}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC52AD4B-4679-44B8-838C-9780FC459488}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC52AD4B-4679-44B8-838C-9780FC459488}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A9362B74-DDDA-4EAF-8BD8-E165BE426883} = {D928C78D-DB5B-4145-A174-DCF0A4A1D64C}
-		{A43C7E00-0F6D-41EA-982B-870DBC08B8C9} = {D928C78D-DB5B-4145-A174-DCF0A4A1D64C}
 		{2DBB5FB7-F219-4999-BDBB-25EB6355C808} = {D928C78D-DB5B-4145-A174-DCF0A4A1D64C}
 		{2E53F953-5F4B-4A1F-B3B0-781D49E2902B} = {271B8126-6261-4C26-92A7-83AD5729F26C}
 		{FA34505D-857B-4CC2-9D5D-C5FB74A75CB1} = {EBFB5CC5-D616-442A-A3C2-3C6731627FB1}
 		{62BC21BD-6A9B-4CEF-8F31-5DF2570A0EEA} = {EBFB5CC5-D616-442A-A3C2-3C6731627FB1}
-		{FC52AD4B-4679-44B8-838C-9780FC459488} = {EBFB5CC5-D616-442A-A3C2-3C6731627FB1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {835E2CFE-5A84-4CD9-B25C-5F6D5424B1B4}
 	EndGlobalSection
 EndGlobal

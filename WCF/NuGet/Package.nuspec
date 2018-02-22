@@ -13,10 +13,6 @@
     <copyright>$copyright$</copyright>
     <tags>Analytics ApplicationInsights Telemetry AppInsights</tags>
     <dependencies>
-      <group targetFramework=".NETFramework4.0">
-        <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.4.1" />
-        <dependency id="Microsoft.ApplicationInsights.Agent.Intercept" version="2.4.0" />
-      </group>
       <group targetFramework=".NETFramework4.5">
         <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.4.1" />
         <dependency id="Microsoft.ApplicationInsights.Agent.Intercept" version="2.4.0" />
@@ -24,9 +20,6 @@
     </dependencies>
   </metadata>
   <files>
-    <!-- .NET v4.0 -->
-    <file src="$configuration$\WCF\net40\Microsoft.AI.Wcf.dll" target="lib\net40\" />
-    <file src="$configuration$\WCF\net40\Microsoft.AI.Wcf.pdb" target="lib\net40\" />
     <!-- .NET v4.5 -->
     <file src="$configuration$\WCF\net45\Microsoft.AI.Wcf.dll" target="lib\net45\" />
     <file src="$configuration$\WCF\net45\Microsoft.AI.Wcf.pdb" target="lib\net45\" />
