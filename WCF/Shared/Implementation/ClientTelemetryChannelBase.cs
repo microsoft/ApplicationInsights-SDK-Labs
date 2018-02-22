@@ -189,7 +189,10 @@
             try
             {
                 var telemetry = new DependencyTelemetry();
+                // Temporary workaround for https://github.com/Microsoft/ApplicationInsights-dotnet/issues/692
+                telemetry.Context.Operation.Id = null;
                 this.ChannelManager.TelemetryClient.Initialize(telemetry);
+
                 telemetry.Start();
                 telemetry.Type = DependencyConstants.WcfClientCall;
                 telemetry.Target = this.RemoteAddress.Uri.Host;
