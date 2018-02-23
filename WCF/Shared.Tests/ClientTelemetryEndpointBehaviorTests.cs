@@ -52,11 +52,7 @@
                 try
                 {
                     var behavior = new ClientTelemetryEndpointBehavior(configuration);
-#if NET40
-                    factory.Endpoint.Behaviors.Add(behavior);
-#else
                     factory.Endpoint.EndpointBehaviors.Add(behavior);
-#endif
 
                     channel = factory.CreateChannel();
                     var innerChannel = GetInnerChannel(channel);
@@ -94,11 +90,7 @@
                 try
                 {
                     var behavior = new ClientTelemetryEndpointBehavior(configuration);
-#if NET40
-                    factory.Endpoint.Behaviors.Add(behavior);
-#else
                     factory.Endpoint.EndpointBehaviors.Add(behavior);
-#endif
 
                     channel = factory.CreateChannel();
                     channel.GetSimpleData();
