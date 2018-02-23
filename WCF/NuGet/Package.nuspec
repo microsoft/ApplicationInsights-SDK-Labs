@@ -14,8 +14,8 @@
     <tags>Analytics ApplicationInsights Telemetry AppInsights</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.5">
-        <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.5.0" />
-        <dependency id="Microsoft.ApplicationInsights.DependencyCollector" version="2.5.0" />
+        <dependency id="Microsoft.ApplicationInsights.WindowsServer" version="2.5.1" />
+        <dependency id="Microsoft.ApplicationInsights.DependencyCollector" version="2.5.1" />
       </group>
     </dependencies>
   </metadata>
