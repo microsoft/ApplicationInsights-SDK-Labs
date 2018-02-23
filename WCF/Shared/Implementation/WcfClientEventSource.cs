@@ -1,11 +1,7 @@
 ﻿namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
     using System;
-#if NET40
-    using Microsoft.Diagnostics.Tracing;
-#else
     using System.Diagnostics.Tracing;
-#endif
 
     [EventSource(Name = "Microsoft-ApplicationInsights-Wcf-Client")]
     internal sealed class WcfClientEventSource : EventSource

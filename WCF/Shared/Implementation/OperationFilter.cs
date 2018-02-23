@@ -47,14 +47,9 @@
         private bool ShouldInstrument(OperationDescription op)
         {
             OperationTelemetryAttribute behavior = null;
-#if NET40
-            behavior = op.Behaviors.Find<OperationTelemetryAttribute>();
-
-#else
             behavior = op.OperationBehaviors
                          .OfType<OperationTelemetryAttribute>()
                          .FirstOrDefault();
-#endif // NET40
             return behavior != null;
         }
     }
