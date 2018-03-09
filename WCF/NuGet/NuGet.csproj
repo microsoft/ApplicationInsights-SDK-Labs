@@ -12,7 +12,7 @@
     <AssemblyName>Microsoft.AI.Wcf.NuGet</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <PackageSpecFile>$(MSBuildProjectDirectory)\Package.nuspec</PackageSpecFile>
-    <PackageVersionFile>$(BinRoot)\$(Configuration)\WCF\net40\Microsoft.AI.Wcf.dll</PackageVersionFile>
+    <PackageVersionFile>$(BinRoot)\$(Configuration)\WCF\net45\Microsoft.AI.Wcf.dll</PackageVersionFile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
