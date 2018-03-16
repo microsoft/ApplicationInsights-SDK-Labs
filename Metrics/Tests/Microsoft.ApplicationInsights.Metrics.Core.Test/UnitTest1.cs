@@ -64,13 +64,14 @@ namespace SomeCustomerNamespace
 
 
 
-        void MethodX()
+        static void MethodX()
         {
 
             MetricManager manager = TelemetryConfiguration.Active.GetMetricManager();
 
             IMetricSeriesConfiguration config = new MetricSeriesConfigurationForMeasurement(restrictToUInt32Values: false);
             MetricSeries series1 = TelemetryConfiguration.Active.GetMetricManager().CreateNewSeries(
+                                                                                null,
                                                                                 "Cows Sold",
                                                                                 new Dictionary<string, string> { ["Color of Cow"] = "Red",
                                                                                                                  ["Gender of Cow"] = "Female"},
@@ -84,7 +85,7 @@ namespace SomeCustomerNamespace
 
         }
 
-        void MethodY()
+        static void MethodY()
         {
             TelemetryClient client = new TelemetryClient();
 

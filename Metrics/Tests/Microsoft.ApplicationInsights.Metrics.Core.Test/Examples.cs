@@ -1,4 +1,6 @@
-﻿namespace User.Namespace.Example01
+﻿#pragma warning disable CA1716  // Namespace naming
+
+namespace User.Namespace.Example01
 {
     using System;
 
@@ -75,7 +77,7 @@
 
             if (!animalsSold.TryTrackValue(count, species))
             {
-                client.TrackTrace($"Data series or dimension cap was reached for metric {animalsSold.MetricId}.", TraceSeveretyLevel.Error);
+                client.TrackTrace($"Data series or dimension cap was reached for metric {animalsSold.Identifier.MetricId}.", TraceSeveretyLevel.Error);
             }
 
             // You can inspect a metric object to reason about its current state. For example:
@@ -107,6 +109,7 @@ namespace User.Namespace.Example02
 
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Metrics;
+    using Microsoft.ApplicationInsights.Metrics.Extensibility;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -115,7 +118,6 @@ namespace User.Namespace.Example02
     /// <summary>
     /// Importing the <c>Microsoft.ApplicationInsights.Metrics</c> namespace supports some more interesting use cases.
     /// These include:
-    ///  - Working with MetricSeries
     ///  - Configuring a metric
     ///  - Working directly with the MetricManager
     ///  
@@ -158,7 +160,7 @@ namespace User.Namespace.Example02
 
             // A zero-dimensional metric has exactly one metric data series:
             Metric cowsSold = client.GetMetric("CowsSold");
-            Assert.AreEqual(0, cowsSold.DimensionsCount);
+            Assert.AreEqual(0, cowsSold.Identifier.DimensionsCount);
 
             MetricSeries cowsSoldValues;
             cowsSold.TryGetDataSeries(out cowsSoldValues);
@@ -186,7 +188,7 @@ namespace User.Namespace.Example02
                 MetricSeries epicTragediesSold;
                 booksSold.TryGetDataSeries(out epicTragediesSold, "Epic Tragedy");
             }
-            catch(InvalidOperationException)
+            catch (ArgumentException)
             {
                 client.TrackTrace(
                                 $"This error will always happen because '{nameof(booksSold)}' has 2 dimensions, but we only specified one.",
@@ -196,70 +198,6 @@ namespace User.Namespace.Example02
             // The main purpose of keeping a reference to a metric data series is to use it directly for tracking data.
             // It can improve the performance of your application, especially if you are tracking values to this series very frequently,
             // as it avoids the lookups necessary to first get the metric and then the series within the metric.
-
-            // *** WORKING WITH THE EMITTED METRIC DATA ***
-
-            // In addition, there are additional operations that you can perform on a series.
-            // Most common of them are designed to support interactive consumption of tracked data.
-            // For example, you can reset the values aggregated so far during the current aggregation period to the initial state:
-
-            epicTragedyInRussianSold.ResetAggregation();    // Now we have 0 Epic Tragedies in Russian
-
-            // For Measurements, resetting will not make a lot of sense in most cases.
-            // However, for Accumulators this may be necessary once in a while, for example when you cleared a data structure for
-            // which you were counting the contained items.
-
-            // Another powerful example for interacting with aggregated metric data is the ability to inspect the aggregation.
-            // This means that your application is not just sending metric telemetry for a later inspection, but is able to use its
-            // own metrics to drive its behavior.
-            // For example, the following code determines the currently most popular book and displays the information:
-
-            MetricAggregate mostPopularBookKind = null;
-            foreach (KeyValuePair<string[], MetricSeries> seriesKvp in booksSold.GetAllSeries())
-            {
-                MetricSeries currentBookInfo = seriesKvp.Value;
-                MetricAggregate currentBookKind = currentBookInfo.GetCurrentAggregateUnsafe();
-
-                if (currentBookKind == null)
-                {
-                    continue;
-                }
-
-                if (mostPopularBookKind == null)
-                {
-                    mostPopularBookKind = currentBookKind;
-                }
-                else
-                {
-                    double maxSum = mostPopularBookKind.GetDataValue<double>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Sum, 0);
-                    double currentSum = currentBookKind.GetDataValue<double>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Sum, 0);
-
-                    if (maxSum > currentSum)
-                    {
-                        mostPopularBookKind = currentBookKind;
-                    }
-                }
-            }
-
-            if (mostPopularBookKind != null)
-            {
-                DisplayMostPopularBook(mostPopularBookKind);
-            }
-
-            // Notice the "...Unsafe" suffix in the MetricSeries.GetCurrentAggregateUnsafe() method.
-            // We added it to underline the need for two important considerations when using this method:
-            // a) It may return proper objects and nulls in a poorly predictable way:
-            //    For performance reasons, we only create internal aggregators if there is any data to aggregate.
-            //    Consider a situation where you tracked some values for a Measurement metric. So GetCurrentAggregateUnsafe()
-            //    returns a valid object. At any time, the aggregation period (1 minute) could complete. The aggregate
-            //    will be "snapped" and sent to the cloud. Now there is no more aggregate until you track more values during
-            //    the ongoing aggregation period.
-            // b) Aggregator implementations may choose to optimize their multithreaded performance in a way such that the aggregates
-            //    do not always reflect the latest state. Data will be synchronized correctly before being sent to the cloud at the end
-            //    of the aggregation period, but it may be lagging behind a few milliseconds at other times or it may be inconsistent.
-            //    E.g., following a TrackValue(..) invocation the Count statistic of an aggregate may already be updated, but its Sum
-            //    statistic may not yet be updated. These errors are small and not statistically significant. However you should use
-            //    unsafe aggregates for what they are - statistical summaries, rather than exact counts.
 
             // *** SPECIAL DIMENSION NAMES ***
 
@@ -301,6 +239,99 @@ namespace User.Namespace.Example02
         {
             // Do stuff
             return 11000;
+        }
+    }
+}
+// ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- -----------
+namespace User.Namespace.Example02a
+{
+    using System;
+    using System.Collections.Generic;
+
+    using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.Metrics;
+    using Microsoft.ApplicationInsights.Metrics.Extensibility;
+
+    /// <summary>
+    /// Importing the <c>Microsoft.ApplicationInsights.Metrics</c> and <c>Microsoft.ApplicationInsights.Metrics.Extensibility</c> namespaces
+    /// also supports working with MetricSeries via inspection and modification.
+    /// </summary>
+    public class Sample02a
+    {
+        /// <summary />
+        public static void Exec()
+        {
+            TelemetryClient client = new TelemetryClient();
+
+            MetricSeries epicTragedyInRussianSold;
+
+            Metric booksSold = client.GetMetric("BooksSold", "Genre", "Language");
+            booksSold.TryGetDataSeries(out epicTragedyInRussianSold, "Epic Tragedy", "Russian");
+
+            // *** WORKING WITH THE EMITTED METRIC DATA ***
+
+            // In addition, there are additional operations that you can perform on a series.
+            // Most common of them are designed to support interactive consumption of tracked data.
+            // For example, you can reset the values aggregated so far during the current aggregation period to the initial state:
+
+            epicTragedyInRussianSold.TrackValue(42);        // Now we have 42 Epic Tragedies in Russian
+            epicTragedyInRussianSold.ResetAggregation();    // Now we have 0 Epic Tragedies in Russian
+
+            // For Measurements, resetting will not make a lot of sense in most cases.
+            // However, for Accumulators this may be necessary once in a while, for example when you cleared a data structure for
+            // which you were counting the contained items.
+
+            // Another powerful example for interacting with aggregated metric data is the ability to inspect the aggregation.
+            // This means that your application is not just sending metric telemetry for a later inspection, but is able to use its
+            // own metrics to drive its behavior.
+            // For example, the following code determines the currently most popular book and displays the information:
+
+            MetricAggregate mostPopularBookKind = null;
+            foreach (KeyValuePair<string[], MetricSeries> seriesKvp in booksSold.GetAllSeries())
+            {
+                MetricSeries currentBookInfo = seriesKvp.Value;
+                MetricAggregate currentBookKind = currentBookInfo.GetCurrentAggregateUnsafe();
+
+                if (currentBookKind == null)
+                {
+                    continue;
+                }
+
+                if (mostPopularBookKind == null)
+                {
+                    mostPopularBookKind = currentBookKind;
+                }
+                else
+                {
+                    double maxSum = mostPopularBookKind.GetDataValue<double>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.Sum, 0);
+                    double currentSum = currentBookKind.GetDataValue<double>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.Sum, 0);
+
+                    if (maxSum > currentSum)
+                    {
+                        mostPopularBookKind = currentBookKind;
+                    }
+                }
+            }
+
+            if (mostPopularBookKind != null)
+            {
+                DisplayMostPopularBook(mostPopularBookKind);
+            }
+
+            // Notice the "...Unsafe" suffix in the MetricSeries.GetCurrentAggregateUnsafe() method.
+            // We added it to underline the need for two important considerations when using this method:
+            // a) It may return proper objects and nulls in a poorly predictable way:
+            //    For performance reasons, we only create internal aggregators if there is any data to aggregate.
+            //    Consider a situation where you tracked some values for a Measurement metric. So GetCurrentAggregateUnsafe()
+            //    returns a valid object. At any time, the aggregation period (1 minute) could complete. The aggregate
+            //    will be "snapped" and sent to the cloud. Now there is no more aggregate until you track more values during
+            //    the ongoing aggregation period.
+            // b) Aggregator implementations may choose to optimize their multithreaded performance in a way such that the aggregates
+            //    do not always reflect the latest state. Data will be synchronized correctly before being sent to the cloud at the end
+            //    of the aggregation period, but it may be lagging behind a few milliseconds at other times or it may be inconsistent.
+            //    E.g., following a TrackValue(..) invocation the Count statistic of an aggregate may already be updated, but its Sum
+            //    statistic may not yet be updated. These errors are small and not statistically significant. However you should use
+            //    unsafe aggregates for what they are - statistical summaries, rather than exact counts.
         }
 
         private static void DisplayMostPopularBook(MetricAggregate mostPopularBookKind)
@@ -400,17 +431,17 @@ namespace User.Namespace.Example03
             // *** CUSTOM METRIC CONFIGURATIONS ***
 
             // Above we have seen two fixed presets for metric configurations: MetricConfigurations.Common.Measurement() and MetricConfigurations.Common.Accumulator().
-            // Both are static objects of class SimpleMetricConfiguration which in turn implements the IMetricConfiguration interface.
-            // You can provide your own implementations of IMetricConfiguration if you want to implement your own custom aggregators; that
-            // is covered elsewhere.
-            // Here, let's focus on creating your own instances of SimpleMetricConfiguration to configure more options.
-            // SimpleMetricConfiguration ctor takes some options on how to manage different series within the respective metric and an
+            // Both are static objects of class MetricConfiguration.
+            // You can provide your own implementations of IMetricSeriesConfiguration which is used by MetricConfiguration if you
+            // want to implement your own custom aggregators; that is covered elsewhere.
+            // Here, let's focus on creating your own instances of MetricConfiguration to configure more options.
+            // MetricConfiguration ctor takes some options on how to manage different series within the respective metric and an
             // object of class MetricSeriesConfigurationForMeasurement : IMetricSeriesConfiguration that specifies aggregation behavior for
             // each individual series of the metric:
 
-            Metric customConfiguredMeasurement= client.GetMetric(
+            Metric customConfiguredMeasurement = client.GetMetric(
                                                         "Custom Metric 1",
-                                                        new SimpleMetricConfiguration(
+                                                        new MetricConfiguration(
                                                                     seriesCountLimit:           1000,
                                                                     valuesPerDimensionLimit:    100,
                                                                     seriesConfig:               new MetricSeriesConfigurationForMeasurement(restrictToUInt32Values: false)));
@@ -433,7 +464,7 @@ namespace User.Namespace.Example03
             Metric someAccumulator1 = client.GetMetric("Some Accumulator 1", MetricConfigurations.Common.Accumulator()); 
 
             MetricConfigurations.Common.SetDefaultForAccumulator(
-                                            new SimpleMetricConfiguration(
+                                            new MetricConfigurationForAccumulator(
                                                         seriesCountLimit:        10000,
                                                         valuesPerDimensionLimit: 5000,
                                                         seriesConfig:            new MetricSeriesConfigurationForAccumulator(restrictToUInt32Values: false)));
@@ -494,6 +525,7 @@ namespace User.Namespace.Example04
             MetricManager metrics = TelemetryConfiguration.Active.GetMetricManager();
 
             MetricSeries itemAccumulator = metrics.CreateNewSeries(
+                                                    "Example Metrics",
                                                     "Items in Queue",
                                                     new MetricSeriesConfigurationForAccumulator(restrictToUInt32Values: false));
 
@@ -509,11 +541,13 @@ namespace User.Namespace.Example04
             // take care of series capping and dimension capping. You need to take care of it yourself.
 
             MetricSeries purpleCowsSold = metrics.CreateNewSeries(
+                                             "Example Metrics",
                                              "Animals Sold",
                                              new Dictionary<string, string>() { ["Species"] = "Cows", ["Color"] = "Purple" },
                                              new MetricSeriesConfigurationForMeasurement(restrictToUInt32Values: false));
 
             MetricSeries yellowHorsesSold = metrics.CreateNewSeries(
+                                             "Example Metrics",
                                              "Animals Sold",
                                              new[] { new KeyValuePair<string, string>("Species", "Horses"), new KeyValuePair<string, string>("Color", "Yellow") },
                                              new MetricSeriesConfigurationForMeasurement(restrictToUInt32Values: false));
@@ -1003,16 +1037,16 @@ namespace User.Namespace.Example06c
             Assert.AreEqual(0, lastCycle.PersistentAggregates.Count, "No Accumulators should be tracked");
 
             Assert.AreEqual("Ducks Sold", lastCycle.NonpersistentAggregates[0].MetricId);
-            Assert.AreEqual(MetricConfigurations.Common.AggregateKinds().Measurement().Moniker, lastCycle.NonpersistentAggregates[0].AggregationKindMoniker);
+            Assert.AreEqual(MetricConfigurations.Common.Measurement().Constants().AggregateKindMoniker, lastCycle.NonpersistentAggregates[0].AggregationKindMoniker);
             Assert.AreEqual(testStartTime, lastCycle.NonpersistentAggregates[0].AggregationPeriodStart);
             Assert.AreEqual(TimeSpan.FromMinutes(1), lastCycle.NonpersistentAggregates[0].AggregationPeriodDuration);
             Assert.AreEqual(1, lastCycle.NonpersistentAggregates[0].Dimensions.Count);
             Assert.AreEqual("Purple", lastCycle.NonpersistentAggregates[0].Dimensions["Color"]);
-            Assert.AreEqual(1, lastCycle.NonpersistentAggregates[0].GetDataValue<int>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Count, -1));
-            Assert.AreEqual(42, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Sum, -1));
-            Assert.AreEqual(42, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Min, -1));
-            Assert.AreEqual(42, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Max, -1));
-            Assert.AreEqual(0, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.StdDev, -1));
+            Assert.AreEqual(1, lastCycle.NonpersistentAggregates[0].GetDataValue<int>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.Count, -1));
+            Assert.AreEqual(42, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.Sum, -1));
+            Assert.AreEqual(42, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.Min, -1));
+            Assert.AreEqual(42, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.Max, -1));
+            Assert.AreEqual(0, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.StdDev, -1));
 
             // Note that because "Ducks Sold" is a Measurement, and because we cycled the custom aggregators, the current aggregator is now empty.
             // However, if it was an Accumulator, it would keep the values tracked thus far. To help differentiate between these two cases, Measurement-like
@@ -1032,16 +1066,16 @@ namespace User.Namespace.Example06c
             Assert.AreEqual(0, lastCycle.PersistentAggregates.Count, "No Accumulators should be tracked");
 
             Assert.AreEqual("Ducks Sold", lastCycle.NonpersistentAggregates[0].MetricId);
-            Assert.AreEqual(MetricConfigurations.Common.AggregateKinds().Measurement().Moniker, lastCycle.NonpersistentAggregates[0].AggregationKindMoniker);
+            Assert.AreEqual(MetricConfigurations.Common.Measurement().Constants().AggregateKindMoniker, lastCycle.NonpersistentAggregates[0].AggregationKindMoniker);
             Assert.AreEqual(testStartTime.AddMinutes(1), lastCycle.NonpersistentAggregates[0].AggregationPeriodStart);
             Assert.AreEqual(TimeSpan.FromMinutes(1), lastCycle.NonpersistentAggregates[0].AggregationPeriodDuration);
             Assert.AreEqual(1, lastCycle.NonpersistentAggregates[0].Dimensions.Count);
             Assert.AreEqual("Purple", lastCycle.NonpersistentAggregates[0].Dimensions["Color"]);
-            Assert.AreEqual(2, lastCycle.NonpersistentAggregates[0].GetDataValue<int>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Count, -1));
-            Assert.AreEqual(23, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Sum, -1));
-            Assert.AreEqual(11, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Min, -1));
-            Assert.AreEqual(12, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Max, -1));
-            Assert.AreEqual(0.5, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.StdDev, -1));
+            Assert.AreEqual(2, lastCycle.NonpersistentAggregates[0].GetDataValue<int>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.Count, -1));
+            Assert.AreEqual(23, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.Sum, -1));
+            Assert.AreEqual(11, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.Min, -1));
+            Assert.AreEqual(12, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.Max, -1));
+            Assert.AreEqual(0.5, lastCycle.NonpersistentAggregates[0].GetDataValue<double>(MetricConfigurations.Common.Measurement().Constants().AggregateKindDataKeys.StdDev, -1));
         }
     }
 
@@ -1068,7 +1102,7 @@ namespace User.Namespace.Example06c
         public bool WillConsume(MetricSeries dataSeries, out IMetricValueFilter valueFilter)
         {
             valueFilter = null;
-            return !dataSeries.MetricId.StartsWith("Items");
+            return !dataSeries.MetricIdentifier.MetricId.StartsWith("Items");
         }
     }
 
@@ -1098,6 +1132,7 @@ namespace Microsoft.ApplicationInsights.Metrics.Examples
         public void Example02()
         {
             User.Namespace.Example02.Sample02.Exec();
+            User.Namespace.Example02a.Sample02a.Exec();
         }
 
         /// <summary />
@@ -1131,3 +1166,5 @@ namespace Microsoft.ApplicationInsights.Metrics.Examples
         }
     }
 }
+
+#pragma warning restore CA1716  // Namespace naming

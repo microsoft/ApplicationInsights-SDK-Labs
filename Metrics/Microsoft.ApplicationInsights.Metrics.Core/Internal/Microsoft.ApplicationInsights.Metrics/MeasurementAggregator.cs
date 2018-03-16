@@ -91,14 +91,15 @@ namespace Microsoft.ApplicationInsights.Metrics
             }
 
             MetricAggregate aggregate = new MetricAggregate(
-                                                DataSeries?.MetricId ?? Util.NullString,
-                                                MetricConfigurations.Common.AggregateKinds().Measurement().Moniker);
+                                                DataSeries?.MetricIdentifier.MetricNamespace ?? Util.NullString,
+                                                DataSeries?.MetricIdentifier.MetricId ?? Util.NullString,
+                                                MetricSeriesConfigurationForMeasurement.Constants.AggregateKindMoniker);
 
-            aggregate.Data[MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Count] = count;
-            aggregate.Data[MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Sum] = sum;
-            aggregate.Data[MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Min] = min;
-            aggregate.Data[MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.Max] = max;
-            aggregate.Data[MetricConfigurations.Common.AggregateKinds().Measurement().DataKeys.StdDev] = stdDev;
+            aggregate.Data[MetricSeriesConfigurationForMeasurement.Constants.AggregateKindDataKeys.Count] = count;
+            aggregate.Data[MetricSeriesConfigurationForMeasurement.Constants.AggregateKindDataKeys.Sum] = sum;
+            aggregate.Data[MetricSeriesConfigurationForMeasurement.Constants.AggregateKindDataKeys.Min] = min;
+            aggregate.Data[MetricSeriesConfigurationForMeasurement.Constants.AggregateKindDataKeys.Max] = max;
+            aggregate.Data[MetricSeriesConfigurationForMeasurement.Constants.AggregateKindDataKeys.StdDev] = stdDev;
 
             AddInfo_Timing_Dimensions_Context(aggregate, periodEnd);
 

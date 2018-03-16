@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 using Microsoft.ApplicationInsights.Metrics.Extensibility;
+using Microsoft.ApplicationInsights.Metrics.Extensions;
 
 namespace Microsoft.ApplicationInsights.Metrics
 {
@@ -18,7 +20,7 @@ namespace Microsoft.ApplicationInsights.Metrics
         {
             MetricAggregateToTelemetryPipelineConverters.Registry.Add(
                                                                     typeof(ApplicationInsightsTelemetryPipeline),
-                                                                    MetricConfigurations.Common.AggregateKinds().Gauge().Moniker,
+                                                                    MetricSeriesConfigurationForGauge.Constants.AggregateKindMoniker,
                                                                     new GaugeAggregateToApplicationInsightsPipelineConverter());
         }
 
@@ -32,10 +34,7 @@ namespace Microsoft.ApplicationInsights.Metrics
             _alwaysResendLastValue = alwaysResendLastValue;
             _restrictToUInt32Values = restrictToUInt32Values;
 
-            unchecked
-            {
-                _hashCode = (((17 * 23) + _alwaysResendLastValue.GetHashCode()) * 23) + _restrictToUInt32Values.GetHashCode();
-            }
+            _hashCode = Util.CombineHashCodes(_alwaysResendLastValue.GetHashCode(), _restrictToUInt32Values.GetHashCode());
         }
 
         /// <summary />
@@ -118,6 +117,97 @@ namespace Microsoft.ApplicationInsights.Metrics
         public override int GetHashCode()
         {
             return _hashCode;
+        }
+
+        /// <summary>
+        /// Groups constants used by metric aggregates produced by aggregators that are configured by metric configurations represented through
+        /// instances of <see cref="MetricSeriesConfigurationForGauge"/>. This class cannot be instantiated. To access the constants, use the 
+        /// extension method <c>MetricConfigurations.Common.Gauge().Constants()</c> or <see cref="MetricSeriesConfigurationForGauge.Constants"/>.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public sealed class AggregateKindConstants
+        {
+            internal static readonly AggregateKindConstants Instance = new AggregateKindConstants();
+
+            private AggregateKindConstants()
+            {
+            }
+
+            /// <summary>
+            /// The kind moniker for aggregates produced by aggregators that are configured by metric configurations represented
+            /// through instances of <see cref="MetricSeriesConfigurationForGauge"/>.
+            /// </summary>
+            public string AggregateKindMoniker { get { return Constants.AggregateKindMoniker; } }
+
+            /// <summary>
+            /// Constants used to refer to data fields contained within aggregates produced by aggregators that are configured
+            /// by metric configurations represented through instances of <see cref="MetricSeriesConfigurationForGauge"/>.
+            /// </summary>
+            public DataKeysConstants AggregateKindDataKeys { get { return DataKeysConstants.Instance; } }
+
+            /// <summary>
+            /// Groups constants used to refer to data fields contained within aggregates produced by aggregators that are configured
+            /// by metric configurations represented through instances of <see cref="MetricSeriesConfigurationForGauge"/>.
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            public sealed class DataKeysConstants
+            {
+                internal static readonly DataKeysConstants Instance = new DataKeysConstants();
+
+                private DataKeysConstants()
+                {
+                }
+
+                /// <summary>
+                /// The name of the Last field in <see cref="MetricAggregate"/> objects produced by gauge aggregators.
+                /// </summary>
+                public string Last { get { return Constants.AggregateKindDataKeys.Last; } }
+
+                /// <summary>
+                /// The name of the Minimum field in <see cref="MetricAggregate"/> objects produced by gauge aggregators.
+                /// </summary>
+                public string Min { get { return Constants.AggregateKindDataKeys.Min; } }
+
+                /// <summary>
+                /// The name of the Maximum field in <see cref="MetricAggregate"/> objects produced by gauge aggregators.
+                /// </summary>
+                public string Max { get { return Constants.AggregateKindDataKeys.Max; } }
+            }
+        }
+
+        /// <summary>
+        /// Defines constants used my metric aggregates produced by aggregators that are configured by metric configurations represented
+        /// through instances of <see cref="MetricSeriesConfigurationForGauge"/>.
+        /// </summary>
+        public static class Constants
+        {
+            /// <summary>
+            /// The kind moniker for aggregates produced by aggregators that are configured by metric configurations represented
+            /// through instances of <see cref="MetricSeriesConfigurationForGauge"/>.
+            /// </summary>
+            public const string AggregateKindMoniker = "Microsoft.Azure.Gauge";
+
+            /// <summary>
+            /// Defines constants used to refer to data fields contained within aggregates produced by aggregators that are configured
+            /// by metric configurations represented through instances of <see cref="MetricSeriesConfigurationForGauge"/>.
+            /// </summary>
+            public static class AggregateKindDataKeys
+            {
+                /// <summary>
+                /// The name of the Last field in <see cref="MetricAggregate"/> objects produced by gauge aggregators.
+                /// </summary>
+                public const string Last = "Last";
+
+                /// <summary>
+                /// The name of the Minimum field in <see cref="MetricAggregate"/> objects produced by gauge aggregators.
+                /// </summary>
+                public const string Min = "Min";
+
+                /// <summary>
+                /// The name of the Maximum field in <see cref="MetricAggregate"/> objects produced by gauge aggregators.
+                /// </summary>
+                public const string Max = "Max";
+            }
         }
     }
 }

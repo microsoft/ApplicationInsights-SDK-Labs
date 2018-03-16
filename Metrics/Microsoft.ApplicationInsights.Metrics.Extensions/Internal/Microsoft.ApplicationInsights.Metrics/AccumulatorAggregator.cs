@@ -68,12 +68,13 @@ namespace Microsoft.ApplicationInsights.Metrics
             max = Util.EnsureConcreteValue(max);
 
             MetricAggregate aggregate = new MetricAggregate(
-                                                DataSeries?.MetricId ?? Util.NullString,
-                                                MetricConfigurations.Common.AggregateKinds().Accumulator().Moniker);
+                                                DataSeries?.MetricIdentifier.MetricNamespace ?? Util.NullString,
+                                                DataSeries?.MetricIdentifier.MetricId ?? Util.NullString,
+                                                MetricConfigurations.Common.Accumulator().Constants().AggregateKindMoniker);
 
-            aggregate.Data[MetricConfigurations.Common.AggregateKinds().Accumulator().DataKeys.Sum] = sum;
-            aggregate.Data[MetricConfigurations.Common.AggregateKinds().Accumulator().DataKeys.Min] = min;
-            aggregate.Data[MetricConfigurations.Common.AggregateKinds().Accumulator().DataKeys.Max] = max;
+            aggregate.Data[MetricConfigurations.Common.Accumulator().Constants().AggregateKindDataKeys.Sum] = sum;
+            aggregate.Data[MetricConfigurations.Common.Accumulator().Constants().AggregateKindDataKeys.Min] = min;
+            aggregate.Data[MetricConfigurations.Common.Accumulator().Constants().AggregateKindDataKeys.Max] = max;
 
             AddInfo_Timing_Dimensions_Context(aggregate, periodEnd);
 

@@ -5,7 +5,7 @@ namespace Microsoft.ApplicationInsights.Metrics
     /// <summary>
     /// 
     /// </summary>
-    public class SimpleMetricConfiguration : IMetricConfiguration
+    public class MetricConfiguration : IEquatable<MetricConfiguration>
     {
         private readonly int _hashCode;
 
@@ -13,7 +13,7 @@ namespace Microsoft.ApplicationInsights.Metrics
         /// <param name="seriesCountLimit"></param>
         /// <param name="valuesPerDimensionLimit"></param>
         /// <param name="seriesConfig"></param>
-        public SimpleMetricConfiguration(
+        public MetricConfiguration(
                                 int seriesCountLimit,
                                 int valuesPerDimensionLimit,
                                 IMetricSeriesConfiguration seriesConfig)
@@ -37,7 +37,11 @@ namespace Microsoft.ApplicationInsights.Metrics
 
             SeriesConfig = seriesConfig;
 
-            _hashCode = ComputeHashCode();
+            _hashCode = Util.CombineHashCodes(
+                                        SeriesCountLimit.GetHashCode(),
+                                        ValuesPerDimensionLimit.GetHashCode(),
+                                        SeriesConfig.GetType().FullName.GetHashCode(),
+                                        SeriesConfig.GetHashCode());
         }
 
         /// <summary />
@@ -56,7 +60,7 @@ namespace Microsoft.ApplicationInsights.Metrics
         {
             if (obj != null)
             {
-                var otherConfig = obj as SimpleMetricConfiguration;
+                var otherConfig = obj as MetricConfiguration;
                 if (otherConfig != null)
                 {
                     return Equals(otherConfig);
@@ -69,15 +73,7 @@ namespace Microsoft.ApplicationInsights.Metrics
         /// <summary />
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals(IMetricConfiguration other)
-        {
-            return Equals((object) other);
-        }
-
-        /// <summary />
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public bool Equals(SimpleMetricConfiguration other)
+        public virtual bool Equals(MetricConfiguration other)
         {
             if (other == null)
             {
@@ -91,27 +87,15 @@ namespace Microsoft.ApplicationInsights.Metrics
 
             return (this.SeriesCountLimit == other.SeriesCountLimit)
                 && (this.ValuesPerDimensionLimit == other.ValuesPerDimensionLimit)
+                && (this.GetType().Equals(other.GetType()))
                 && (this.SeriesConfig.Equals(other.SeriesConfig));
         }
 
         /// <summary />
-        /// <returns></returns>
+        /// <returns />
         public override int GetHashCode()
         {
             return _hashCode;
-        }
-
-        private int ComputeHashCode()
-        {
-            unchecked
-            {
-                int hash = 17;
-                hash = (hash * 23) + SeriesCountLimit.GetHashCode();
-                hash = (hash * 23) + ValuesPerDimensionLimit.GetHashCode();
-                hash = (hash * 23) + SeriesConfig.GetType().FullName.GetHashCode();
-                hash = (hash * 23) + SeriesConfig.GetHashCode();
-                return hash;
-            }
         }
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
+using Microsoft.ApplicationInsights.Metrics.Extensibility;
 
 namespace Microsoft.ApplicationInsights.Metrics
 {
@@ -210,6 +211,81 @@ namespace Microsoft.ApplicationInsights.Metrics
         public static DateTimeOffset RoundDownToSecond(DateTimeOffset dto)
         {
             return new DateTimeOffset(dto.Year, dto.Month, dto.Day, dto.Hour, dto.Minute, dto.Second, 0, dto.Offset);
+        }
+
+        public static bool FilterWillConsume(IMetricSeriesFilter seriesFilter, MetricSeries series, out IMetricValueFilter valueFilter)
+        {
+            valueFilter = null;
+            try
+            {
+                return (seriesFilter == null) || (seriesFilter.WillConsume(series, out valueFilter));
+            }
+            catch
+            {
+                // Protect against errors in user's implemenmtation of IMetricSeriesFilter.WillConsume(..).
+                // If it throws, assume that the filter is not functional and accept all values.
+                return true;
+            }
+        }
+
+        public static bool FilterWillConsume(IMetricValueFilter valueFilter, MetricSeries series, double metricValue)
+        {
+            try
+            {
+                return (valueFilter == null) || (valueFilter.WillConsume(series, metricValue));
+            }
+            catch
+            {
+                // If user code in IMetricValueFilter.WillConsume(..) throws, assume that the filter is not functional and accept all values.
+                return true;
+            }
+        }
+
+        public static bool FilterWillConsume(IMetricValueFilter valueFilter, MetricSeries series, object metricValue)
+        {
+            try
+            {
+                return (valueFilter == null) || (valueFilter.WillConsume(series, metricValue));
+            }
+            catch
+            {
+                // If user code in IMetricValueFilter.WillConsume(..) throws, assume that the filter is not functional and accept all values.
+                return true;
+            }
+        }
+
+        public static int CombineHashCodes(int hash1)
+        {
+            int hash = 17;
+            unchecked
+            {
+                hash = hash * 23 + hash1;
+            }
+            return hash;
+        }
+
+        public static int CombineHashCodes(int hash1, int hash2)
+        {
+            int hash = 17;
+            unchecked
+            {
+                hash = hash * 23 + hash1;
+                hash = hash * 23 + hash2;
+            }
+            return hash;
+        }
+
+        public static int CombineHashCodes(int hash1, int hash2, int hash3, int hash4)
+        {
+            int hash = 17;
+            unchecked
+            {
+                hash = hash * 23 + hash1;
+                hash = hash * 23 + hash2;
+                hash = hash * 23 + hash3;
+                hash = hash * 23 + hash4;
+            }
+            return hash;
         }
 
         /// <summary>

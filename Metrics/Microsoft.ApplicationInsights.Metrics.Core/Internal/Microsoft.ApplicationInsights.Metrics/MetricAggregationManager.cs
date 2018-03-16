@@ -77,10 +77,13 @@ namespace Microsoft.ApplicationInsights.Metrics
                     return true;
 
                 case CycleKind.QuickPulse:
+                    AggregatorCollection qpAggs = _aggregatorsForQuickPulse;
+                    filter = qpAggs?.Filter;
+                    return (qpAggs != null);
                 case CycleKind.Custom:
-                    AggregatorCollection aggs = (aggregationCycleKind == CycleKind.QuickPulse) ? _aggregatorsForQuickPulse : _aggregatorsForCustom;
-                    filter = aggs?.Filter;
-                    return (aggs != null);
+                    AggregatorCollection cAggs = _aggregatorsForCustom;
+                    filter = cAggs?.Filter;
+                    return (cAggs != null);
 
                 default:
                     throw new ArgumentException($"Unexpected value of {nameof(aggregationCycleKind)}: {aggregationCycleKind}.");
@@ -120,8 +123,8 @@ namespace Microsoft.ApplicationInsights.Metrics
             }
 
             IMetricSeriesFilter seriesFilter = aggregatorCollection.Filter;
-            IMetricValueFilter valueFilter = null;
-            if (seriesFilter != null && !seriesFilter.WillConsume(aggregator.DataSeries, out valueFilter))
+            IMetricValueFilter valueFilter;
+            if (! Util.FilterWillConsume(seriesFilter, aggregator.DataSeries, out valueFilter))
             {
                 return false;
             }
@@ -140,7 +143,7 @@ namespace Microsoft.ApplicationInsights.Metrics
         {
             if (aggregators == _aggregatorsForPersistent)
             {
-                throw new InvalidOperationException("Invernal SDK bug. Please report. Cannot cycle persistent aggregators.");
+                throw new InvalidOperationException("Internal SDK bug. Please report. Cannot cycle persistent aggregators.");
             }
 
             tactTimestamp = Util.RoundDownToSecond(tactTimestamp);
@@ -157,7 +160,10 @@ namespace Microsoft.ApplicationInsights.Metrics
                 prevAggregators = Interlocked.Exchange(ref aggregators, nextAggregators);
             }
 
+            // Get persistent aggregations. We do this for any cycle kind, i.e. for whatever the aggregators collection was:
             List<MetricAggregate> persistentValsAggregations = GetPersistentAggregations(tactTimestamp, prevAggregators?.Filter);
+
+            // Get non-persistent aggregations:
             List<MetricAggregate> nonpersistentAggregations = GetNonpersistentAggregations(tactTimestamp, prevAggregators);
 
             var summary = new AggregationPeriodSummary(persistentValsAggregations, nonpersistentAggregations);
@@ -184,9 +190,7 @@ namespace Microsoft.ApplicationInsights.Metrics
                         // But we can apply the cycle's filters to determine whether or not to pull the aggregator
                         // for a aggregate at this time. Of course, only series filters, not value filters, can be considered.
                         IMetricValueFilter unusedValueFilter;
-                        bool satisfiesFilter = (previousFilter == null)
-                                                ||
-                                               (previousFilter.WillConsume(aggregator.DataSeries, out unusedValueFilter));
+                        bool satisfiesFilter = Util.FilterWillConsume(previousFilter, aggregator.DataSeries, out unusedValueFilter);
                         if (satisfiesFilter)
                         {
                             MetricAggregate aggregate = aggregator.CompleteAggregation(tactTimestamp);

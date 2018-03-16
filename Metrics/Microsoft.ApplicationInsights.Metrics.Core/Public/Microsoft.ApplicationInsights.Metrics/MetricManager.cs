@@ -15,9 +15,8 @@ namespace Microsoft.ApplicationInsights.Metrics
         private readonly MetricAggregationManager _aggregationManager;
         private readonly DefaultAggregationPeriodCycle _aggregationCycle;
         private readonly IMetricTelemetryPipeline _telemetryPipeline;
+        private readonly MetricsCollection _metrics;
 
-        private object _extensionState;
-        
         /// <summary>
         /// 
         /// </summary>
@@ -29,6 +28,8 @@ namespace Microsoft.ApplicationInsights.Metrics
             _telemetryPipeline = telemetryPipeline;
             _aggregationManager = new MetricAggregationManager();
             _aggregationCycle = new DefaultAggregationPeriodCycle(_aggregationManager, this);
+
+            _metrics = new MetricsCollection(this);
 
             _aggregationCycle.Start();
         }
@@ -45,38 +46,73 @@ namespace Microsoft.ApplicationInsights.Metrics
             }
         }
 
+        /// <summary>
+        /// </summary>
+        public MetricsCollection Metrics { get { return _metrics; } }
+
         internal MetricAggregationManager AggregationManager { get { return _aggregationManager; } }
 
         internal DefaultAggregationPeriodCycle AggregationCycle { get { return _aggregationCycle; } }
 
         /// <summary>
-        /// 
         /// </summary>
+        /// <param name="metricNamespace"></param>
         /// <param name="metricId"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public MetricSeries CreateNewSeries(string metricId, IMetricSeriesConfiguration config)
+        public MetricSeries CreateNewSeries(string metricNamespace, string metricId, IMetricSeriesConfiguration config)
         {
-            Util.ValidateNotNull(metricId, nameof(metricId));
-            Util.ValidateNotNull(config, nameof(config));
-
-            var dataSeries = new MetricSeries(_aggregationManager, metricId, null, config);
-            return dataSeries;
+            return CreateNewSeries(
+                            metricNamespace,
+                            metricId,
+                            dimensionNamesAndValues: null,
+                            config: config);
         }
 
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="metricNamespace"></param>
         /// <param name="metricId"></param>
         /// <param name="dimensionNamesAndValues"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public MetricSeries CreateNewSeries(string metricId, IEnumerable<KeyValuePair<string, string>> dimensionNamesAndValues, IMetricSeriesConfiguration config)
+        public MetricSeries CreateNewSeries(
+                                    string metricNamespace, 
+                                    string metricId, 
+                                    IEnumerable<KeyValuePair<string, string>> dimensionNamesAndValues, 
+                                    IMetricSeriesConfiguration config)
         {
-            Util.ValidateNotNull(metricId, nameof(metricId));
+            // Create MetricIdentifier (it will also validate metricNamespace and metricId):
+            List<string> dimNames = null;
+            if (dimensionNamesAndValues != null)
+            {
+                dimNames = new List<string>();
+                foreach (KeyValuePair<string, string> dimNameVal in dimensionNamesAndValues)
+                {
+                    dimNames.Add(dimNameVal.Key);
+                }
+            }
+
+            var metricIdentifier = new MetricIdentifier(metricNamespace, metricId, dimNames);
+
+            // Create series:
+            return CreateNewSeries(metricIdentifier, dimensionNamesAndValues, config);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="metricIdentifier"></param>
+        /// <param name="dimensionNamesAndValues"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public MetricSeries CreateNewSeries(MetricIdentifier metricIdentifier, IEnumerable<KeyValuePair<string, string>> dimensionNamesAndValues, IMetricSeriesConfiguration config)
+        {
+            Util.ValidateNotNull(metricIdentifier, nameof(metricIdentifier));
             Util.ValidateNotNull(config, nameof(config));
 
-            var dataSeries = new MetricSeries(_aggregationManager, metricId, dimensionNamesAndValues, config);
+            var dataSeries = new MetricSeries(_aggregationManager, metricIdentifier, dimensionNamesAndValues, config);
             return dataSeries;
         }
 
@@ -142,35 +178,5 @@ namespace Microsoft.ApplicationInsights.Metrics
                 flushTask.Wait();
             }
         }
-
-        internal object GetOrCreateExtensionStateUnsafe(Func<MetricManager, object> newExtensionStateInstanceFactory)
-        {
-            object extensionState = _extensionState;
-
-            if (extensionState != null)
-            {
-                return extensionState;
-            }
-
-            Util.ValidateNotNull(newExtensionStateInstanceFactory, nameof(newExtensionStateInstanceFactory));
-
-            object newExtensionState = null;
-            try
-            {
-                newExtensionState = newExtensionStateInstanceFactory(this);
-            }
-            catch
-            {
-                newExtensionState = null;
-            }
-
-            if (newExtensionState != null)
-            {
-                object prevExtensionState = Interlocked.CompareExchange(ref _extensionState, newExtensionState, null);
-                extensionState = prevExtensionState ?? newExtensionState;
-            }
-
-            return extensionState;
-        }
-    }
+    }        
 }
