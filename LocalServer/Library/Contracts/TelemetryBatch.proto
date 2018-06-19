@@ -1,0 +1,10 @@
+﻿syntax = "proto3";
+package contracts;
+
+option csharp_namespace = "Library.Inputs.Contracts";
+
+import "Telemetry.proto";
+
+message TelemetryBatch {
+	repeated Telemetry items = 1;
+}

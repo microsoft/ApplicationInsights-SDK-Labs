@@ -1,0 +1,1 @@
+﻿.\bin\protoc.exe -I=.\ --csharp_out=.\ --csharp_opt=file_extension=.g.cs Event.proto TelemetryBatch.proto Telemetry.proto SeverityLevel.proto Message.proto DataPoint.proto DataPointType.proto Metric.proto Exception.proto ExceptionDetails.proto StackFrame.proto Dependency.proto Availability.proto PageView.proto Request.proto
