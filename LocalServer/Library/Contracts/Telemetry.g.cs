@@ -24,25 +24,27 @@ namespace Library.Inputs.Contracts {
     static TelemetryReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg9UZWxlbWV0cnkucHJvdG8SCWNvbnRyYWN0cxoLRXZlbnQucHJvdG8aDU1l",
-            "c3NhZ2UucHJvdG8aDE1ldHJpYy5wcm90bxoPRXhjZXB0aW9uLnByb3RvGhBE",
-            "ZXBlbmRlbmN5LnByb3RvGhJBdmFpbGFiaWxpdHkucHJvdG8aDlBhZ2VWaWV3",
-            "LnByb3RvGg1SZXF1ZXN0LnByb3RvIrUECglUZWxlbWV0cnkSCwoDdmVyGAEg",
-            "ASgFEhQKDGRhdGFUeXBlTmFtZRgCIAEoCRIQCghkYXRlVGltZRgDIAEoCRIU",
-            "CgxzYW1wbGluZ1JhdGUYBCABKAESFgoOc2VxdWVuY2VOdW1iZXIYBSABKAkS",
-            "GgoSaW5zdHJ1bWVudGF0aW9uS2V5GAYgASgJEiwKBHRhZ3MYByADKAsyHi5j",
-            "b250cmFjdHMuVGVsZW1ldHJ5LlRhZ3NFbnRyeRIhCgVldmVudBgIIAEoCzIQ",
-            "LmNvbnRyYWN0cy5FdmVudEgAEiUKB21lc3NhZ2UYCSABKAsyEi5jb250cmFj",
-            "dHMuTWVzc2FnZUgAEiMKBm1ldHJpYxgKIAEoCzIRLmNvbnRyYWN0cy5NZXRy",
-            "aWNIABIpCglleGNlcHRpb24YCyABKAsyFC5jb250cmFjdHMuRXhjZXB0aW9u",
-            "SAASKwoKZGVwZW5kZW5jeRgMIAEoCzIVLmNvbnRyYWN0cy5EZXBlbmRlbmN5",
-            "SAASLwoMYXZhaWxhYmlsaXR5GA0gASgLMhcuY29udHJhY3RzLkF2YWlsYWJp",
-            "bGl0eUgAEicKCHBhZ2VWaWV3GA4gASgLMhMuY29udHJhY3RzLlBhZ2VWaWV3",
-            "SAASJQoHcmVxdWVzdBgPIAEoCzISLmNvbnRyYWN0cy5SZXF1ZXN0SAAaKwoJ",
-            "VGFnc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAFCBgoE",
-            "ZGF0YUIbqgIYTGlicmFyeS5JbnB1dHMuQ29udHJhY3RzYgZwcm90bzM="));
+            "Cg9UZWxlbWV0cnkucHJvdG8SCWNvbnRyYWN0cxomaW5jbHVkZS9nb29nbGUv",
+            "cHJvdG9idWYvd3JhcHBlcnMucHJvdG8aC0V2ZW50LnByb3RvGg1NZXNzYWdl",
+            "LnByb3RvGgxNZXRyaWMucHJvdG8aD0V4Y2VwdGlvbi5wcm90bxoQRGVwZW5k",
+            "ZW5jeS5wcm90bxoSQXZhaWxhYmlsaXR5LnByb3RvGg5QYWdlVmlldy5wcm90",
+            "bxoNUmVxdWVzdC5wcm90byLTBAoJVGVsZW1ldHJ5EgsKA3ZlchgBIAEoBRIU",
+            "CgxkYXRhVHlwZU5hbWUYAiABKAkSEAoIZGF0ZVRpbWUYAyABKAkSMgoMc2Ft",
+            "cGxpbmdSYXRlGAQgASgLMhwuZ29vZ2xlLnByb3RvYnVmLkRvdWJsZVZhbHVl",
+            "EhYKDnNlcXVlbmNlTnVtYmVyGAUgASgJEhoKEmluc3RydW1lbnRhdGlvbktl",
+            "eRgGIAEoCRIsCgR0YWdzGAcgAygLMh4uY29udHJhY3RzLlRlbGVtZXRyeS5U",
+            "YWdzRW50cnkSIQoFZXZlbnQYCCABKAsyEC5jb250cmFjdHMuRXZlbnRIABIl",
+            "CgdtZXNzYWdlGAkgASgLMhIuY29udHJhY3RzLk1lc3NhZ2VIABIjCgZtZXRy",
+            "aWMYCiABKAsyES5jb250cmFjdHMuTWV0cmljSAASKQoJZXhjZXB0aW9uGAsg",
+            "ASgLMhQuY29udHJhY3RzLkV4Y2VwdGlvbkgAEisKCmRlcGVuZGVuY3kYDCAB",
+            "KAsyFS5jb250cmFjdHMuRGVwZW5kZW5jeUgAEi8KDGF2YWlsYWJpbGl0eRgN",
+            "IAEoCzIXLmNvbnRyYWN0cy5BdmFpbGFiaWxpdHlIABInCghwYWdlVmlldxgO",
+            "IAEoCzITLmNvbnRyYWN0cy5QYWdlVmlld0gAEiUKB3JlcXVlc3QYDyABKAsy",
+            "Ei5jb250cmFjdHMuUmVxdWVzdEgAGisKCVRhZ3NFbnRyeRILCgNrZXkYASAB",
+            "KAkSDQoFdmFsdWUYAiABKAk6AjgBQgYKBGRhdGFCG6oCGExpYnJhcnkuSW5w",
+            "dXRzLkNvbnRyYWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Library.Inputs.Contracts.EventReflection.Descriptor, global::Library.Inputs.Contracts.MessageReflection.Descriptor, global::Library.Inputs.Contracts.MetricReflection.Descriptor, global::Library.Inputs.Contracts.ExceptionReflection.Descriptor, global::Library.Inputs.Contracts.DependencyReflection.Descriptor, global::Library.Inputs.Contracts.AvailabilityReflection.Descriptor, global::Library.Inputs.Contracts.PageViewReflection.Descriptor, global::Library.Inputs.Contracts.RequestReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, global::Library.Inputs.Contracts.EventReflection.Descriptor, global::Library.Inputs.Contracts.MessageReflection.Descriptor, global::Library.Inputs.Contracts.MetricReflection.Descriptor, global::Library.Inputs.Contracts.ExceptionReflection.Descriptor, global::Library.Inputs.Contracts.DependencyReflection.Descriptor, global::Library.Inputs.Contracts.AvailabilityReflection.Descriptor, global::Library.Inputs.Contracts.PageViewReflection.Descriptor, global::Library.Inputs.Contracts.RequestReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.Telemetry), global::Library.Inputs.Contracts.Telemetry.Parser, new[]{ "Ver", "DataTypeName", "DateTime", "SamplingRate", "SequenceNumber", "InstrumentationKey", "Tags", "Event", "Message", "Metric", "Exception", "Dependency", "Availability", "PageView", "Request" }, new[]{ "Data" }, null, new pbr::GeneratedClrTypeInfo[] { null, })
           }));
@@ -79,7 +81,7 @@ namespace Library.Inputs.Contracts {
       ver_ = other.ver_;
       dataTypeName_ = other.dataTypeName_;
       dateTime_ = other.dateTime_;
-      samplingRate_ = other.samplingRate_;
+      SamplingRate = other.samplingRate_ != null ? other.SamplingRate.Clone() : null;
       sequenceNumber_ = other.sequenceNumber_;
       instrumentationKey_ = other.instrumentationKey_;
       tags_ = other.tags_.Clone();
@@ -158,12 +160,12 @@ namespace Library.Inputs.Contracts {
 
     /// <summary>Field number for the "samplingRate" field.</summary>
     public const int SamplingRateFieldNumber = 4;
-    private double samplingRate_;
+    private global::Google.Protobuf.WellKnownTypes.DoubleValue samplingRate_;
     /// <summary>
     ///default must be assumed 100
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public double SamplingRate {
+    public global::Google.Protobuf.WellKnownTypes.DoubleValue SamplingRate {
       get { return samplingRate_; }
       set {
         samplingRate_ = value;
@@ -331,7 +333,7 @@ namespace Library.Inputs.Contracts {
       if (Ver != other.Ver) return false;
       if (DataTypeName != other.DataTypeName) return false;
       if (DateTime != other.DateTime) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(SamplingRate, other.SamplingRate)) return false;
+      if (!object.Equals(SamplingRate, other.SamplingRate)) return false;
       if (SequenceNumber != other.SequenceNumber) return false;
       if (InstrumentationKey != other.InstrumentationKey) return false;
       if (!Tags.Equals(other.Tags)) return false;
@@ -353,7 +355,7 @@ namespace Library.Inputs.Contracts {
       if (Ver != 0) hash ^= Ver.GetHashCode();
       if (DataTypeName.Length != 0) hash ^= DataTypeName.GetHashCode();
       if (DateTime.Length != 0) hash ^= DateTime.GetHashCode();
-      if (SamplingRate != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(SamplingRate);
+      if (samplingRate_ != null) hash ^= SamplingRate.GetHashCode();
       if (SequenceNumber.Length != 0) hash ^= SequenceNumber.GetHashCode();
       if (InstrumentationKey.Length != 0) hash ^= InstrumentationKey.GetHashCode();
       hash ^= Tags.GetHashCode();
@@ -391,9 +393,9 @@ namespace Library.Inputs.Contracts {
         output.WriteRawTag(26);
         output.WriteString(DateTime);
       }
-      if (SamplingRate != 0D) {
-        output.WriteRawTag(33);
-        output.WriteDouble(SamplingRate);
+      if (samplingRate_ != null) {
+        output.WriteRawTag(34);
+        output.WriteMessage(SamplingRate);
       }
       if (SequenceNumber.Length != 0) {
         output.WriteRawTag(42);
@@ -453,8 +455,8 @@ namespace Library.Inputs.Contracts {
       if (DateTime.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(DateTime);
       }
-      if (SamplingRate != 0D) {
-        size += 1 + 8;
+      if (samplingRate_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(SamplingRate);
       }
       if (SequenceNumber.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(SequenceNumber);
@@ -507,8 +509,11 @@ namespace Library.Inputs.Contracts {
       if (other.DateTime.Length != 0) {
         DateTime = other.DateTime;
       }
-      if (other.SamplingRate != 0D) {
-        SamplingRate = other.SamplingRate;
+      if (other.samplingRate_ != null) {
+        if (samplingRate_ == null) {
+          samplingRate_ = new global::Google.Protobuf.WellKnownTypes.DoubleValue();
+        }
+        SamplingRate.MergeFrom(other.SamplingRate);
       }
       if (other.SequenceNumber.Length != 0) {
         SequenceNumber = other.SequenceNumber;
@@ -591,8 +596,11 @@ namespace Library.Inputs.Contracts {
             DateTime = input.ReadString();
             break;
           }
-          case 33: {
-            SamplingRate = input.ReadDouble();
+          case 34: {
+            if (samplingRate_ == null) {
+              samplingRate_ = new global::Google.Protobuf.WellKnownTypes.DoubleValue();
+            }
+            input.ReadMessage(samplingRate_);
             break;
           }
           case 42: {

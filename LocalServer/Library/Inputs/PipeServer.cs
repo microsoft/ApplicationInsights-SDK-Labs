@@ -18,16 +18,23 @@
         private PipeServerStats stats;
 
         private CancellationTokenSource cts;
-
+        
+        public bool IsRunning { get; private set; }
 
         public PipeServer()
         {
+            this.IsRunning = false;
         }
 
         public async Task Start(Func<PipeServer, Task> onClientConnected, Func<PipeServer, Task> onClientDisconnected, Func<PipeServer, Contracts.TelemetryBatch, Task> onBatchReceived)
         {
             try
             {
+                if (this.IsRunning)
+                {
+                    throw new InvalidOperationException(FormattableString.Invariant($"PipeServer is already running, can't start it."));
+                }
+
                 this.cts = new CancellationTokenSource();
                 this.stats = new PipeServerStats();
                 this.reader = new StreamReader();
@@ -46,7 +53,14 @@
                 // listen for a client
                 try
                 {
-                    await this.pipe.WaitForConnectionAsync().ConfigureAwait(false);
+                    this.IsRunning = true;
+                    await this.pipe.WaitForConnectionAsync(this.cts.Token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    // we were stopped while waiting for the client
+                    // just exit the listening loop
+                    return;
                 }
                 catch (Exception e)
                 {
@@ -61,13 +75,19 @@
                     await onClientConnected(this).ConfigureAwait(false);
                 }
 
-                while (true)
+                while (!this.cts.IsCancellationRequested)
                 {
                     Contracts.TelemetryBatch telemetryItemBatch;
 
                     try
                     {
                         telemetryItemBatch = await this.reader.ReadPipe(this.pipe, this.stats, this.cts.Token).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // we were stopped
+                        // just exit the listening loop
+                        return;
                     }
                     catch (EndOfStreamException e)
                     {
@@ -96,7 +116,23 @@
             }
             finally
             {
+                // we are out of the receiving loop, meaning the client has closed the pipe from the other end
+                // or we got stopped, or something went terribly wrong
+                try
+                {
+                    if (this.pipe?.IsConnected == true)
+                    {
+                        this.pipe.Disconnect();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Common.Diagnostics.Log(FormattableString.Invariant($"Error while attempting to disconnect the pipe. {e}"));
+                }
+
                 this.pipe?.Dispose();
+
+                this.IsRunning = false;
             }
         }
 
@@ -104,19 +140,22 @@
         {
             try
             {
-                this.cts.Cancel();
-
-                if (this.pipe.IsConnected)
+                if (!this.IsRunning)
                 {
-                    this.pipe.Disconnect();
+                    throw new InvalidOperationException(FormattableString.Invariant($"PipeServer is not currently running, can't stop it."));
+                }
+
+                if (this.cts?.IsCancellationRequested == false)
+                {
+                    this.cts.Cancel();
                 }
             }
             catch (Exception e)
             {
-                Common.Diagnostics.Log(FormattableString.Invariant($"Error while attempting to close the pipe. {e}"));
-            }
-            finally
-            {
+                // something went wrong while traing to cancel the operation, let's at least dispose of the pipe
+                
+                Common.Diagnostics.Log(FormattableString.Invariant($"Error while attempting to cancel a pipe operation. {e}"));
+
                 this.pipe.Dispose();
             }
         }

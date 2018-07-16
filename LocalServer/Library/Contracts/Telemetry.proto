@@ -3,6 +3,8 @@ package contracts;
 
 option csharp_namespace = "Library.Inputs.Contracts";
 
+import "include/google/protobuf/wrappers.proto";
+
 import "Event.proto";
 import "Message.proto";
 import "Metric.proto";
@@ -23,7 +25,7 @@ message Telemetry {
     string dateTime = 3;
     
     //default must be assumed 100
-    double samplingRate = 4;
+    google.protobuf.DoubleValue samplingRate = 4;
     
     string sequenceNumber = 5;
     

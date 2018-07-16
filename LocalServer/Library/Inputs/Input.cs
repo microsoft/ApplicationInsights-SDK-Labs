@@ -9,9 +9,11 @@
     /// </summary>
     interface IInput
     {
-        Task Start(Action<TelemetryBatch> onBatchReceived);
+        void Start(Action<TelemetryBatch> onBatchReceived);
 
         void Stop();
+
+        bool IsRunning { get; }
 
         InputStats GetStats();
     }

@@ -5,7 +5,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
 
     <AssemblyOriginatorKeyFile>LocalServer.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>

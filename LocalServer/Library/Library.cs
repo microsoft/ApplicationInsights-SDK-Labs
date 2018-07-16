@@ -12,10 +12,10 @@
         private readonly TelemetryClient telemetryClient = new TelemetryClient();
         private readonly IInput localInput = new NamedPipeInput();
 
-        public async Task Run()
+        public void Run()
         {
             // start the inputs
-            await this.localInput.Start(this.OnBatchReceived).ConfigureAwait(false);
+            this.localInput.Start(this.OnBatchReceived);
         }
 
         /// <summary>

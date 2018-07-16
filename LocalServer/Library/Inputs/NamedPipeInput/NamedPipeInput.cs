@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -17,13 +18,27 @@
 
         private Action<Contracts.TelemetryBatch> onBatchReceived;
 
+        private CancellationTokenSource cts;
+
+        public NamedPipeInput()
+        {
+            this.IsRunning = false;
+        }
+
         /// <summary>
         /// Starts listening for data.
         /// </summary>
         /// <param name="onBatchReceived">A callback to be invoked every time there is a new incoming telemetry batch. No guarantees are provided as to which thread the callback is called on.</param>
-        public async Task Start(Action<Contracts.TelemetryBatch> onBatchReceived)
+        public void Start(Action<Contracts.TelemetryBatch> onBatchReceived)
         {
+            if (this.IsRunning)
+            {
+                throw new InvalidOperationException(FormattableString.Invariant($"NamedPipeInput is already running, can't start it."));
+            }
+
             this.onBatchReceived = onBatchReceived;
+
+            this.cts = new CancellationTokenSource();
 
             this.stats = new InputStats();
 
@@ -37,7 +52,15 @@
                     this.pipeServers.Add(firstPipeServer);
                 }
 
-                await firstPipeServer.Start(this.OnClientConnected, this.OnClientDisconnected, this.OnBatchReceived).ConfigureAwait(false);
+                Task.Run(() =>
+                {
+                    // call pipe server's Start() and mark ourselves as running before it completes (after the first await), so no await in the call below
+#pragma warning disable 4014
+                    firstPipeServer.Start(this.OnClientConnected, this.OnClientDisconnected, this.OnBatchReceived);
+#pragma warning restore 4014
+
+                    this.IsRunning = true;
+                });
             }
             catch (Exception e)
             {
@@ -47,32 +70,56 @@
 
         public void Stop()
         {
-            var errorMessages = new List<string>();
-            lock (this.pipeServers)
+            try
             {
-                foreach (var pipeServer in this.pipeServers)
+                if (!this.IsRunning)
                 {
-                    try
+                    throw new InvalidOperationException(FormattableString.Invariant($"NamedPipeInput is not currently running, can't stop it."));
+                }
+
+                var errorMessages = new List<string>();
+                lock (this.pipeServers)
+                {
+                    foreach (var pipeServer in this.pipeServers)
                     {
-                        pipeServer.Stop();
+                        try
+                        {
+                            pipeServer.Stop();
+                        }
+                        catch (Exception e)
+                        {
+                            errorMessages.Add(
+                                FormattableString.Invariant($"Failed to stop one of the pipe servers: {e.ToString()}"));
+                        }
                     }
-                    catch (Exception e)
+
+                    if (!SpinWait.SpinUntil(() => this.pipeServers.All(ps => !ps.IsRunning), TimeSpan.FromSeconds(5)))
                     {
-                        errorMessages.Add(
-                            FormattableString.Invariant($"Failed to stop one of the pipe servers: {e.ToString()}"));
+                        throw new InvalidOperationException(
+                            FormattableString.Invariant(
+                                $"Failed to stop some of the pipe servers within the alloted time period. {string.Join(", ", errorMessages)}"));
                     }
                 }
 
-                this.pipeServers.Clear();
+                if (errorMessages.Any())
+                {
+                    throw new InvalidOperationException(
+                        FormattableString.Invariant(
+                            $"Failed to stop some of the pipe servers. {string.Join(", ", errorMessages)}"));
+                }
             }
-
-            if (errorMessages.Any())
+            finally
             {
-                throw new InvalidOperationException(
-                    FormattableString.Invariant(
-                        $"Failed to stop some of the pipe servers. {string.Join(", ", errorMessages)}"));
+                lock (this.pipeServers)
+                {
+                    this.pipeServers.Clear();
+                }
+
+                this.IsRunning = false;
             }
         }
+
+        public bool IsRunning { get; private set; }
 
         public InputStats GetStats()
         {
@@ -91,7 +138,8 @@
                     this.pipeServers.Add(nextPipeServer);
                 }
 
-                await nextPipeServer.Start(this.OnClientConnected, this.OnClientDisconnected, this.OnBatchReceived).ConfigureAwait(false);
+                // no await here, we don't want to wait past the first await (when it starts listening)
+                nextPipeServer.Start(this.OnClientConnected, this.OnClientDisconnected, this.OnBatchReceived);
 
                 this.stats.ConnectionCount++;
             }
