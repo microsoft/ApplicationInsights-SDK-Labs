@@ -2,9 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Google.Protobuf.WellKnownTypes;
 
     /// <summary>
     /// Named pipe-based input
@@ -19,6 +21,10 @@
         private Action<Contracts.TelemetryBatch> onBatchReceived;
 
         private CancellationTokenSource cts;
+
+        private volatile bool isRunning;
+
+        private volatile bool isStoppingInput = false;
 
         public NamedPipeInput()
         {
@@ -77,24 +83,55 @@
                     throw new InvalidOperationException(FormattableString.Invariant($"NamedPipeInput is not currently running, can't stop it."));
                 }
 
+                this.isStoppingInput = true;
+
                 var errorMessages = new List<string>();
-                lock (this.pipeServers)
+                Action shutDownAllServers = () =>
                 {
-                    foreach (var pipeServer in this.pipeServers)
+                    lock (this.pipeServers)
                     {
-                        try
+                        foreach (var pipeServer in this.pipeServers)
                         {
-                            pipeServer.Stop();
-                        }
-                        catch (Exception e)
-                        {
-                            errorMessages.Add(
-                                FormattableString.Invariant($"Failed to stop one of the pipe servers: {e.ToString()}"));
+                            try
+                            {
+                                pipeServer.Stop();
+                            }
+                            catch (Exception e)
+                            {
+                                errorMessages.Add(
+                                    FormattableString.Invariant(
+                                        $"Failed to stop one of the pipe servers: {e.ToString()}"));
+                            }
                         }
                     }
+                };
 
-                    if (!SpinWait.SpinUntil(() => this.pipeServers.All(ps => !ps.IsRunning), TimeSpan.FromSeconds(5)))
+                shutDownAllServers();
+
+                if (!SpinWait.SpinUntil(() =>
+                {
+                    lock (this.pipeServers)
                     {
+                        return this.pipeServers.All(ps => !ps.IsRunning);
+                    }
+                }, TimeSpan.FromSeconds(5)))
+                {
+                    // it appears there are still running pipe servers in this.pipeServers collection
+                    // (it is possible due to race condition with creating new servers in OnClientConnected callback handler)
+                    // now that we're under the this.isStoppingInput flag, let threads cool down and stop the remaining ones
+                    Thread.Sleep(TimeSpan.FromSeconds(3));
+
+                    shutDownAllServers();
+
+                    if (!SpinWait.SpinUntil(() =>
+                    {
+                        lock (this.pipeServers)
+                        {
+                            return this.pipeServers.All(ps => !ps.IsRunning);
+                        }
+                    }, TimeSpan.FromSeconds(5)))
+                    {
+                        // no luck again, report an issue
                         throw new InvalidOperationException(
                             FormattableString.Invariant(
                                 $"Failed to stop some of the pipe servers within the alloted time period. {string.Join(", ", errorMessages)}"));
@@ -116,10 +153,15 @@
                 }
 
                 this.IsRunning = false;
+                this.isStoppingInput = false;
             }
         }
 
-        public bool IsRunning { get; private set; }
+        public bool IsRunning
+        {
+            get => this.isRunning;
+            private set => this.isRunning = value;
+        }
 
         public InputStats GetStats()
         {
@@ -131,6 +173,12 @@
             // a client has connected, we need to start one more server to listen for the next client
             try
             {
+                if (this.isStoppingInput)
+                {
+                    // we are being stopped, don't do anything
+                    return;
+                }
+
                 var nextPipeServer = new PipeServer();
 
                 lock (this.pipeServers)
@@ -159,6 +207,12 @@
         private async Task OnClientDisconnected(PipeServer pipeServer)
         {
             // the client has disconnected, dispose of this server
+
+            if (this.isStoppingInput)
+            {
+                // we are being stopped, don't do anything
+                return;
+            }
 
             lock (this.pipeServers)
             {

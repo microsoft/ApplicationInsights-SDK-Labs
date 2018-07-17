@@ -12,5 +12,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
+  
+  <PropertyGroup>
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
 
 </Project>

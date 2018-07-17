@@ -109,7 +109,10 @@
 
                 bytesReadSoFar += chunkSize;
 
-                stats.BytesRead += (ulong) chunkSize;
+                if (stats != null)
+                {
+                    stats.BytesRead += (ulong) chunkSize;
+                }
 
                 if (chunkSize == 0)
                 {

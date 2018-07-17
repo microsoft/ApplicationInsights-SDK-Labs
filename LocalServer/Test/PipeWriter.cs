@@ -8,11 +8,13 @@ namespace Test.Library
 
     public class PipeWriter
     {
+        private readonly TimeSpan timeout;
         private NamedPipeClientStream pipe;
 
-        public PipeWriter()
+        public PipeWriter(TimeSpan timeout)
         {
-            NamedPipeClientStream pipe;
+            this.timeout = timeout;
+
             try
             {
                 this.pipe = new NamedPipeClientStream(".", "MsftLocalServer",
@@ -27,11 +29,11 @@ namespace Test.Library
 
         public async Task Start()
         {
-            var ct = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            var ct = new CancellationTokenSource(this.timeout);
             await this.pipe.ConnectAsync(ct.Token).ConfigureAwait(false);
         }
 
-        public async Task Stop()
+        public void Stop()
         {
             this.pipe?.WaitForPipeDrain();
             this.pipe?.Dispose();
@@ -42,7 +44,7 @@ namespace Test.Library
             try
             {
                 // Send the message to the connected pipe
-                await this.pipe.WriteAsync(message, 0, message.Length, new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token).ConfigureAwait(false);
+                await this.pipe.WriteAsync(message, 0, message.Length, new CancellationTokenSource(this.timeout).Token).ConfigureAwait(false);
             }
             catch (Exception e)
             {

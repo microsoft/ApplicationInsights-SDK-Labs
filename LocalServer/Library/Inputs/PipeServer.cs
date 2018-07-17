@@ -1,6 +1,7 @@
 ﻿namespace Library.Inputs
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.IO.Pipes;
     using System.Threading;
@@ -18,8 +19,14 @@
         private PipeServerStats stats;
 
         private CancellationTokenSource cts;
-        
-        public bool IsRunning { get; private set; }
+
+        private volatile bool isRunning;
+
+        public bool IsRunning
+        {
+            get => this.isRunning;
+            private set => this.isRunning = value;
+        }
 
         public PipeServer()
         {
