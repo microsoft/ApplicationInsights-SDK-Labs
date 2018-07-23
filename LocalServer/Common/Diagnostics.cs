@@ -6,7 +6,8 @@
     {
         public static void Log(string message)
         {
-            throw new NotImplementedException();
+            //!!!
+            //throw new NotImplementedException();
         }
     }
 }

@@ -189,7 +189,7 @@
                 // no await here, we don't want to wait past the first await (when it starts listening)
                 nextPipeServer.Start(this.OnClientConnected, this.OnClientDisconnected, this.OnBatchReceived);
 
-                this.stats.ConnectionCount++;
+                Interlocked.Increment(ref this.stats.ConnectionCount);
             }
             catch (Exception e)
             {
@@ -223,7 +223,7 @@
             {
                 pipeServer.Stop();
 
-                this.stats.ConnectionCount--;
+                Interlocked.Increment(ref this.stats.ConnectionCount);
             }
             catch (Exception e)
             {
@@ -235,7 +235,7 @@
 
         private async Task OnBatchReceived(PipeServer pipeServer, Contracts.TelemetryBatch batch)
         {
-            this.stats.BatchesReceived++;
+            Interlocked.Increment(ref this.stats.BatchesReceived);
 
             try
             {

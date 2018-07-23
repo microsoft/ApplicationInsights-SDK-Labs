@@ -76,8 +76,8 @@ namespace Library.Inputs.Contracts {
       name_ = other.name_;
       id_ = other.id_;
       resultCode_ = other.resultCode_;
-      Duration = other.duration_ != null ? other.Duration.Clone() : null;
-      Success = other.success_ != null ? other.Success.Clone() : null;
+      duration_ = other.duration_ != null ? other.duration_.Clone() : null;
+      success_ = other.success_ != null ? other.success_.Clone() : null;
       data_ = other.data_;
       type_ = other.type_;
       target_ = other.target_;

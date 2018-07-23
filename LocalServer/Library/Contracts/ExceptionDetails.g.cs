@@ -71,7 +71,7 @@ namespace Library.Inputs.Contracts {
       outerId_ = other.outerId_;
       typeName_ = other.typeName_;
       message_ = other.message_;
-      HasFullStack = other.hasFullStack_ != null ? other.HasFullStack.Clone() : null;
+      hasFullStack_ = other.hasFullStack_ != null ? other.hasFullStack_.Clone() : null;
       stack_ = other.stack_;
       parsedStack_ = other.parsedStack_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);

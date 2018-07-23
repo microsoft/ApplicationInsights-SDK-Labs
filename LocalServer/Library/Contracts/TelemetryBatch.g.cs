@@ -25,12 +25,15 @@ namespace Library.Inputs.Contracts {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChRUZWxlbWV0cnlCYXRjaC5wcm90bxIJY29udHJhY3RzGg9UZWxlbWV0cnku",
-            "cHJvdG8iNQoOVGVsZW1ldHJ5QmF0Y2gSIwoFaXRlbXMYASADKAsyFC5jb250",
-            "cmFjdHMuVGVsZW1ldHJ5QhuqAhhMaWJyYXJ5LklucHV0cy5Db250cmFjdHNi",
-            "BnByb3RvMw=="));
+            "cHJvdG8iCgoIUmVzcG9uc2UiNQoOVGVsZW1ldHJ5QmF0Y2gSIwoFaXRlbXMY",
+            "ASADKAsyFC5jb250cmFjdHMuVGVsZW1ldHJ5Ml4KEFRlbGVtZXRyeVNlcnZp",
+            "Y2USSgoSU2VuZFRlbGVtZXRyeUJhdGNoEhkuY29udHJhY3RzLlRlbGVtZXRy",
+            "eUJhdGNoGhMuY29udHJhY3RzLlJlc3BvbnNlIgAoATABQhuqAhhMaWJyYXJ5",
+            "LklucHV0cy5Db250cmFjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Library.Inputs.Contracts.TelemetryReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.Response), global::Library.Inputs.Contracts.Response.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.TelemetryBatch), global::Library.Inputs.Contracts.TelemetryBatch.Parser, new[]{ "Items" }, null, null, null)
           }));
     }
@@ -38,6 +41,107 @@ namespace Library.Inputs.Contracts {
 
   }
   #region Messages
+  public sealed partial class Response : pb::IMessage<Response> {
+    private static readonly pb::MessageParser<Response> _parser = new pb::MessageParser<Response>(() => new Response());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<Response> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Library.Inputs.Contracts.TelemetryBatchReflection.Descriptor.MessageTypes[0]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Response() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Response(Response other) : this() {
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Response Clone() {
+      return new Response(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as Response);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(Response other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(Response other) {
+      if (other == null) {
+        return;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+        }
+      }
+    }
+
+  }
+
   public sealed partial class TelemetryBatch : pb::IMessage<TelemetryBatch> {
     private static readonly pb::MessageParser<TelemetryBatch> _parser = new pb::MessageParser<TelemetryBatch>(() => new TelemetryBatch());
     private pb::UnknownFieldSet _unknownFields;
@@ -46,7 +150,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.TelemetryBatchReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Library.Inputs.Contracts.TelemetryBatchReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

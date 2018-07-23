@@ -7,6 +7,7 @@ namespace Test.Library.Inputs.NamedPipeInput
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -46,10 +47,11 @@ namespace Test.Library.Inputs.NamedPipeInput
             await pipeWriter.Start().ConfigureAwait(false);
 
             // ASSERT
-            Common.AssertIsTrueEventually(() => input.GetStats().ConnectionCount == 1, NamedPipeInputTests.DefaultTimeout);
+            Common.AssertIsTrueEventually(() => input.GetStats().ConnectionCount == 1,
+                NamedPipeInputTests.DefaultTimeout);
 
             pipeWriter.Stop();
-            
+
             input.Stop();
 
             Assert.IsTrue(SpinWait.SpinUntil(() => !input.IsRunning, NamedPipeInputTests.DefaultTimeout));
@@ -59,8 +61,16 @@ namespace Test.Library.Inputs.NamedPipeInput
         public async Task NamedPipeInputTests_ReceivesData()
         {
             // ARRANGE
+            int batchesReceived = 0;
+            TelemetryBatch receivedBatch = null;
+
             var input = new NamedPipeInput();
-            input.Start(null);
+            input.Start((telemetryBatch) =>
+            {
+                batchesReceived++;
+                receivedBatch = telemetryBatch;
+            });
+
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, NamedPipeInputTests.DefaultTimeout));
 
             var pipeWriter = new PipeWriter(NamedPipeInputTests.DefaultTimeout);
@@ -81,12 +91,24 @@ namespace Test.Library.Inputs.NamedPipeInput
             }
 
             // ASSERT
-            Common.AssertIsTrueEventually(() => input.GetStats().ConnectionCount == 1 && input.GetStats().BatchesReceived == 1, NamedPipeInputTests.DefaultTimeout);
-            
+            Common.AssertIsTrueEventually(
+                () => input.GetStats().ConnectionCount == 1 && input.GetStats().BatchesReceived == 1 &&
+                      batchesReceived == 1 && receivedBatch.Items.Single().Event.Name == "Event1",
+                NamedPipeInputTests.DefaultTimeout);
+
             pipeWriter.Stop();
 
             input.Stop();
             Assert.IsTrue(SpinWait.SpinUntil(() => !input.IsRunning, NamedPipeInputTests.DefaultTimeout));
+        }
+
+        /*
+         * PipeInput was deprioritized and test coverage left incomplete. Complete coverage before using
+         */
+        [Ignore]
+        [TestMethod()]
+        public async Task NamedPipeInputTests_IncompleteCoverage()
+        {
         }
     }
 }

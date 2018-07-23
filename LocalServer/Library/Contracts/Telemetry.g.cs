@@ -81,7 +81,7 @@ namespace Library.Inputs.Contracts {
       ver_ = other.ver_;
       dataTypeName_ = other.dataTypeName_;
       dateTime_ = other.dateTime_;
-      SamplingRate = other.samplingRate_ != null ? other.SamplingRate.Clone() : null;
+      samplingRate_ = other.samplingRate_ != null ? other.samplingRate_.Clone() : null;
       sequenceNumber_ = other.sequenceNumber_;
       instrumentationKey_ = other.instrumentationKey_;
       tags_ = other.tags_.Clone();

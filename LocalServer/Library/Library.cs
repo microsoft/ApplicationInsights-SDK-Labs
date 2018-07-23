@@ -1,21 +1,27 @@
 ﻿namespace Library
 {
-    using System;
-    using System.Threading.Tasks;
     using Inputs;
-    using Inputs.NamedPipeInput;
+    using Inputs.GrpcInput;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Channel;
+    using System;
 
     public class Library
     {
         private readonly TelemetryClient telemetryClient = new TelemetryClient();
-        private readonly IInput localInput = new NamedPipeInput();
+
+        //!!!
+        private readonly IInput gRpcInput = new GrpcInput(50001);
 
         public void Run()
         {
             // start the inputs
-            this.localInput.Start(this.OnBatchReceived);
+            this.gRpcInput.Start(this.OnBatchReceived);
+        }
+
+        public void Stop()
+        {
+            this.gRpcInput.Stop();
         }
 
         /// <summary>

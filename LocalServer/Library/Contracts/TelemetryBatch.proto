@@ -5,6 +5,14 @@ option csharp_namespace = "Library.Inputs.Contracts";
 
 import "Telemetry.proto";
 
+// gRPC service to transmit telemetry
+service TelemetryService {
+  rpc SendTelemetryBatch (stream TelemetryBatch) returns (stream Response) {}
+}
+
+message Response {
+}
+
 message TelemetryBatch {
 	repeated Telemetry items = 1;
 }

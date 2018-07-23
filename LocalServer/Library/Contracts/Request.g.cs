@@ -74,9 +74,9 @@ namespace Library.Inputs.Contracts {
     public Request(Request other) : this() {
       ver_ = other.ver_;
       id_ = other.id_;
-      Duration = other.duration_ != null ? other.Duration.Clone() : null;
+      duration_ = other.duration_ != null ? other.duration_.Clone() : null;
       responseCode_ = other.responseCode_;
-      Success = other.success_ != null ? other.Success.Clone() : null;
+      success_ = other.success_ != null ? other.success_.Clone() : null;
       source_ = other.source_;
       name_ = other.name_;
       url_ = other.url_;

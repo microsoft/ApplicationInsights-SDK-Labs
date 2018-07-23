@@ -72,10 +72,10 @@ namespace Library.Inputs.Contracts {
       name_ = other.name_;
       kind_ = other.kind_;
       value_ = other.value_;
-      Count = other.count_ != null ? other.Count.Clone() : null;
-      Min = other.min_ != null ? other.Min.Clone() : null;
-      Max = other.max_ != null ? other.Max.Clone() : null;
-      StdDev = other.stdDev_ != null ? other.StdDev.Clone() : null;
+      count_ = other.count_ != null ? other.count_.Clone() : null;
+      min_ = other.min_ != null ? other.min_.Clone() : null;
+      max_ = other.max_ != null ? other.max_.Clone() : null;
+      stdDev_ = other.stdDev_ != null ? other.stdDev_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 

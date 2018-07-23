@@ -73,7 +73,7 @@ namespace Library.Inputs.Contracts {
       ver_ = other.ver_;
       id_ = other.id_;
       name_ = other.name_;
-      Duration = other.duration_ != null ? other.Duration.Clone() : null;
+      duration_ = other.duration_ != null ? other.duration_.Clone() : null;
       success_ = other.success_;
       runLocation_ = other.runLocation_;
       message_ = other.message_;

@@ -65,9 +65,9 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public PageView(PageView other) : this() {
-      Event = other.event_ != null ? other.Event.Clone() : null;
+      event_ = other.event_ != null ? other.event_.Clone() : null;
       url_ = other.url_;
-      Duration = other.duration_ != null ? other.Duration.Clone() : null;
+      duration_ = other.duration_ != null ? other.duration_.Clone() : null;
       id_ = other.id_;
       referrerUri_ = other.referrerUri_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
