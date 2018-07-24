@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.LocalForwarder.Library</id>
+    <version>1.0.0-alpha</version>
+    <authors>Microsoft.LocalForwarder.Library</authors>
+    <owners>Microsoft.LocalForwarder.Library</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Google.Protobuf" version="3.6.0" />
+        <dependency id="Google.Protobuf.Tools" version="3.6.0" />
+        <dependency id="Grpc" version="1.13.1" />
+        <dependency id="Grpc.Tools" version="1.13.1" />
+        <dependency id="Microsoft.ApplicationInsights" version="2.6.4" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\Library\bin\$configuration$\netstandard2.0\Microsoft.LocalForwarder.Library.dll" target="lib\netstandard" />
+    <file src="..\Library\bin\$configuration$\netstandard2.0\Microsoft.LocalForwarder.Library.pdb" target="lib\netstandard" />
+    <file src="..\Library\bin\$configuration$\netstandard2.0\Microsoft.LocalForwarder.Common.dll" target="lib\netstandard" />
+    <file src="..\Library\bin\$configuration$\netstandard2.0\Microsoft.LocalForwarder.Common.pdb" target="lib\netstandard" />
+  </files>
+</package>

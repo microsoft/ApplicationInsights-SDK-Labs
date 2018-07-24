@@ -22,6 +22,7 @@
 
   <PropertyGroup>
     <DebugType>Full</DebugType>
+    <AssemblyName>Microsoft.LocalForwarder.Test</AssemblyName>
   </PropertyGroup>
 
 </Project>

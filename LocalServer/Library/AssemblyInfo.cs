@@ -2,7 +2,7 @@
 
 //!!!
 //[assembly: InternalsVisibleTo("Test, PublicKey=" + AssemblyInfo.PublicKey)]
-[assembly: InternalsVisibleTo("Test")]
+[assembly: InternalsVisibleTo("Microsoft.LocalForwarder.Test")]
 
 internal static class AssemblyInfo
 {
