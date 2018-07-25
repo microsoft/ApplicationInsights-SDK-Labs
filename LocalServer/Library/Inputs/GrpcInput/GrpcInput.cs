@@ -2,6 +2,7 @@
 {
     using Grpc.Core;
     using System;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using Contracts;
@@ -15,10 +16,12 @@
         private Action<TelemetryBatch> onBatchReceived;
         private Server server;
         private InputStats stats;
-        private int port;
+        private readonly string host;
+        private readonly int port;
 
-        public GrpcInput(int port)
+        public GrpcInput(string host, int port)
         {
+            this.host = host;
             this.port = port;
         }
 
@@ -39,7 +42,7 @@
                 this.server = new Server
                 {
                     Services = {TelemetryService.BindService(this)},
-                    Ports = {new ServerPort("localhost", this.port, ServerCredentials.Insecure)}
+                    Ports = {new ServerPort(host, this.port, ServerCredentials.Insecure)}
                 };
 
                 this.server.Start();

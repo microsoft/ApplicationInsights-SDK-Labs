@@ -20,7 +20,7 @@ namespace Test.Library.Inputs.NamedPipeInput
         {
             // ARRANGE
             int port = GetPort();
-            var input = new GrpcInput(port);
+            var input = new GrpcInput("localhost", port);
 
             // ACT
             input.Start(null);
@@ -40,7 +40,7 @@ namespace Test.Library.Inputs.NamedPipeInput
         {
             // ARRANGE
             int port = GetPort();
-            var input = new GrpcInput(port);
+            var input = new GrpcInput("localhost", port);
 
             input.Start(null);
 
@@ -58,7 +58,7 @@ namespace Test.Library.Inputs.NamedPipeInput
         {
             // ARRANGE
             int port = GetPort();
-            var input = new GrpcInput(port);
+            var input = new GrpcInput("localhost", port);
             
             // ACT
             input.Stop();
@@ -74,7 +74,7 @@ namespace Test.Library.Inputs.NamedPipeInput
             TelemetryBatch receivedBatch = null;
 
             int port = GetPort();
-            var input = new GrpcInput(port);
+            var input = new GrpcInput("localhost", port);
             input.Start(telemetryBatch =>
             {
                 batchesReceived++;
@@ -100,6 +100,43 @@ namespace Test.Library.Inputs.NamedPipeInput
         }
 
         [TestMethod]
+        public async Task GrpcInputTests_ReceivesDataFromMultipleClients()
+        {
+            // ARRANGE
+            int batchesReceived = 0;
+            TelemetryBatch receivedBatch = null;
+            
+            int port = GetPort();
+            var input = new GrpcInput("localhost", port);
+            input.Start(telemetryBatch =>
+            {
+                batchesReceived++;
+                receivedBatch = telemetryBatch;
+            });
+            Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcInputTests.DefaultTimeout));
+
+            // ACT
+            var grpcWriter1 = new GrpcWriter(port, GrpcInputTests.DefaultTimeout);
+            var grpcWriter2 = new GrpcWriter(port, GrpcInputTests.DefaultTimeout);
+
+            TelemetryBatch batch = new TelemetryBatch();
+            batch.Items.Add(new Telemetry() { Event = new Event() { Name = "Event1" } });
+
+            await grpcWriter1.Write(batch).ConfigureAwait(false);
+
+            batch.Items.First().Event.Name = "Event2";
+            await grpcWriter2.Write(batch).ConfigureAwait(false);
+
+            // ASSERT
+            Common.AssertIsTrueEventually(
+                () => input.GetStats().BatchesReceived == 2 && batchesReceived == 2 &&
+                      receivedBatch.Items.First().Event.Name == "Event2", GrpcInputTests.DefaultTimeout);
+
+            input.Stop();
+            Assert.IsTrue(SpinWait.SpinUntil(() => !input.IsRunning, GrpcInputTests.DefaultTimeout));
+        }
+
+        [TestMethod]
         public async Task GrpcInputTests_StopsWhileWaitingForData()
         {
             // ARRANGE
@@ -107,7 +144,7 @@ namespace Test.Library.Inputs.NamedPipeInput
             TelemetryBatch receivedBatch = null;
 
             int port = GetPort();
-            var input = new GrpcInput(port);
+            var input = new GrpcInput("localhost", port);
 
             input.Start(telemetryBatch =>
             {
@@ -145,7 +182,7 @@ namespace Test.Library.Inputs.NamedPipeInput
             TelemetryBatch receivedBatch = null;
 
             int port = GetPort();
-            var input = new GrpcInput(port);
+            var input = new GrpcInput("localhost", port);
 
             input.Start(telemetryBatch =>
             {
@@ -196,7 +233,7 @@ namespace Test.Library.Inputs.NamedPipeInput
         {
             // ARRANGE
             int port = GetPort();
-            var input = new GrpcInput(port);
+            var input = new GrpcInput("localhost", port);
 
             input.Start(telemetryBatch => throw new InvalidOperationException());
 
