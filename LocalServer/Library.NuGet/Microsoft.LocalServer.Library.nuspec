@@ -22,5 +22,6 @@
     <file src="..\Library\bin\$configuration$\netstandard2.0\Microsoft.LocalForwarder.Library.pdb" target="lib\netstandard" />
     <file src="..\Library\bin\$configuration$\netstandard2.0\Microsoft.LocalForwarder.Common.dll" target="lib\netstandard" />
     <file src="..\Library\bin\$configuration$\netstandard2.0\Microsoft.LocalForwarder.Common.pdb" target="lib\netstandard" />
+    <file src="..\Library\bin\$configuration$\netstandard2.0\nlog.config" target="lib\netstandard" />
   </files>
 </package>

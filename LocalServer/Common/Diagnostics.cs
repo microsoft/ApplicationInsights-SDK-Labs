@@ -1,13 +1,25 @@
 ﻿namespace Common
 {
-    using System;
+    using System.Threading;
+    using NLog;
 
-    public static class Diagnostics
+    public class Diagnostics
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static SpinLock spinLock = new SpinLock();
+
         public static void Log(string message)
         {
-            //!!!
-            //throw new NotImplementedException();
+            bool lockTaken = false;
+            spinLock.Enter(ref lockTaken);
+
+            if (lockTaken)
+            {
+                // ok to lose the message in an unlikely case that lockTaken is false
+                logger.Log(LogLevel.Error, message);
+
+                spinLock.Exit();
+            }
         }
     }
 }

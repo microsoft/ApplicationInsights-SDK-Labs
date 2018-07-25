@@ -110,27 +110,25 @@ namespace Test.Library.Inputs.NamedPipeInput
             var input = new GrpcInput("localhost", port);
             input.Start(telemetryBatch =>
             {
-                batchesReceived++;
+                Interlocked.Increment(ref batchesReceived);
                 receivedBatch = telemetryBatch;
             });
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcInputTests.DefaultTimeout));
 
             // ACT
-            var grpcWriter1 = new GrpcWriter(port, GrpcInputTests.DefaultTimeout);
-            var grpcWriter2 = new GrpcWriter(port, GrpcInputTests.DefaultTimeout);
-
             TelemetryBatch batch = new TelemetryBatch();
             batch.Items.Add(new Telemetry() { Event = new Event() { Name = "Event1" } });
 
-            await grpcWriter1.Write(batch).ConfigureAwait(false);
+            Parallel.For(0, 1000, new ParallelOptions() {MaxDegreeOfParallelism = 1000}, async i =>
+            {
+                var grpcWriter = new GrpcWriter(port, GrpcInputTests.DefaultTimeout);
 
-            batch.Items.First().Event.Name = "Event2";
-            await grpcWriter2.Write(batch).ConfigureAwait(false);
+                await grpcWriter.Write(batch).ConfigureAwait(false);
+            });
 
             // ASSERT
             Common.AssertIsTrueEventually(
-                () => input.GetStats().BatchesReceived == 2 && batchesReceived == 2 &&
-                      receivedBatch.Items.First().Event.Name == "Event2", GrpcInputTests.DefaultTimeout);
+                () => input.GetStats().BatchesReceived == 1000 && batchesReceived == 1000, GrpcInputTests.DefaultTimeout);
 
             input.Stop();
             Assert.IsTrue(SpinWait.SpinUntil(() => !input.IsRunning, GrpcInputTests.DefaultTimeout));

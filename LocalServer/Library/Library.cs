@@ -62,6 +62,7 @@
         /// <summary>
         /// Processes an incoming telemetry batch
         /// </summary>
+        /// <remarks>This method may be called from multiple threads concurrently.</remarks>
         private void OnBatchReceived(Inputs.Contracts.TelemetryBatch batch)
         {
             try
