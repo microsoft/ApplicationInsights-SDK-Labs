@@ -10,7 +10,7 @@
     using System.Globalization;
     using System.Linq;
 
-    public static class TelemetryConverter
+    static class AiTelemetryConverter
     {
         private static readonly ContextTagKeys TagKeys = new ContextTagKeys();
 
@@ -22,8 +22,8 @@
             result.Properties.PopulateFromProtobuf(inputTelemetry.Event.Properties);
             result.Metrics.PopulateFromProtobuf(inputTelemetry.Event.Measurements);
 
-            TelemetryConverter.CopyCommonFields(inputTelemetry, result);
-            TelemetryConverter.CopySamplingFields(inputTelemetry, result);
+            AiTelemetryConverter.CopyCommonFields(inputTelemetry, result);
+            AiTelemetryConverter.CopySamplingFields(inputTelemetry, result);
 
             return result;
         }
@@ -34,12 +34,12 @@
 
             result.Message = inputTelemetry.Message.Message_;
 
-            result.SeverityLevel = TelemetryConverter.ConvertSeverityLevel(inputTelemetry.Message.SeverityLevel);
+            result.SeverityLevel = AiTelemetryConverter.ConvertSeverityLevel(inputTelemetry.Message.SeverityLevel);
 
             result.Properties.PopulateFromProtobuf(inputTelemetry.Message.Properties);
 
-            TelemetryConverter.CopyCommonFields(inputTelemetry, result);
-            TelemetryConverter.CopySamplingFields(inputTelemetry, result);
+            AiTelemetryConverter.CopyCommonFields(inputTelemetry, result);
+            AiTelemetryConverter.CopySamplingFields(inputTelemetry, result);
 
             return result;
         }
@@ -75,7 +75,7 @@
 
             result.Properties.PopulateFromProtobuf(inputTelemetry.Metric.Properties);
 
-            TelemetryConverter.CopyCommonFields(inputTelemetry, result);
+            AiTelemetryConverter.CopyCommonFields(inputTelemetry, result);
             
             return result;
         }
@@ -87,7 +87,7 @@
             
             result.ProblemId = inputTelemetry.Exception.ProblemId;
 
-            result.SeverityLevel = TelemetryConverter.ConvertSeverityLevel(inputTelemetry.Exception.SeverityLevel);
+            result.SeverityLevel = AiTelemetryConverter.ConvertSeverityLevel(inputTelemetry.Exception.SeverityLevel);
 
             //!!!
             throw new NotImplementedException("Exceptions are not implemented yet");
@@ -105,8 +105,8 @@
             result.Properties.PopulateFromProtobuf(inputTelemetry.Exception.Properties);
             result.Metrics.PopulateFromProtobuf(inputTelemetry.Exception.Measurements);
 
-            TelemetryConverter.CopyCommonFields(inputTelemetry, result);
-            TelemetryConverter.CopySamplingFields(inputTelemetry, result);
+            AiTelemetryConverter.CopyCommonFields(inputTelemetry, result);
+            AiTelemetryConverter.CopySamplingFields(inputTelemetry, result);
 
 
             return result;
@@ -133,8 +133,8 @@
             result.Properties.PopulateFromProtobuf(item.Properties);
             result.Metrics.PopulateFromProtobuf(item.Measurements);
 
-            TelemetryConverter.CopyCommonFields(inputTelemetry, result);
-            TelemetryConverter.CopySamplingFields(inputTelemetry, result);
+            AiTelemetryConverter.CopyCommonFields(inputTelemetry, result);
+            AiTelemetryConverter.CopySamplingFields(inputTelemetry, result);
 
             return result;
         }
@@ -157,7 +157,7 @@
             result.Properties.PopulateFromProtobuf(item.Properties);
             result.Metrics.PopulateFromProtobuf(item.Measurements);
 
-            TelemetryConverter.CopyCommonFields(inputTelemetry, result);
+            AiTelemetryConverter.CopyCommonFields(inputTelemetry, result);
             
             return result;
         }
@@ -178,8 +178,8 @@
             result.Properties.PopulateFromProtobuf(item.Event?.Properties);
             result.Metrics.PopulateFromProtobuf(item.Event?.Measurements);
 
-            TelemetryConverter.CopyCommonFields(inputTelemetry, result);
-            TelemetryConverter.CopySamplingFields(inputTelemetry, result);
+            AiTelemetryConverter.CopyCommonFields(inputTelemetry, result);
+            AiTelemetryConverter.CopySamplingFields(inputTelemetry, result);
 
             return result;
         }
@@ -201,8 +201,8 @@
             result.Properties.PopulateFromProtobuf(item.Properties);
             result.Metrics.PopulateFromProtobuf(item.Measurements);
 
-            TelemetryConverter.CopyCommonFields(inputTelemetry, result);
-            TelemetryConverter.CopySamplingFields(inputTelemetry, result);
+            AiTelemetryConverter.CopyCommonFields(inputTelemetry, result);
+            AiTelemetryConverter.CopySamplingFields(inputTelemetry, result);
 
             return result;
         }
@@ -213,7 +213,7 @@
             telemetry.Timestamp = DateTimeOffset.ParseExact(inputTelemetry.DateTime, "0", CultureInfo.InvariantCulture);
             telemetry.Context.InstrumentationKey = inputTelemetry.InstrumentationKey;
 
-            TelemetryConverter.PopulateContext(inputTelemetry, telemetry);
+            AiTelemetryConverter.PopulateContext(inputTelemetry, telemetry);
         }
 
         private static void CopySamplingFields(Telemetry inputTelemetry, ISupportSampling telemetry)
@@ -225,97 +225,97 @@
         {
             foreach (var tag in telemetryItem.Tags)
             {
-                if (string.Equals(tag.Key, TelemetryConverter.TagKeys.ApplicationVersion, StringComparison.InvariantCulture))
+                if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.ApplicationVersion, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Component.Version = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.CloudRole, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.CloudRole, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Cloud.RoleName = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.CloudRoleInstance, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.CloudRoleInstance, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Cloud.RoleInstance = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.DeviceId, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.DeviceId, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Device.Id = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.DeviceLocale, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.DeviceLocale, StringComparison.InvariantCulture))
                 {
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.DeviceModel, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.DeviceModel, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Device.Model = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.DeviceOEMName, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.DeviceOEMName, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Device.OemName = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.DeviceOSVersion, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.DeviceOSVersion, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Device.OperatingSystem = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.DeviceType, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.DeviceType, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Device.Type = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.InternalAgentVersion, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.InternalAgentVersion, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.GetInternalContext().AgentVersion = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.InternalNodeName, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.InternalNodeName, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.GetInternalContext().NodeName = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.InternalSdkVersion, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.InternalSdkVersion, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.GetInternalContext().SdkVersion = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.LocationIp, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.LocationIp, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Location.Ip = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.OperationCorrelationVector, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.OperationCorrelationVector, StringComparison.InvariantCulture))
                 {
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.OperationId, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.OperationId, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Operation.Id = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.OperationName, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.OperationName, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Operation.Name = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.OperationParentId, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.OperationParentId, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Operation.ParentId = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.OperationSyntheticSource, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.OperationSyntheticSource, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Operation.SyntheticSource = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.SessionId, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.SessionId, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Session.Id = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.SessionIsFirst, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.SessionIsFirst, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.Session.IsFirst = false;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.UserAccountId, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.UserAccountId, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.User.AccountId = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.UserAgent, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.UserAgent, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.User.UserAgent = tag.Value; //TODO: Deprecated???
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.UserAuthUserId, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.UserAuthUserId, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.User.AuthenticatedUserId = tag.Value;
                 }
-                else if (string.Equals(tag.Key, TelemetryConverter.TagKeys.UserId, StringComparison.InvariantCulture))
+                else if (string.Equals(tag.Key, AiTelemetryConverter.TagKeys.UserId, StringComparison.InvariantCulture))
                 {
                     telemetry.Context.User.Id = tag.Value;
                 }

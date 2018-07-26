@@ -107,7 +107,7 @@ namespace Test.Library.Inputs.NamedPipeInput
          */
         [Ignore]
         [TestMethod()]
-        public async Task NamedPipeInputTests_IncompleteCoverage()
+        public void NamedPipeInputTests_IncompleteCoverage()
         {
         }
     }

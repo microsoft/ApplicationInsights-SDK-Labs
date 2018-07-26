@@ -1,30 +1,47 @@
 ﻿namespace Library
 {
-    using Inputs;
+    using Inputs.Contracts;
     using Inputs.GrpcInput;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Channel;
+    using Opencensus.Proto.Exporter;
+    using Opencensus.Proto.Trace;
     using System;
+    using Exception = System.Exception;
 
     public class Library
     {
         private readonly TelemetryClient telemetryClient = new TelemetryClient();
 
-        private readonly IInput gRpcInput;
+        private readonly GrpcAiInput gRpcAiInput;
+        private readonly GrpcOpenCensusInput gRpcOpenCensusInput;
 
         public Library()
         {
             try
             {
-                this.gRpcInput = new GrpcInput("localhost", 50001);
+                this.gRpcAiInput = new GrpcAiInput("localhost", 50001);
             }
             catch (Exception e)
             {
                 Common.Diagnostics.Log(
-                    FormattableString.Invariant($"Could not create the gRPC channel. {e.ToString()}"));
+                    FormattableString.Invariant($"Could not create the gRPC AI channel. {e.ToString()}"));
 
                 throw new InvalidOperationException(
-                    FormattableString.Invariant($"Could not create the gRPC channel. {e.ToString()}"), e);
+                    FormattableString.Invariant($"Could not create the gRPC AI channel. {e.ToString()}"), e);
+            }
+
+            try
+            {
+                this.gRpcOpenCensusInput = new GrpcOpenCensusInput("localhost", 50002);
+            }
+            catch (Exception e)
+            {
+                Common.Diagnostics.Log(
+                    FormattableString.Invariant($"Could not create the gRPC OpenCensus channel. {e.ToString()}"));
+
+                throw new InvalidOperationException(
+                    FormattableString.Invariant($"Could not create the gRPC OpenCensus channel. {e.ToString()}"), e);
             }
         }
 
@@ -32,15 +49,28 @@
         {
             try
             {
-                this.gRpcInput.Start(this.OnBatchReceived);
+                this.gRpcAiInput.Start(this.OnBatchReceived);
             }
             catch (Exception e)
             {
                 Common.Diagnostics.Log(
-                    FormattableString.Invariant($"Could not start the gRPC channel. {e.ToString()}"));
+                    FormattableString.Invariant($"Could not start the gRPC AI channel. {e.ToString()}"));
 
                 throw new InvalidOperationException(
-                    FormattableString.Invariant($"Could not start the gRPC channel. {e.ToString()}"), e);
+                    FormattableString.Invariant($"Could not start the gRPC AI channel. {e.ToString()}"), e);
+            }
+
+            try
+            {
+                this.gRpcOpenCensusInput.Start(this.OnBatchReceived);
+            }
+            catch (Exception e)
+            {
+                Common.Diagnostics.Log(
+                    FormattableString.Invariant($"Could not start the gRPC OpenCensus channel. {e.ToString()}"));
+
+                throw new InvalidOperationException(
+                    FormattableString.Invariant($"Could not start the gRPC OpenCensus channel. {e.ToString()}"), e);
             }
         }
 
@@ -48,22 +78,34 @@
         {
             try
             {
-                this.gRpcInput.Stop();
+                this.gRpcAiInput.Stop();
             }
             catch (Exception e)
             {
-                Common.Diagnostics.Log(FormattableString.Invariant($"Could not stop the gRPC channel. {e.ToString()}"));
+                Common.Diagnostics.Log(FormattableString.Invariant($"Could not stop the gRPC AI channel. {e.ToString()}"));
 
                 throw new InvalidOperationException(
-                    FormattableString.Invariant($"Could not stop the gRPC channel. {e.ToString()}"), e);
+                    FormattableString.Invariant($"Could not stop the gRPC AI channel. {e.ToString()}"), e);
+            }
+
+            try
+            {
+                this.gRpcOpenCensusInput.Stop();
+            }
+            catch (Exception e)
+            {
+                Common.Diagnostics.Log(FormattableString.Invariant($"Could not stop the gRPC OpenCensus channel. {e.ToString()}"));
+
+                throw new InvalidOperationException(
+                    FormattableString.Invariant($"Could not stop the gRPC OpenCensus channel. {e.ToString()}"), e);
             }
         }
 
         /// <summary>
-        /// Processes an incoming telemetry batch
+        /// Processes an incoming telemetry batch for AI channel.
         /// </summary>
         /// <remarks>This method may be called from multiple threads concurrently.</remarks>
-        private void OnBatchReceived(Inputs.Contracts.TelemetryBatch batch)
+        private void OnBatchReceived(TelemetryBatch batch)
         {
             try
             {
@@ -77,35 +119,35 @@
                         switch (telemetry.DataCase)
                         {
                             case Inputs.Contracts.Telemetry.DataOneofCase.Event:
-                                convertedTelemetry = TelemetryConverter.ConvertEventToSdkApi(telemetry);
+                                convertedTelemetry = AiTelemetryConverter.ConvertEventToSdkApi(telemetry);
                                 break;
                             case Inputs.Contracts.Telemetry.DataOneofCase.Message:
-                                convertedTelemetry = TelemetryConverter.ConvertTraceToSdkApi(telemetry);
+                                convertedTelemetry = AiTelemetryConverter.ConvertTraceToSdkApi(telemetry);
                                 break;
                             case Inputs.Contracts.Telemetry.DataOneofCase.Metric:
-                                convertedTelemetry = TelemetryConverter.ConvertMetricToSdkApi(telemetry);
+                                convertedTelemetry = AiTelemetryConverter.ConvertMetricToSdkApi(telemetry);
                                 break;
                             case Inputs.Contracts.Telemetry.DataOneofCase.Exception:
-                                convertedTelemetry = TelemetryConverter.ConvertExceptionToSdkApi(telemetry);
+                                convertedTelemetry = AiTelemetryConverter.ConvertExceptionToSdkApi(telemetry);
                                 break;
                             case Inputs.Contracts.Telemetry.DataOneofCase.Dependency:
-                                convertedTelemetry = TelemetryConverter.ConvertDependencyToSdkApi(telemetry);
+                                convertedTelemetry = AiTelemetryConverter.ConvertDependencyToSdkApi(telemetry);
                                 break;
                             case Inputs.Contracts.Telemetry.DataOneofCase.Availability:
-                                convertedTelemetry = TelemetryConverter.ConvertAvailabilityToSdkApi(telemetry);
+                                convertedTelemetry = AiTelemetryConverter.ConvertAvailabilityToSdkApi(telemetry);
                                 break;
                             case Inputs.Contracts.Telemetry.DataOneofCase.PageView:
-                                convertedTelemetry = TelemetryConverter.ConvertPageViewToSdkApi(telemetry);
+                                convertedTelemetry = AiTelemetryConverter.ConvertPageViewToSdkApi(telemetry);
                                 break;
                             case Inputs.Contracts.Telemetry.DataOneofCase.Request:
-                                convertedTelemetry = TelemetryConverter.ConvertRequestToSdkApi(telemetry);
+                                convertedTelemetry = AiTelemetryConverter.ConvertRequestToSdkApi(telemetry);
                                 break;
                             case Inputs.Contracts.Telemetry.DataOneofCase.None:
                                 throw new ArgumentException(
-                                    FormattableString.Invariant($"Empty telemetry item encountered"));
+                                    FormattableString.Invariant($"Empty AI telemetry item encountered"));
                             default:
                                 throw new ArgumentException(
-                                    FormattableString.Invariant($"Unknown telemetry item type encountered"));
+                                    FormattableString.Invariant($"Unknown AI telemetry item type encountered"));
                         }
                     }
                     catch (Exception e)
@@ -114,7 +156,7 @@
                         // log and carry on
                         Common.Diagnostics.Log(
                             FormattableString.Invariant(
-                                $"Could not convert an incoming telemetry item. {e.ToString()}"));
+                                $"Could not convert an incoming AI telemetry item. {e.ToString()}"));
                     }
 
                     try
@@ -130,7 +172,7 @@
                         // log and carry on
                         Common.Diagnostics.Log(
                             FormattableString.Invariant(
-                                $"Could not track an incoming telemetry item. {e.ToString()}"));
+                                $"Could not track an incoming AI telemetry item. {e.ToString()}"));
                     }
                 }
             }
@@ -140,7 +182,42 @@
                 // log and carry on
                 Common.Diagnostics.Log(
                     FormattableString.Invariant(
-                        $"Could not process an incoming telemetry batch. {e.ToString()}"));
+                        $"Could not process an incoming AI telemetry batch. {e.ToString()}"));
+            }
+        }
+
+        /// <summary>
+        /// Processes an incoming telemetry batch for OpenCensus channel.
+        /// </summary>
+        /// <remarks>This method may be called from multiple threads concurrently.</remarks>
+        private void OnBatchReceived(ExportSpanRequest batch)
+        {
+            try
+            {
+                // send incoming telemetry items to the telemetryClient
+                foreach (Span span in batch.Spans)
+                {
+                    try
+                    {
+                        OpenCensusTelemetryConverter.TrackSpan(span, this.telemetryClient);
+                    }
+                    catch (Exception e)
+                    {
+                        // an unexpected issue while tracking an item
+                        // log and carry on
+                        Common.Diagnostics.Log(
+                            FormattableString.Invariant(
+                                $"Could not track an incoming OpenCensus telemetry item. {e.ToString()}"));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                // an unexpected issue while processing the batch
+                // log and carry on
+                Common.Diagnostics.Log(
+                    FormattableString.Invariant(
+                        $"Could not process an incoming OpenCensus telemetry batch. {e.ToString()}"));
             }
         }
     }

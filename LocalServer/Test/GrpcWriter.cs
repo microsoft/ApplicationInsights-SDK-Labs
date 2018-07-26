@@ -1,33 +1,43 @@
 namespace Test.Library
 {
-    using System;
-    using System.IO.Pipes;
-    using System.Threading;
-    using System.Threading.Tasks;
     using global::Library.Inputs.Contracts;
     using Grpc.Core;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Exception = System.Exception;
+    using System;
+    using System.Threading.Tasks;
+    using Opencensus.Proto.Exporter;
 
     public class GrpcWriter
     {
+        private readonly bool aiMode;
         private readonly TimeSpan timeout;
 
-        AsyncDuplexStreamingCall<TelemetryBatch, Response> streamingCall;
+        AsyncDuplexStreamingCall<TelemetryBatch, AiResponse> aiStreamingCall;
+        AsyncDuplexStreamingCall<ExportSpanRequest, ExportSpanResponse> openCensusStreamingCall;
         private int port;
 
-        public GrpcWriter(int port, TimeSpan timeout)
+        public GrpcWriter(bool aiMode, int port, TimeSpan timeout)
         {
+            this.aiMode = aiMode;
             this.timeout = timeout;
             this.port = port;
 
             try
             {
                 var channel = new Channel($"127.0.0.1:{this.port}", ChannelCredentials.Insecure);
-                var client = new TelemetryService.TelemetryServiceClient(channel);
-                this.streamingCall = client.SendTelemetryBatch();
+
+                if (aiMode)
+                {
+                    var client = new AITelemetryService.AITelemetryServiceClient(channel);
+                    this.aiStreamingCall = client.SendTelemetryBatch();
+                }
+                else
+                {
+                    // OpenCensus
+                    var client = new OpenCensusExport.OpenCensusExportClient(channel);
+                    this.openCensusStreamingCall = client.ExportSpan();
+                }
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 throw new InvalidOperationException(
                     FormattableString.Invariant($"Error initializing the gRpc test client. {e.ToString()}"));
@@ -37,11 +47,34 @@ namespace Test.Library
 
         public async Task Write(TelemetryBatch batch)
         {
+            if (!this.aiMode)
+            {
+                throw new InvalidOperationException("Incorrect mode");
+            }
+
             try
             {
-                await this.streamingCall.RequestStream.WriteAsync(batch).ConfigureAwait(false);
+                await this.aiStreamingCall.RequestStream.WriteAsync(batch).ConfigureAwait(false);
             }
-            catch (Exception e)
+            catch (System.Exception e)
+            {
+                throw new InvalidOperationException(
+                    FormattableString.Invariant($"Error sending a message via gRpc. {e.ToString()}"));
+            }
+        }
+
+        public async Task Write(ExportSpanRequest batch)
+        {
+            if (this.aiMode)
+            {
+                throw new InvalidOperationException("Incorrect mode");
+            }
+
+            try
+            {
+                await this.openCensusStreamingCall.RequestStream.WriteAsync(batch).ConfigureAwait(false);
+            }
+            catch (System.Exception e)
             {
                 throw new InvalidOperationException(
                     FormattableString.Invariant($"Error sending a message via gRpc. {e.ToString()}"));

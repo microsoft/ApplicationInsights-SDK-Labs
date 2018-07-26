@@ -1,10 +1,8 @@
 namespace Test.Library
 {
-    using System;
-    using System.IO.Pipes;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
+    using System.Threading;
 
     public static class Common
     {
