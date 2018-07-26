@@ -1,17 +1,12 @@
 ﻿namespace Library
 {
-    using Google.Protobuf.Collections;
-    using Inputs.Contracts;
-    using Microsoft.ApplicationInsights.Channel;
-    using Microsoft.ApplicationInsights.DataContracts;
-    using Microsoft.ApplicationInsights.Extensibility.Implementation;
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
     using Google.Protobuf;
     using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Extensibility.Implementation;
     using Opencensus.Proto.Trace;
+    using System;
+    using System.Collections.Generic;
 
     static class OpenCensusTelemetryConverter
     {
