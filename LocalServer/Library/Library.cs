@@ -199,7 +199,7 @@
                 {
                     try
                     {
-                        OpenCensusTelemetryConverter.TrackSpan(span, this.telemetryClient);
+                        this.telemetryClient.TrackSpan(span);
                     }
                     catch (Exception e)
                     {
