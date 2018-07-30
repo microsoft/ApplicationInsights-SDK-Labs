@@ -9,18 +9,18 @@
         {
             try
             {
-                Console.WriteLine("Starting Local Forwarder...");
+                Common.Diagnostics.Log("Starting Local Forwarder...");
 
                 Library localForwarder = new Library();
                 localForwarder.Run();
 
-                Console.WriteLine("Local Forwarder is running. Press any key to stop.");
+                Common.Diagnostics.Log("Local Forwarder is running. Press any key to stop.");
 
                 Console.ReadKey();
 
                 localForwarder.Stop();
 
-                Console.WriteLine("Local Forwarder is stopped");
+                Common.Diagnostics.Log("Local Forwarder is stopped");
             }
             finally
             {

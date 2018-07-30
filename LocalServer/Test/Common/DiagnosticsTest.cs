@@ -14,9 +14,9 @@ namespace Test.Common
             // ARRANGE
             File.Delete("LocalForwarder-internal.log");
             File.Delete("LocalForwarder.log");
+            var guid = Guid.NewGuid();
 
             // ACT
-            var guid = Guid.NewGuid();
             Diagnostics.Log($"Log message here {guid.ToString()}");
             
             // ASSERT
