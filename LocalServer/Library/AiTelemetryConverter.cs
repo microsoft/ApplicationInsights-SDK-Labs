@@ -82,32 +82,17 @@
 
         public static ExceptionTelemetry ConvertExceptionToSdkApi(Telemetry inputTelemetry)
         {
-            var result = new ExceptionTelemetry();
+            //!!! make sure we're onboarded onto a release version of AI SDK
+            Inputs.Contracts.Exception item = inputTelemetry.Exception;
+
+            var result = new ExceptionTelemetry(
+                item.Exceptions.Select(ed => new ExceptionDetailsInfo(ed.Id, ed.OuterId, ed.TypeName, ed.Message, ed.HasFullStack.Value, ed.Stack,
+                    ed.ParsedStack.Select(f => new Microsoft.ApplicationInsights.DataContracts.StackFrame(f.Assembly, f.FileName, f.Level, f.Line, f.Method)))),
+                AiTelemetryConverter.ConvertSeverityLevel(item.SeverityLevel), item.ProblemId, item.Properties, item.Measurements);
 
             
-            result.ProblemId = inputTelemetry.Exception.ProblemId;
-
-            result.SeverityLevel = AiTelemetryConverter.ConvertSeverityLevel(inputTelemetry.Exception.SeverityLevel);
-
-            //!!!
-            throw new NotImplementedException("Exceptions are not implemented yet");
-            //var stackFrames = new List<System.Diagnostics.StackFrame>();
-            //foreach (var exception in inputTelemetry.Exceptions)
-            //{
-            //    var ex = new System.Exception();
-            //    ex.
-            //    //stackFrames.Add(System.Diagnostics.StackFrame);
-            //}
-
-            //telemetry.SetParsedStack(inputTelemetry.Exceptions.First().)
-
-
-            result.Properties.PopulateFromProtobuf(inputTelemetry.Exception.Properties);
-            result.Metrics.PopulateFromProtobuf(inputTelemetry.Exception.Measurements);
-
             AiTelemetryConverter.CopyCommonFields(inputTelemetry, result);
             AiTelemetryConverter.CopySamplingFields(inputTelemetry, result);
-
 
             return result;
         }
