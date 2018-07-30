@@ -1,265 +1,372 @@
-﻿namespace Library
+﻿using System.ComponentModel;
+using Google.Protobuf.WellKnownTypes;
+
+namespace Library
 {
     using Google.Protobuf;
     using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.Channel;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility.Implementation;
     using Opencensus.Proto.Trace;
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
 
     static class OpenCensusTelemetryConverter
     {
-        private const string LINK_PROPERTY_NAME = "link";
-        private const string LINK_SPAN_ID_PROPERTY_NAME = "spanId";
-        private const string LINK_TRACE_ID_PROPERTY_NAME = "traceId";
-        private const string LINK_TYPE_PROPERTY_NAME = "type";
-
-        public static void TrackSpan(Span span, TelemetryClient telemetryClient)
+        public static class SpanAttributeConstants
         {
-            if (span.Kind == Span.Types.SpanKind.Client ||
-                (span.Kind == Span.Types.SpanKind.Unspecified && span.SameProcessAsParentSpan.GetValueOrDefault()))
+            public const string SpanKindKey = "span.kind";
+
+            public const string ServerSpanKind = "server";
+            public const string ClientSpanKind = "client";
+            public const string ProducerSpanKind = "producer";
+            public const string ConsumerSpanKind = "consumer";
+
+            public const string HttpUrlKey = "http.url";
+            public const string HttpMethodKey = "http.method";
+            public const string HttpStatusCodeKey = "http.status_code";
+            public const string HttpPathKey = "http.path";
+            public const string HttpHostKey = "http.host";
+            public const string HttpPortKey = "http.port";
+            public const string HttpRouteKey = "http.route";
+            public const string HttpUserAgentKey = "http.user_agent";
+
+            public const string ErrorKey = "error";
+            public const string ErrorStackTrace = "error.stack.trace";
+        }
+
+        private const string StatusDescriptionPropertyName = "statusDescription";
+        private const string LinkPropertyName = "link";
+        private const string LinkSpanIdPropertyName = "spanId";
+        private const string LinkTraceIdPropertyName = "traceId";
+        private const string LinkTypePropertyName = "type";
+        private const string SdkVersion = "oclf"; // todo version
+        private static readonly uint[] Lookup32 = CreateLookup32();
+
+        public static void TrackSpan(this TelemetryClient telemetryClient, Span span)
+        {
+            if (span == null)
             {
-                TrackDependencyFromSpan(span, telemetryClient);
+                return;
+            }
+
+            if (GetSpanKind(span) == Span.Types.SpanKind.Client)
+            {
+                telemetryClient.TrackDependencyFromSpan(span);
             }
             else
             {
-                TrackRequestFromSpan(span, telemetryClient);
+                telemetryClient.TrackRequestFromSpan(span);
             }
 
-            foreach (var evnt in span.TimeEvents.TimeEvent)
+            if (span.TimeEvents != null)
             {
-                TrackTraceFromTimeEvent(evnt, span, telemetryClient);
+                foreach (var evnt in span.TimeEvents.TimeEvent)
+                {
+                    telemetryClient.TrackTraceFromTimeEvent(evnt, span);
+                }
             }
         }
 
-        private static void TrackRequestFromSpan(Span span, TelemetryClient telemetryClient)
+        private static Span.Types.SpanKind GetSpanKind(Span span)
         {
-            RequestTelemetry request = new RequestTelemetry();
-            SetOperationContext(span, request.Context.Operation);
-
-            //TODO:
-            request.Id = ToStr(span.SpanId);
-            request.Timestamp = span.StartTime.ToDateTime();
-            request.Duration = span.EndTime.ToDateTime() - request.Timestamp;
-            request.Success = span.Status.Code == 0;
-
-            string host = null;
-            string method = null;
-            string path = null;
-            string route = null;
-            int port = -1;
-            bool isResultSet = false;
-
-            foreach (var attribute in span.Attributes.AttributeMap)
+            if (span.Attributes?.AttributeMap != null && span.Attributes.AttributeMap.TryGetValue(SpanAttributeConstants.SpanKindKey, out var value))
             {
-                switch (attribute.Key)
-                {
-                    case "http.status_code":
-                        request.ResponseCode = attribute.Value.StringValue.Value;
-                        isResultSet = true;
-                        break;
-                    case "http.user_agent":
-                        request.Context.User.UserAgent = attribute.Value.StringValue.Value;
-                        break;
-                    case "http.route":
-                        route = attribute.Value.StringValue.Value;
-                        break;
-                    case "http.path":
-                        path = attribute.Value.StringValue.Value;
-                        break;
-                    case "http.method":
-                        method = attribute.Value.StringValue.Value;
-                        break;
-                    case "http.host":
-                        host = attribute.Value.StringValue.Value;
-                        break;
-                    case "http.port":
-                        port = (int)attribute.Value.IntValue;
-                        break;
-                    default:
-                        if (!request.Properties.ContainsKey(attribute.Key))
-                        {
-                            request.Properties[attribute.Key] = attribute.Value.StringValue.Value;
-                        }
-
-                        break;
-                }
-
-                if (host != null)
-                {
-                    request.Url = GetUrl(host, port, path);
-                    request.Name = $"{method} {route ?? path}";
-                }
-                else
-                { // perhaps not http
-                    request.Name = span.Name.Value;
-                }
-
-                if (!isResultSet)
-                {
-                    request.ResponseCode = span.Status.Message;
-                }
+                return value.StringValue?.Value == SpanAttributeConstants.ClientSpanKind ? Span.Types.SpanKind.Client : Span.Types.SpanKind.Server;
             }
 
-            SetLinks(span.Links, request.Properties);
+            if (span.Kind == Span.Types.SpanKind.Unspecified)
+            {
+                if (span.SameProcessAsParentSpan.HasValue && !span.SameProcessAsParentSpan.Value)
+                {
+                    return Span.Types.SpanKind.Server;
+                }
+
+                return Span.Types.SpanKind.Client;
+            }
+
+            return span.Kind;
+        }
+
+        private static void TrackRequestFromSpan(this TelemetryClient telemetryClient, Span span)
+        {
+            RequestTelemetry request = new RequestTelemetry();
+
+            InitializeOperationTelemetry(request, span);
+            request.ResponseCode = span.Status?.Message;
+
+            string host = null, method = null, path = null, route = null, url = null;
+            int port = -1;
+
+            if (span.Attributes?.AttributeMap != null)
+            {
+                foreach (var attribute in span.Attributes.AttributeMap)
+                {
+                    switch (attribute.Key)
+                    {
+                        case SpanAttributeConstants.HttpUrlKey:
+                            url = attribute.Value.StringValue?.Value;
+                            break;
+                        case SpanAttributeConstants.HttpStatusCodeKey:
+                            request.ResponseCode = attribute.Value.IntValue.ToString();
+                            break;
+                        case SpanAttributeConstants.HttpUserAgentKey:
+                            request.Context.User.UserAgent = attribute.Value.StringValue?.Value;
+                            break;
+                        case SpanAttributeConstants.HttpRouteKey:
+                            route = attribute.Value.StringValue?.Value;
+                            break;
+                        case SpanAttributeConstants.HttpPathKey:
+                            path = attribute.Value.StringValue?.Value;
+                            break;
+                        case SpanAttributeConstants.HttpMethodKey:
+                            method = attribute.Value.StringValue?.Value;
+                            break;
+                        case SpanAttributeConstants.HttpHostKey:
+                            host = attribute.Value.StringValue?.Value;
+                            break;
+                        case SpanAttributeConstants.HttpPortKey:
+                            port = (int) attribute.Value?.IntValue;
+                            break;
+                        case SpanAttributeConstants.ErrorKey:
+                            if (attribute.Value != null && attribute.Value.BoolValue)
+                            {
+                                request.Success = false;
+                            }
+                            break;
+                        default:
+                            SetCustomProperty(request, attribute);
+
+                            break;
+                    }
+                }
+
+                if (url != null)
+                {
+                    request.Url = new Uri(url);
+                    request.Name = GetHttpTelemetryName(method, request.Url.AbsolutePath, route);
+                }
+                else
+                {
+                    request.Url = GetUrl(host, port, path);
+                    request.Name = GetHttpTelemetryName(method, path, route);
+                }
+            }
 
             telemetryClient.TrackRequest(request);
         }
 
-        private static void TrackDependencyFromSpan(Span span, TelemetryClient telemetryClient)
+        private static void TrackDependencyFromSpan(this TelemetryClient telemetryClient, Span span)
         {
-            String host = null;
-            if (span.Attributes.AttributeMap.ContainsKey("http.host"))
+            string host = GetHost(span.Attributes?.AttributeMap);
+            if (IsApplicationInsightsUrl(host))
             {
-                host = span.Attributes.AttributeMap["http.host"].StringValue.Value;
-                if (IsApplicationInsightsUrl(host))
-                {
-                    return;
-                }
+                return;
             }
 
             DependencyTelemetry dependency = new DependencyTelemetry();
-            SetOperationContext(span, dependency.Context.Operation);
 
-            dependency.Id = ToStr(span.SpanId);
-            dependency.Timestamp = span.StartTime.ToDateTime();
-            dependency.Duration = span.EndTime.ToDateTime() - dependency.Timestamp;
-            dependency.Success = span.Status.Code == 0;
+            // https://github.com/Microsoft/ApplicationInsights-dotnet/issues/876
+            dependency.Success = null;
 
-            dependency.ResultCode = span.Status.Message;
+            InitializeOperationTelemetry(dependency, span);
 
-            string method = null;
-            string path = null;
-            int port = -1;
+            dependency.ResultCode = span.Status?.Code.ToString();
 
-            bool isHttp = false;
-            bool isResultSet = false;
-            foreach (var attribute in span.Attributes.AttributeMap)
+            if (span.Attributes?.AttributeMap != null)
             {
-                switch (attribute.Key)
-                {
-                    case "http.status_code":
-                        dependency.ResultCode = attribute.Value.StringValue.Value;
-                        isHttp = true;
-                        isResultSet = true;
-                        break;
-                    case "http.path":
-                        path = attribute.Value.StringValue.Value;
-                        isHttp = true;
-                        break;
-                    case "http.method":
-                        method = attribute.Value.StringValue.Value;
-                        isHttp = true;
-                        break;
-                    case "http.host":
-                        break;
-                    case "http.port":
-                        port = (int)attribute.Value.IntValue;
-                        break;
-                    default:
-                        if (!dependency.Properties.ContainsKey(attribute.Key))
-                        {
-                            dependency.Properties[attribute.Key] = attribute.Value.StringValue.Value;
-                        }
+                string method = null, path = null, url = null;
+                int port = -1;
 
-                        break;
+                bool isHttp = false;
+                foreach (var attribute in span.Attributes.AttributeMap)
+                {
+                    switch (attribute.Key)
+                    {
+                        case SpanAttributeConstants.HttpUrlKey:
+                            url = attribute.Value.StringValue?.Value;
+                            break;
+                        case SpanAttributeConstants.HttpStatusCodeKey:
+                            dependency.ResultCode = attribute.Value?.IntValue.ToString();
+                            isHttp = true;
+                            break;
+                        case SpanAttributeConstants.HttpPathKey:
+                            path = attribute.Value.StringValue.Value;
+                            isHttp = true;
+                            break;
+                        case SpanAttributeConstants.HttpMethodKey:
+                            method = attribute.Value.StringValue.Value;
+                            isHttp = true;
+                            break;
+                        case SpanAttributeConstants.HttpHostKey:
+                            break;
+                        case SpanAttributeConstants.HttpPortKey:
+                            port = (int) attribute.Value.IntValue;
+                            break;
+                        case SpanAttributeConstants.ErrorKey:
+                            if (attribute.Value != null && attribute.Value.BoolValue)
+                            {
+                                dependency.Success = false;
+                            }
+
+                            break;
+                        default:
+                            SetCustomProperty(dependency, attribute);
+                            break;
+                    }
+                }
+
+                dependency.Target = host;
+                if (isHttp)
+                {
+                    dependency.Type = "Http";
+                }
+
+                if (url != null)
+                {
+                    dependency.Data = url;
+                    if (Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri))
+                    {
+                        dependency.Name = GetHttpTelemetryName(method, uri.AbsolutePath, null);
+                    }
+                }
+                else
+                {
+                    dependency.Data = GetUrl(host, port, path)?.ToString();
+                    dependency.Name = GetHttpTelemetryName(method, path, null);
                 }
             }
-
-            dependency.Target = host;
-            if (isHttp)
-            {
-                dependency.Type = "HTTP";
-            }
-
-            if (!isResultSet)
-            {
-                dependency.ResultCode = span.Status.Message;
-            }
-
-            if (host != null)
-            {
-                dependency.Data = GetUrl(host, port, path).ToString();
-            }
-
-            if (method != null && path != null)
-            {
-                dependency.Name = $"{method} {path}";
-            }
-            else
-            {
-                dependency.Name = span.Name.Value;
-            }
-
-            SetLinks(span.Links, dependency.Properties);
 
             telemetryClient.TrackDependency(dependency);
         }
 
         private static bool IsApplicationInsightsUrl(string host)
         {
-            return host.StartsWith("dc.services.visualstudio.com")
-                   || host.StartsWith("rt.services.visualstudio.com");
+            return host != null && (host.StartsWith("dc.services.visualstudio.com")
+                   || host.StartsWith("rt.services.visualstudio.com"));
         }
 
-        private static void TrackTraceFromTimeEvent(Span.Types.TimeEvent evnt, Span span, TelemetryClient telemetryClient)
+        private static void TrackTraceFromTimeEvent(this TelemetryClient telemetryClient, Span.Types.TimeEvent evnt, Span span)
         {
             Span.Types.TimeEvent.Types.Annotation annotation = evnt.Annotation;
             if (annotation != null)
             {
-                TraceTelemetry trace = new TraceTelemetry();
-                SetParentOperationContext(span, trace.Context.Operation);
-                trace.Timestamp = evnt.Time.ToDateTime();
-
-                trace.Message = annotation.Description.Value;
-                SetAttributes(annotation.Attributes.AttributeMap, trace.Properties);
-                telemetryClient.TrackTrace(trace);
+                telemetryClient.TrackTrace(span, evnt, annotation.Description.Value,
+                    annotation.Attributes?.AttributeMap);
             }
 
             Span.Types.TimeEvent.Types.MessageEvent message = evnt.MessageEvent;
             if (message != null)
             {
-                TraceTelemetry trace = new TraceTelemetry();
-                SetParentOperationContext(span, trace.Context.Operation);
-                trace.Timestamp = evnt.Time.ToDateTime();
-
-                trace.Message = $"MessageEvent. messageId: '{message.Id}', type: '{message.Type}', compressed size: '{message.CompressedSize}', uncompressed size: '{message.UncompressedSize}'";
-                telemetryClient.TrackTrace(trace);
+                telemetryClient.TrackTrace(span, evnt,
+                    $"MessageEvent. messageId: '{message.Id}', type: '{message.Type}', compressed size: '{message.CompressedSize}', uncompressed size: '{message.UncompressedSize}'");
             }
         }
 
-        private static void SetOperationContext(Span span, OperationContext context)
+        private static void TrackTrace(this TelemetryClient telemetryClient, 
+            Span span, 
+            Span.Types.TimeEvent evnt,
+            string message,
+            IDictionary<string, AttributeValue> attributes = null)
         {
-            context.Id = ToStr(span.TraceId);
-            context.ParentId = ToStr(span.ParentSpanId);
+            TraceTelemetry trace = new TraceTelemetry(message);
+            SetSdkVersion(trace);
+            SetParentOperationContext(span, trace.Context.Operation);
+            trace.Timestamp = evnt.Time?.ToDateTime() ?? DateTime.UtcNow;
+            if (attributes != null)
+            {
+                foreach (var attribute in attributes)
+                {
+                    SetCustomProperty(trace, attribute);
+                }
+            }
+
+            telemetryClient.TrackTrace(trace);
+        }
+
+        private static void InitializeOperationTelemetry(OperationTelemetry telemetry, Span span)
+        {
+            telemetry.Name = span.Name?.Value;
+            SetSdkVersion(telemetry);
+
+            var now = DateTime.UtcNow;
+            telemetry.Timestamp = span.StartTime?.ToDateTime() ?? now;
+            var endTime = span.EndTime?.ToDateTime() ?? now;
+
+            SetOperationContext(span, telemetry);
+            telemetry.Duration = endTime - telemetry.Timestamp;
+
+            if (span.Status != null)
+            {
+                telemetry.Success = span.Status.Code == 0;
+                if (!string.IsNullOrEmpty(span.Status.Message))
+                {
+                    telemetry.Properties[StatusDescriptionPropertyName] = span.Status.Message;
+                }
+            }
+
+            SetLinks(span.Links, telemetry.Properties);
+        }
+
+        private static void SetOperationContext(Span span, OperationTelemetry telemetry)
+        {
+            string traceId = BytesStringToHexString(span.TraceId);
+            telemetry.Context.Operation.Id = BytesStringToHexString(span.TraceId);
+            telemetry.Context.Operation.ParentId = BytesStringToHexString(span.ParentSpanId);
+            telemetry.Id = $"|{traceId}.{BytesStringToHexString(span.SpanId)}.";
         }
 
         private static void SetParentOperationContext(Span span, OperationContext context)
         {
-            context.Id = ToStr(span.TraceId);
-            context.ParentId = ToStr(span.SpanId);
-        }
-
-        private static string ToStr(ByteString str)
-        {
-            return BitConverter.ToString(str.ToByteArray()).Replace("-", "").ToLower();
+            context.Id = BytesStringToHexString(span.TraceId);
+            context.ParentId = $"|{context.Id}.{BytesStringToHexString(span.SpanId)}.";
         }
 
         private static Uri GetUrl(String host, int port, String path)
         {
-            // todo: better way to determine scheme?
-            String schema = port == 80 ? "http" : "https";
-            if (port == 80 || port == 443)
+            if (host == null)
             {
-                return new Uri(string.Format("{0}://{1}{2}", schema, host, path));
+                return null;
             }
 
-            return new Uri($"{schema}://{host}:{port}{path}");
+            String scheme = port == 80 ? "http" : "https";
+            if (port < 0 || port == 80 || port == 443)
+            {
+                return new Uri($"{scheme}://{host}/{path}");
+            }
+
+            return new Uri($"{scheme}://{host}:{port}/{path}");
+        }
+
+        private static string GetHttpTelemetryName(string method, string path, string route)
+        {
+            if (method == null && path == null && route == null)
+            {
+                return null;
+            }
+
+            if (path == null && route == null)
+            {
+                return method;
+            }
+
+            if (method == null)
+            {
+                return route ?? path;
+            }
+
+            return method + " " + (route ?? path);
         }
 
         private static void SetLinks(Span.Types.Links spanLinks, IDictionary<string, string> telemetryProperties)
         {
+            if (spanLinks == null)
+            {
+                return;
+            }
+
             // for now, we just put links to telemetry properties
             // link0_spanId = ...
             // link0_traceId = ...
@@ -271,30 +378,103 @@
             int num = 0;
             foreach (var link in spanLinks.Link)
             {
-                string prefix = $"{LINK_PROPERTY_NAME}{num++}_";
-                telemetryProperties[prefix + LINK_SPAN_ID_PROPERTY_NAME] = ToStr(link.SpanId);
-                telemetryProperties[prefix + LINK_TRACE_ID_PROPERTY_NAME] = ToStr(link.TraceId);
-                telemetryProperties[prefix + LINK_TYPE_PROPERTY_NAME] = link.Type.ToString();
+                string prefix = $"{LinkPropertyName}{num++}_";
+                telemetryProperties[prefix + LinkSpanIdPropertyName] = BytesStringToHexString(link.SpanId);
+                telemetryProperties[prefix + LinkTraceIdPropertyName] = BytesStringToHexString(link.TraceId);
+                telemetryProperties[prefix + LinkTypePropertyName] = link.Type.ToString();
 
-                foreach (var attribute in link.Attributes.AttributeMap)
+                if (link.Attributes?.AttributeMap != null)
                 {
-                    if (!telemetryProperties.ContainsKey(attribute.Key))
+                    foreach (var attribute in link.Attributes.AttributeMap)
                     {
-                        telemetryProperties[attribute.Key] = attribute.Value.StringValue.Value;
+                        telemetryProperties[prefix + attribute.Key] = attribute.Value.StringValue.Value;
                     }
                 }
             }
         }
 
-        private static void SetAttributes(IDictionary<string, AttributeValue> attributes, IDictionary<string, string> telemetryProperties)
+        private static void SetSdkVersion(ITelemetry telemetry)
         {
-            foreach (var attribute in attributes)
+            telemetry.Context.GetInternalContext().SdkVersion = SdkVersion;
+        }
+
+        private static string GetHost(IDictionary<string, AttributeValue> attributes)
+        {
+            if (attributes != null)
             {
-                if (!telemetryProperties.ContainsKey(attribute.Key))
+                if (attributes.TryGetValue(SpanAttributeConstants.HttpUrlKey, out var urlAttribute))
                 {
-                    telemetryProperties[attribute.Key] = attribute.Value.StringValue.Value;
+                    if (urlAttribute != null &&
+                        Uri.TryCreate(urlAttribute.StringValue.Value, UriKind.Absolute, out var uri))
+                    {
+                        return uri.Host;
+                    }
+                }
+
+                if (attributes.TryGetValue(SpanAttributeConstants.HttpHostKey, out var hostAttribute))
+                {
+                    return hostAttribute.StringValue?.Value;
                 }
             }
+
+            return null;
+        }
+
+        private static void SetCustomProperty(ISupportProperties telemetry, KeyValuePair<string, AttributeValue> attribute)
+        {
+            if (telemetry.Properties.ContainsKey(attribute.Key))
+            {
+                return;
+            }
+
+            switch (attribute.Value.ValueCase)
+            {
+                case AttributeValue.ValueOneofCase.StringValue:
+                    telemetry.Properties[attribute.Key] = attribute.Value.StringValue?.Value;
+                    break;
+                case AttributeValue.ValueOneofCase.BoolValue:
+                    telemetry.Properties[attribute.Key] = attribute.Value.BoolValue.ToString();
+                    break;
+                case AttributeValue.ValueOneofCase.IntValue:
+                    telemetry.Properties[attribute.Key] = attribute.Value.IntValue.ToString();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Converts protobuf ByteString to hex-encoded low string
+        /// </summary>
+        /// <returns>Hex string</returns>
+        private static string BytesStringToHexString(ByteString bytes)
+        {
+            if (bytes == null)
+            {
+                return null;
+            }
+
+            // See https://stackoverflow.com/questions/311165/how-do-you-convert-a-byte-array-to-a-hexadecimal-string-and-vice-versa/24343727#24343727
+            var result = new char[bytes.Length * 2];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                var val = Lookup32[bytes[i]];
+                result[2 * i] = (char)val;
+                result[(2 * i) + 1] = (char)(val >> 16);
+            }
+
+            return new string(result);
+        }
+
+        private static uint[] CreateLookup32()
+        {
+            // See https://stackoverflow.com/questions/311165/how-do-you-convert-a-byte-array-to-a-hexadecimal-string-and-vice-versa/24343727#24343727
+            var result = new uint[256];
+            for (int i = 0; i < 256; i++)
+            {
+                string s = i.ToString("x2", CultureInfo.InvariantCulture);
+                result[i] = s[0] + ((uint)s[1] << 16);
+            }
+
+            return result;
         }
     }
 }
