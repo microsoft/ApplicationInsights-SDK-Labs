@@ -42,7 +42,7 @@ message ExportSpanResponse {
 message ExportMetricsResponse {
 }*/
 
-service OpenCensusExport {
+service Export {
   rpc ExportSpan (stream ExportSpanRequest) returns (stream ExportSpanResponse) {}
   //rpc ExportMetrics (stream ExportMetricsRequest) returns (stream ExportMetricsResponse) {}
 }

@@ -7,6 +7,7 @@
     using Opencensus.Proto.Exporter;
     using Opencensus.Proto.Trace;
     using System;
+    using System.Linq;
     using Exception = System.Exception;
 
     public class Library
@@ -33,7 +34,7 @@
 
             try
             {
-                this.gRpcOpenCensusInput = new GrpcOpenCensusInput("localhost", 50002);
+                this.gRpcOpenCensusInput = new GrpcOpenCensusInput("127.0.0.1", 50002);
             }
             catch (Exception e)
             {
@@ -199,6 +200,9 @@
                 {
                     try
                     {
+                        //!!!
+                        Common.Diagnostics.Log($"OpenCensus message received: {batch.Spans.Count} spans, first span: {batch.Spans.First().Name}");
+
                         this.telemetryClient.TrackSpan(span);
                     }
                     catch (Exception e)

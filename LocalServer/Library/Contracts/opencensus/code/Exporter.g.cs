@@ -27,13 +27,13 @@ namespace Opencensus.Proto.Exporter {
             "ChdleHBvcnRlci9leHBvcnRlci5wcm90bxIZb3BlbmNlbnN1cy5wcm90by5l",
             "eHBvcnRlchoib3BlbmNlbnN1cy9wcm90by90cmFjZS90cmFjZS5wcm90byJA",
             "ChFFeHBvcnRTcGFuUmVxdWVzdBIrCgVzcGFucxgBIAMoCzIcLm9wZW5jZW5z",
-            "dXMucHJvdG8udHJhY2UuU3BhbiIUChJFeHBvcnRTcGFuUmVzcG9uc2UygwEK",
-            "EE9wZW5DZW5zdXNFeHBvcnQSbwoKRXhwb3J0U3BhbhIsLm9wZW5jZW5zdXMu",
-            "cHJvdG8uZXhwb3J0ZXIuRXhwb3J0U3BhblJlcXVlc3QaLS5vcGVuY2Vuc3Vz",
-            "LnByb3RvLmV4cG9ydGVyLkV4cG9ydFNwYW5SZXNwb25zZSIAKAEwAUJ4Chxp",
-            "by5vcGVuY2Vuc3VzLnByb3RvLmV4cG9ydGVyQg1FeHBvcnRlclByb3RvUAFa",
-            "R2dpdGh1Yi5jb20vY2Vuc3VzLWluc3RydW1lbnRhdGlvbi9vcGVuY2Vuc3Vz",
-            "LXByb3RvL2dlbi1nby9leHBvcnRlcnByb3RvYgZwcm90bzM="));
+            "dXMucHJvdG8udHJhY2UuU3BhbiIUChJFeHBvcnRTcGFuUmVzcG9uc2UyeQoG",
+            "RXhwb3J0Em8KCkV4cG9ydFNwYW4SLC5vcGVuY2Vuc3VzLnByb3RvLmV4cG9y",
+            "dGVyLkV4cG9ydFNwYW5SZXF1ZXN0Gi0ub3BlbmNlbnN1cy5wcm90by5leHBv",
+            "cnRlci5FeHBvcnRTcGFuUmVzcG9uc2UiACgBMAFCeAocaW8ub3BlbmNlbnN1",
+            "cy5wcm90by5leHBvcnRlckINRXhwb3J0ZXJQcm90b1ABWkdnaXRodWIuY29t",
+            "L2NlbnN1cy1pbnN0cnVtZW50YXRpb24vb3BlbmNlbnN1cy1wcm90by9nZW4t",
+            "Z28vZXhwb3J0ZXJwcm90b2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Opencensus.Proto.Trace.TraceReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {

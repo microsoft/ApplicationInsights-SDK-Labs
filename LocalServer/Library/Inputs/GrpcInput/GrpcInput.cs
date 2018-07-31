@@ -66,7 +66,7 @@
             {
                 this.server = new Server
                 {
-                    Services = {this.aiServer != null ? AITelemetryService.BindService(this.aiServer) : OpenCensusExport.BindService(this.openCensusServer)},
+                    Services = {this.aiServer != null ? AITelemetryService.BindService(this.aiServer) : Export.BindService(this.openCensusServer)},
                     Ports = {new ServerPort(this.host, this.port, ServerCredentials.Insecure)}
                 };
 
@@ -171,7 +171,7 @@
             }
         }
 
-        private class GrpcOpenCensusServer : OpenCensusExport.OpenCensusExportBase
+        private class GrpcOpenCensusServer : Export.ExportBase
         {
             private readonly
                 Func<IAsyncStreamReader<ExportSpanRequest>, IServerStreamWriter<ExportSpanResponse>, ServerCallContext, Task

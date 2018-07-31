@@ -33,7 +33,7 @@ namespace Test.Library
                 else
                 {
                     // OpenCensus
-                    var client = new OpenCensusExport.OpenCensusExportClient(channel);
+                    var client = new Export.ExportClient(channel);
                     this.openCensusStreamingCall = client.ExportSpan();
                 }
             }

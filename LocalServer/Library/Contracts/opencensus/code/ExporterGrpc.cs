@@ -23,9 +23,9 @@
 using grpc = global::Grpc.Core;
 
 namespace Opencensus.Proto.Exporter {
-  public static partial class OpenCensusExport
+  public static partial class Export
   {
-    static readonly string __ServiceName = "opencensus.proto.exporter.OpenCensusExport";
+    static readonly string __ServiceName = "opencensus.proto.exporter.Export";
 
     static readonly grpc::Marshaller<global::Opencensus.Proto.Exporter.ExportSpanRequest> __Marshaller_ExportSpanRequest = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Opencensus.Proto.Exporter.ExportSpanRequest.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Opencensus.Proto.Exporter.ExportSpanResponse> __Marshaller_ExportSpanResponse = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Opencensus.Proto.Exporter.ExportSpanResponse.Parser.ParseFrom);
@@ -43,8 +43,8 @@ namespace Opencensus.Proto.Exporter {
       get { return global::Opencensus.Proto.Exporter.ExporterReflection.Descriptor.Services[0]; }
     }
 
-    /// <summary>Base class for server-side implementations of OpenCensusExport</summary>
-    public abstract partial class OpenCensusExportBase
+    /// <summary>Base class for server-side implementations of Export</summary>
+    public abstract partial class ExportBase
     {
       public virtual global::System.Threading.Tasks.Task ExportSpan(grpc::IAsyncStreamReader<global::Opencensus.Proto.Exporter.ExportSpanRequest> requestStream, grpc::IServerStreamWriter<global::Opencensus.Proto.Exporter.ExportSpanResponse> responseStream, grpc::ServerCallContext context)
       {
@@ -53,26 +53,26 @@ namespace Opencensus.Proto.Exporter {
 
     }
 
-    /// <summary>Client for OpenCensusExport</summary>
-    public partial class OpenCensusExportClient : grpc::ClientBase<OpenCensusExportClient>
+    /// <summary>Client for Export</summary>
+    public partial class ExportClient : grpc::ClientBase<ExportClient>
     {
-      /// <summary>Creates a new client for OpenCensusExport</summary>
+      /// <summary>Creates a new client for Export</summary>
       /// <param name="channel">The channel to use to make remote calls.</param>
-      public OpenCensusExportClient(grpc::Channel channel) : base(channel)
+      public ExportClient(grpc::Channel channel) : base(channel)
       {
       }
-      /// <summary>Creates a new client for OpenCensusExport that uses a custom <c>CallInvoker</c>.</summary>
+      /// <summary>Creates a new client for Export that uses a custom <c>CallInvoker</c>.</summary>
       /// <param name="callInvoker">The callInvoker to use to make remote calls.</param>
-      public OpenCensusExportClient(grpc::CallInvoker callInvoker) : base(callInvoker)
+      public ExportClient(grpc::CallInvoker callInvoker) : base(callInvoker)
       {
       }
       /// <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
-      protected OpenCensusExportClient() : base()
+      protected ExportClient() : base()
       {
       }
       /// <summary>Protected constructor to allow creation of configured clients.</summary>
       /// <param name="configuration">The client configuration.</param>
-      protected OpenCensusExportClient(ClientBaseConfiguration configuration) : base(configuration)
+      protected ExportClient(ClientBaseConfiguration configuration) : base(configuration)
       {
       }
 
@@ -85,15 +85,15 @@ namespace Opencensus.Proto.Exporter {
         return CallInvoker.AsyncDuplexStreamingCall(__Method_ExportSpan, null, options);
       }
       /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
-      protected override OpenCensusExportClient NewInstance(ClientBaseConfiguration configuration)
+      protected override ExportClient NewInstance(ClientBaseConfiguration configuration)
       {
-        return new OpenCensusExportClient(configuration);
+        return new ExportClient(configuration);
       }
     }
 
     /// <summary>Creates service definition that can be registered with a server</summary>
     /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
-    public static grpc::ServerServiceDefinition BindService(OpenCensusExportBase serviceImpl)
+    public static grpc::ServerServiceDefinition BindService(ExportBase serviceImpl)
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
           .AddMethod(__Method_ExportSpan, serviceImpl.ExportSpan).Build();
