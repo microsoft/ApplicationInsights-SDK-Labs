@@ -1,19 +1,18 @@
-namespace Test.Library
+namespace Microsoft.LocalForwarder.Test.Library
 {
+    using ApplicationInsights;
+    using ApplicationInsights.Channel;
+    using ApplicationInsights.DataContracts;
+    using ApplicationInsights.Extensibility;
+    using ApplicationInsights.Extensibility.Implementation;
+    using Google.Protobuf;
+    using Google.Protobuf.WellKnownTypes;
+    using LocalForwarder.Library;
+    using Opencensus.Proto.Trace;
     using System;
     using System.Collections.Concurrent;
     using System.Linq;
-    using global::Library;
-    using Google.Protobuf;
-    using Google.Protobuf.WellKnownTypes;
-    using Microsoft.ApplicationInsights;
-    using Microsoft.ApplicationInsights.Channel;
-    using Microsoft.ApplicationInsights.DataContracts;
-    using Microsoft.ApplicationInsights.Extensibility;
-    using Microsoft.ApplicationInsights.Extensibility.Implementation;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Opencensus.Proto.Trace;
-    using static Opencensus.Proto.Trace.Span.Types;
+    using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class OpenCensusTelemetryConverterTests
@@ -34,14 +33,14 @@ namespace Test.Library
         [TestInitialize]
         public void Setup()
         {
-            configuration = new TelemetryConfiguration();
-            channel = new StubTelemetryChannel
+            this.configuration = new TelemetryConfiguration();
+            this.channel = new StubTelemetryChannel
             {
-                OnSend = t => sentItems.Enqueue(t)
+                OnSend = t => this.sentItems.Enqueue(t)
             };
 
-            configuration.TelemetryChannel = channel;
-            client = new TelemetryClient(configuration);
+            this.configuration.TelemetryChannel = this.channel;
+            this.client = new TelemetryClient(this.configuration);
         }
 
         [TestMethod]
@@ -50,18 +49,18 @@ namespace Test.Library
             // ARRANGE
             var now = DateTime.UtcNow;
 
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
             span.StartTime = now.AddSeconds(-1).ToTimestamp();
             span.EndTime = now.ToTimestamp();
 
             // ACT
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
             // ASSERT
-            Assert.AreEqual(1, sentItems.Count);
-            Assert.IsInstanceOfType(sentItems.Single(), typeof(RequestTelemetry));
+            Assert.AreEqual(1, this.sentItems.Count);
+            Assert.IsInstanceOfType(this.sentItems.Single(), typeof(RequestTelemetry));
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual("spanName", request.Name);
             Assert.AreEqual(now.AddSeconds(-1), request.Timestamp);
             Assert.AreEqual(1, request.Duration.TotalSeconds);
@@ -80,28 +79,28 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksRequestWithParent()
         {
             // ARRANGE
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
-            span.ParentSpanId = ByteString.CopyFrom(testParentSpanIdBytes, 0, 8);
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
+            span.ParentSpanId = ByteString.CopyFrom(this.testParentSpanIdBytes, 0, 8);
 
             // ACT
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
             // ASSERT
-            Assert.AreEqual(TestParentSpanId, ((RequestTelemetry)sentItems.Single()).Context.Operation.ParentId);
+            Assert.AreEqual(TestParentSpanId, ((RequestTelemetry)this.sentItems.Single()).Context.Operation.ParentId);
         }
 
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksRequestWithStatus()
         {
             // ARRANGE
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
             span.Status = new Status {Code = 0};
 
             // ACT
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
             // ASSERT
-            var request = (RequestTelemetry)sentItems.Single();
+            var request = (RequestTelemetry)this.sentItems.Single();
 
             Assert.IsTrue(request.Success.HasValue);
             Assert.IsTrue(request.Success.Value);
@@ -112,14 +111,14 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksRequestWithStatusAndDescription()
         {
             // ARRANGE
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
             span.Status = new Status {Code = 0, Message = "all good"};
 
             // ACT
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
             // ASSERT
-            var request = (RequestTelemetry)sentItems.Single();
+            var request = (RequestTelemetry)this.sentItems.Single();
 
             Assert.IsTrue(request.Success.HasValue);
             Assert.IsTrue(request.Success.Value);
@@ -130,14 +129,14 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksRequestWithNonSuccessStatusAndDescription()
         {
             // ARRANGE
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
             span.Status = new Status { Code = 1, Message = "all bad" };
 
             // ACT
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
             // ASSERT
-            var request = (RequestTelemetry)sentItems.Single();
+            var request = (RequestTelemetry)this.sentItems.Single();
 
             Assert.IsTrue(request.Success.HasValue);
             Assert.IsFalse(request.Success.Value);
@@ -147,15 +146,15 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksRequestErrorAttribute()
         {
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
+            span.Attributes = new Span.Types.Attributes
             {
-                AttributeMap = { ["error"] = CreateAttributeValue(true) }
+                AttributeMap = { ["error"] = this.CreateAttributeValue(true) }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.IsTrue(request.Success.HasValue);
             Assert.IsFalse(request.Success.Value);
         }
@@ -166,18 +165,18 @@ namespace Test.Library
             // ARRANGE
             var now = DateTime.UtcNow;
 
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
             span.StartTime = now.AddSeconds(-1).ToTimestamp();
             span.EndTime = now.ToTimestamp();
 
             // ACT
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
             // ASSERT
-            Assert.AreEqual(1, sentItems.Count);
-            Assert.IsInstanceOfType(sentItems.Single(), typeof(DependencyTelemetry));
+            Assert.AreEqual(1, this.sentItems.Count);
+            Assert.IsInstanceOfType(this.sentItems.Single(), typeof(DependencyTelemetry));
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual("spanName", dependency.Name);
             Assert.AreEqual(now.AddSeconds(-1), dependency.Timestamp);
             Assert.AreEqual(1, dependency.Duration.TotalSeconds);
@@ -198,14 +197,14 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksDependencyWithParent()
         {
             // ARRANGE
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
-            span.ParentSpanId = ByteString.CopyFrom(testParentSpanIdBytes, 0, 8);
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
+            span.ParentSpanId = ByteString.CopyFrom(this.testParentSpanIdBytes, 0, 8);
 
             // ACT
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
             // ASSERT
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual(TestParentSpanId, dependency.Context.Operation.ParentId);
         }
 
@@ -213,14 +212,14 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksDependencyWithStatus()
         {
             // ARRANGE
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
             span.Status = new Status {Code = 0};
 
             // ACT
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
             // ASSERT
-            var dependency = (DependencyTelemetry)sentItems.Single();
+            var dependency = (DependencyTelemetry)this.sentItems.Single();
 
             Assert.IsTrue(dependency.Success.HasValue);
             Assert.IsTrue(dependency.Success.Value);
@@ -232,14 +231,14 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksDependencyWithStatusAndDescription()
         {
             // ARRANGE
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
             span.Status = new Status {Code = 0, Message = "all good"};
 
             // ACT
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
             // ASSERT
-            var dependency = (DependencyTelemetry)sentItems.Single();
+            var dependency = (DependencyTelemetry)this.sentItems.Single();
 
             Assert.IsTrue(dependency.Success.HasValue);
             Assert.IsTrue(dependency.Success.Value);
@@ -253,14 +252,14 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksDependencyWithNonSuccessStatusAndDescription()
         {
             // ARRANGE
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
             span.Status = new Status { Code = 1, Message = "all bad" };
 
             // ACT
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
             // ASSERT
-            var dependency = (DependencyTelemetry)sentItems.Single();
+            var dependency = (DependencyTelemetry)this.sentItems.Single();
 
             Assert.IsTrue(dependency.Success.HasValue);
             Assert.IsFalse(dependency.Success.Value);
@@ -272,15 +271,15 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksDependencyErrorAttribute()
         {
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
+            span.Attributes = new Span.Types.Attributes
             {
-                AttributeMap = { ["error"] = CreateAttributeValue(true) }
+                AttributeMap = { ["error"] = this.CreateAttributeValue(true) }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.IsTrue(dependency.Success.HasValue);
             Assert.IsFalse(dependency.Success.Value);
         }
@@ -288,82 +287,82 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksRequestBasedOnSpanKindAttribute()
         {
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
-            span.Attributes = new Attributes()
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
+            span.Attributes = new Span.Types.Attributes()
             {
-                AttributeMap = { ["span.kind"] = CreateAttributeValue("server") }
+                AttributeMap = { ["span.kind"] = this.CreateAttributeValue("server") }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            Assert.IsInstanceOfType(sentItems.Single(), typeof(RequestTelemetry));
+            Assert.IsInstanceOfType(this.sentItems.Single(), typeof(RequestTelemetry));
         }
 
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksRequestBasedOnSpanKindProperty()
         {
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
             span.SameProcessAsParentSpan = null;
-            span.ParentSpanId = ByteString.CopyFrom(testParentSpanIdBytes, 0, 8);
-            client.TrackSpan(span);
+            span.ParentSpanId = ByteString.CopyFrom(this.testParentSpanIdBytes, 0, 8);
+            this.client.TrackSpan(span);
 
-            Assert.IsInstanceOfType(sentItems.Single(), typeof(RequestTelemetry));
+            Assert.IsInstanceOfType(this.sentItems.Single(), typeof(RequestTelemetry));
         }
 
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksDependencyBasedOnSpanKindProperty()
         {
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
             span.SameProcessAsParentSpan = null;
-            span.ParentSpanId = ByteString.CopyFrom(testParentSpanIdBytes, 0, 8);
+            span.ParentSpanId = ByteString.CopyFrom(this.testParentSpanIdBytes, 0, 8);
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            Assert.IsInstanceOfType(sentItems.Single(), typeof(DependencyTelemetry));
+            Assert.IsInstanceOfType(this.sentItems.Single(), typeof(DependencyTelemetry));
         }
 
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksDependenciesBasedOnSpanKindAttribute()
         {
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
+            span.Attributes = new Span.Types.Attributes
             {
-                AttributeMap = { ["span.kind"] = CreateAttributeValue("client") }
+                AttributeMap = { ["span.kind"] = this.CreateAttributeValue("client") }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            Assert.IsInstanceOfType(sentItems.Single(), typeof(DependencyTelemetry));
+            Assert.IsInstanceOfType(this.sentItems.Single(), typeof(DependencyTelemetry));
         }
 
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksRequestBasedOnSameProcessAsParentFlag()
         {
-            var span = CreateBasicSpan(SpanKind.Unspecified, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Unspecified, "spanName");
             span.SameProcessAsParentSpan = false;
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            Assert.IsInstanceOfType(sentItems.Single(), typeof(RequestTelemetry));
+            Assert.IsInstanceOfType(this.sentItems.Single(), typeof(RequestTelemetry));
         }
 
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksDepednencyBasedOnSameProcessAsParentFlag()
         {
-            var span = CreateBasicSpan(SpanKind.Unspecified, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Unspecified, "spanName");
             span.SameProcessAsParentSpan = true;
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            Assert.IsInstanceOfType(sentItems.Single(), typeof(DependencyTelemetry));
+            Assert.IsInstanceOfType(this.sentItems.Single(), typeof(DependencyTelemetry));
         }
 
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksDepednencyBasedOnSameProcessAsParentFlagNotSet()
         {
-            var span = CreateBasicSpan(SpanKind.Unspecified, "spanName");
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Unspecified, "spanName");
             span.SameProcessAsParentSpan = null;
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            Assert.IsInstanceOfType(sentItems.Single(), typeof(DependencyTelemetry));
+            Assert.IsInstanceOfType(this.sentItems.Single(), typeof(DependencyTelemetry));
         }
 
 
@@ -372,14 +371,14 @@ namespace Test.Library
         {
             var span = new Span
             {
-                Kind = SpanKind.Server,
-                TraceId = ByteString.CopyFrom(testTraceIdBytes, 0, 16),
-                SpanId = ByteString.CopyFrom(testSpanIdBytes, 0, 8),
+                Kind = Span.Types.SpanKind.Server,
+                TraceId = ByteString.CopyFrom(this.testTraceIdBytes, 0, 16),
+                SpanId = ByteString.CopyFrom(this.testSpanIdBytes, 0, 8),
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            Assert.IsNull(sentItems.OfType<RequestTelemetry>().Single().Name);
+            Assert.IsNull(this.sentItems.OfType<RequestTelemetry>().Single().Name);
         }
 
         [TestMethod]
@@ -387,14 +386,14 @@ namespace Test.Library
         {
             var span = new Span
             {
-                TraceId = ByteString.CopyFrom(testTraceIdBytes, 0, 16),
-                SpanId = ByteString.CopyFrom(testSpanIdBytes, 0, 8),
+                TraceId = ByteString.CopyFrom(this.testTraceIdBytes, 0, 16),
+                SpanId = ByteString.CopyFrom(this.testSpanIdBytes, 0, 8),
                 Name = new TruncatableString { Value = "spanName" }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            Assert.IsInstanceOfType(sentItems.Single(), typeof(DependencyTelemetry));
+            Assert.IsInstanceOfType(this.sentItems.Single(), typeof(DependencyTelemetry));
         }
 
         [TestMethod]
@@ -402,15 +401,15 @@ namespace Test.Library
         {
             var span = new Span
             {
-                Kind = SpanKind.Server,
-                TraceId = ByteString.CopyFrom(testTraceIdBytes, 0, 16),
-                SpanId = ByteString.CopyFrom(testSpanIdBytes, 0, 8),
+                Kind = Span.Types.SpanKind.Server,
+                TraceId = ByteString.CopyFrom(this.testTraceIdBytes, 0, 16),
+                SpanId = ByteString.CopyFrom(this.testSpanIdBytes, 0, 8),
                 Name = new TruncatableString { Value = "spanName" }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.IsTrue(Math.Abs((request.Timestamp - DateTime.UtcNow).TotalSeconds) < 1);
             Assert.AreEqual(0, request.Duration.TotalSeconds);
         }
@@ -419,20 +418,20 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksHttpRequestWithUrl()
         {
             var url = new Uri("https://host:123/path?query");
-            var span = CreateBasicSpan(SpanKind.Server, "HttpIn");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "HttpIn");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.url"] = CreateAttributeValue(url),
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.status_code"] = CreateAttributeValue(409),
+                    ["http.url"] = this.CreateAttributeValue(url),
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.status_code"] = this.CreateAttributeValue(409),
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(url.ToString(), request.Url.ToString());
             Assert.AreEqual("POST /path", request.Name);
             Assert.AreEqual("409", request.ResponseCode);
@@ -442,21 +441,21 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksHttpRequestWithUrlAndRoute()
         {
             var url = new Uri("https://host:123/path?query");
-            var span = CreateBasicSpan(SpanKind.Server, "HttpIn");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "HttpIn");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.url"] = CreateAttributeValue(url),
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.route"] = CreateAttributeValue("route"),
-                    ["http.status_code"] = CreateAttributeValue(503),
+                    ["http.url"] = this.CreateAttributeValue(url),
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.route"] = this.CreateAttributeValue("route"),
+                    ["http.status_code"] = this.CreateAttributeValue(503),
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(url.ToString(), request.Url.ToString());
             Assert.AreEqual("POST route", request.Name);
             Assert.AreEqual("503", request.ResponseCode);
@@ -466,19 +465,19 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksHttpRequestWithUrlAndNoMethod()
         {
             var url = new Uri("https://host:123/path?query");
-            var span = CreateBasicSpan(SpanKind.Server, "HttpIn");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "HttpIn");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.url"] = CreateAttributeValue(url),
-                    ["http.status_code"] = CreateAttributeValue(200),
+                    ["http.url"] = this.CreateAttributeValue(url),
+                    ["http.status_code"] = this.CreateAttributeValue(200),
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(url.ToString(), request.Url.ToString());
             Assert.AreEqual("/path", request.Name);
             Assert.AreEqual("200", request.ResponseCode);
@@ -488,23 +487,23 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksHttpRequestWithUrlOtherAttributesAreIgnored()
         {
             var url = new Uri("https://host:123/path?query");
-            var span = CreateBasicSpan(SpanKind.Server, "HttpIn");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "HttpIn");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.url"] = CreateAttributeValue(url),
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.path"] = CreateAttributeValue("another path"),
-                    ["http.host"] = CreateAttributeValue("another host"),
-                    ["http.port"] = CreateAttributeValue(8080),
-                    ["http.status_code"] = CreateAttributeValue(200),
+                    ["http.url"] = this.CreateAttributeValue(url),
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.path"] = this.CreateAttributeValue("another path"),
+                    ["http.host"] = this.CreateAttributeValue("another host"),
+                    ["http.port"] = this.CreateAttributeValue(8080),
+                    ["http.status_code"] = this.CreateAttributeValue(200),
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(url.ToString(), request.Url.ToString());
             Assert.AreEqual("POST /path", request.Name);
             Assert.AreEqual("200", request.ResponseCode);
@@ -513,22 +512,22 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksHttpRequestHostPortPathAttributes()
         {
-            var span = CreateBasicSpan(SpanKind.Server, "HttpIn");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "HttpIn");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.path"] = CreateAttributeValue("path"),
-                    ["http.host"] = CreateAttributeValue("host"),
-                    ["http.port"] = CreateAttributeValue(123),
-                    ["http.status_code"] = CreateAttributeValue(200),
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.path"] = this.CreateAttributeValue("path"),
+                    ["http.host"] = this.CreateAttributeValue("host"),
+                    ["http.port"] = this.CreateAttributeValue(123),
+                    ["http.status_code"] = this.CreateAttributeValue(200),
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual("https://host:123/path", request.Url.ToString());
             Assert.AreEqual("POST path", request.Name);
             Assert.AreEqual("200", request.ResponseCode);
@@ -537,21 +536,21 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksHttpRequestHostPathAttributes()
         {
-            var span = CreateBasicSpan(SpanKind.Server, "HttpIn");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "HttpIn");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.path"] = CreateAttributeValue("path"),
-                    ["http.host"] = CreateAttributeValue("host"),
-                    ["http.status_code"] = CreateAttributeValue(200),
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.path"] = this.CreateAttributeValue("path"),
+                    ["http.host"] = this.CreateAttributeValue("host"),
+                    ["http.status_code"] = this.CreateAttributeValue(200),
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual("https://host/path", request.Url.ToString());
             Assert.AreEqual("POST path", request.Name);
             Assert.AreEqual("200", request.ResponseCode);
@@ -560,20 +559,20 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksHttpRequestHostAttributes()
         {
-            var span = CreateBasicSpan(SpanKind.Server, "HttpIn");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "HttpIn");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.host"] = CreateAttributeValue("host"),
-                    ["http.status_code"] = CreateAttributeValue(200),
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.host"] = this.CreateAttributeValue("host"),
+                    ["http.status_code"] = this.CreateAttributeValue(200),
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual("https://host/", request.Url.ToString());
             Assert.AreEqual("POST", request.Name);
             Assert.AreEqual("200", request.ResponseCode);
@@ -582,19 +581,19 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksHttpRequestOnlyMethodAttributes()
         {
-            var span = CreateBasicSpan(SpanKind.Server, "HttpIn");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "HttpIn");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.status_code"] = CreateAttributeValue(200),
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.status_code"] = this.CreateAttributeValue(200),
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.IsNull(request.Url);
             Assert.AreEqual("POST", request.Name);
             Assert.AreEqual("200", request.ResponseCode);
@@ -605,19 +604,19 @@ namespace Test.Library
         {
             var userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36";
 
-            var span = CreateBasicSpan(SpanKind.Server, "HttpIn");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "HttpIn");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.url"] = CreateAttributeValue("https://host/path"),
-                    ["http.user_agent"] = CreateAttributeValue(userAgent)
+                    ["http.url"] = this.CreateAttributeValue("https://host/path"),
+                    ["http.user_agent"] = this.CreateAttributeValue(userAgent)
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(userAgent, request.Context.User.UserAgent);
         }
 
@@ -625,20 +624,20 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksHttpDependencyWithUrl()
         {
             var url = new Uri("https://host:123/path?query");
-            var span = CreateBasicSpan(SpanKind.Client, "HttpOut");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "HttpOut");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.url"] = CreateAttributeValue(url),
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.status_code"] = CreateAttributeValue(200)
+                    ["http.url"] = this.CreateAttributeValue(url),
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.status_code"] = this.CreateAttributeValue(200)
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual(url.ToString(), dependency.Data);
             Assert.AreEqual("POST /path", dependency.Name);
             Assert.AreEqual("200", dependency.ResultCode);
@@ -650,23 +649,23 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksHttpDependencyWithUrlIgnoresHostPortPath()
         {
             var url = new Uri("https://host:123/path?query");
-            var span = CreateBasicSpan(SpanKind.Client, "HttpOut");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "HttpOut");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.url"] = CreateAttributeValue(url),
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.path"] = CreateAttributeValue("another path"),
-                    ["http.host"] = CreateAttributeValue("another host"),
-                    ["http.port"] = CreateAttributeValue(8080),
-                    ["http.status_code"] = CreateAttributeValue(200)
+                    ["http.url"] = this.CreateAttributeValue(url),
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.path"] = this.CreateAttributeValue("another path"),
+                    ["http.host"] = this.CreateAttributeValue("another host"),
+                    ["http.port"] = this.CreateAttributeValue(8080),
+                    ["http.status_code"] = this.CreateAttributeValue(200)
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual(url.ToString(), dependency.Data);
             Assert.AreEqual("POST /path", dependency.Name);
             Assert.AreEqual("200", dependency.ResultCode);
@@ -677,22 +676,22 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksHttpDependencyWithHostPortPath()
         {
-            var span = CreateBasicSpan(SpanKind.Client, "HttpOut");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "HttpOut");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.path"] = CreateAttributeValue("path"),
-                    ["http.host"] = CreateAttributeValue("host"),
-                    ["http.port"] = CreateAttributeValue(123),
-                    ["http.status_code"] = CreateAttributeValue(200)
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.path"] = this.CreateAttributeValue("path"),
+                    ["http.host"] = this.CreateAttributeValue("host"),
+                    ["http.port"] = this.CreateAttributeValue(123),
+                    ["http.status_code"] = this.CreateAttributeValue(200)
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual("https://host:123/path", dependency.Data);
             Assert.AreEqual("POST path", dependency.Name);
             Assert.AreEqual("200", dependency.ResultCode);
@@ -703,22 +702,22 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksHttpDependencyWithHostPort()
         {
-            var span = CreateBasicSpan(SpanKind.Client, "HttpOut");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "HttpOut");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
 
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.host"] = CreateAttributeValue("host"),
-                    ["http.port"] = CreateAttributeValue(123),
-                    ["http.status_code"] = CreateAttributeValue(200)
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.host"] = this.CreateAttributeValue("host"),
+                    ["http.port"] = this.CreateAttributeValue(123),
+                    ["http.status_code"] = this.CreateAttributeValue(200)
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual("https://host:123/", dependency.Data);
             Assert.AreEqual("POST", dependency.Name);
             Assert.AreEqual("200", dependency.ResultCode);
@@ -729,21 +728,21 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksHttpDependencyWithHost()
         {
-            var span = CreateBasicSpan(SpanKind.Client, "HttpOut");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "HttpOut");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
 
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.host"] = CreateAttributeValue("host"),
-                    ["http.status_code"] = CreateAttributeValue(200)
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.host"] = this.CreateAttributeValue("host"),
+                    ["http.status_code"] = this.CreateAttributeValue(200)
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual("https://host/", dependency.Data);
             Assert.AreEqual("POST", dependency.Name);
             Assert.AreEqual("200", dependency.ResultCode);
@@ -754,19 +753,19 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksHttpDependencyWithMethod()
         {
-            var span = CreateBasicSpan(SpanKind.Client, "HttpOut");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "HttpOut");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.method"] = CreateAttributeValue("POST"),
-                    ["http.status_code"] = CreateAttributeValue(200)
+                    ["http.method"] = this.CreateAttributeValue("POST"),
+                    ["http.status_code"] = this.CreateAttributeValue(200)
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.IsNull(dependency.Data);
             Assert.AreEqual("POST", dependency.Name);
             Assert.AreEqual("200", dependency.ResultCode);
@@ -777,18 +776,18 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksHttpDependencyWithStatusCodeOnly()
         {
-            var span = CreateBasicSpan(SpanKind.Client, "HttpOut");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "HttpOut");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["http.status_code"] = CreateAttributeValue(200)
+                    ["http.status_code"] = this.CreateAttributeValue(200)
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.IsNull(dependency.Data);
             Assert.IsNull(dependency.Name);
             Assert.IsNull(dependency.Target);
@@ -799,20 +798,20 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksDependencyWithCustomAttributes()
         {
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["custom.stringAttribute"] = CreateAttributeValue("string"),
-                    ["custom.longAttribute"] = CreateAttributeValue(long.MaxValue),
-                    ["custom.boolAttribute"] = CreateAttributeValue(true)
+                    ["custom.stringAttribute"] = this.CreateAttributeValue("string"),
+                    ["custom.longAttribute"] = this.CreateAttributeValue(long.MaxValue),
+                    ["custom.boolAttribute"] = this.CreateAttributeValue(true)
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual(3, dependency.Properties.Count);
             Assert.IsTrue(dependency.Properties.ContainsKey("custom.stringAttribute"));
             Assert.AreEqual("string", dependency.Properties["custom.stringAttribute"]);
@@ -827,20 +826,20 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksRequestsWithCustomAttributes()
         {
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
-            span.Attributes = new Attributes
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
+            span.Attributes = new Span.Types.Attributes
             {
                 AttributeMap =
                 {
-                    ["custom.stringAttribute"] = CreateAttributeValue("string"),
-                    ["custom.longAttribute"] = CreateAttributeValue(long.MaxValue),
-                    ["custom.boolAttribute"] = CreateAttributeValue(true)
+                    ["custom.stringAttribute"] = this.CreateAttributeValue("string"),
+                    ["custom.longAttribute"] = this.CreateAttributeValue(long.MaxValue),
+                    ["custom.boolAttribute"] = this.CreateAttributeValue(true)
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(3, request.Properties.Count);
             Assert.IsTrue(request.Properties.ContainsKey("custom.stringAttribute"));
             Assert.AreEqual("string", request.Properties["custom.stringAttribute"]);
@@ -863,35 +862,35 @@ namespace Test.Library
             var (link1SpanId, link1SpanIdBytes) = GenerateRandomId(8);
             var (link2SpanId, link2SpanIdBytes) = GenerateRandomId(8);
 
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
-            span.Links = new Links
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
+            span.Links = new Span.Types.Links
             {
                 Link =
                 {
-                    new Link
+                    new Span.Types.Link
                     {
                         SpanId = ByteString.CopyFrom(link0SpanIdBytes),
                         TraceId = ByteString.CopyFrom(link0TraceIdBytes),
-                        Type = Link.Types.Type.ChildLinkedSpan
+                        Type = Span.Types.Link.Types.Type.ChildLinkedSpan
                     },
-                    new Link
+                    new Span.Types.Link
                     {
                         SpanId = ByteString.CopyFrom(link1SpanIdBytes),
                         TraceId = ByteString.CopyFrom(link1TraceIdBytes),
-                        Type = Link.Types.Type.ParentLinkedSpan
+                        Type = Span.Types.Link.Types.Type.ParentLinkedSpan
                     },
-                    new Link
+                    new Span.Types.Link
                     {
                         SpanId = ByteString.CopyFrom(link2SpanIdBytes),
                         TraceId = ByteString.CopyFrom(link2TraceIdBytes),
-                        Type = Link.Types.Type.Unspecified
+                        Type = Span.Types.Link.Types.Type.Unspecified
                     }
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual(9, dependency.Properties.Count);
 
             Assert.IsTrue(dependency.Properties.ContainsKey("link0_traceId"));
@@ -922,24 +921,24 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksDependencyWithLinksAndAttributes()
         {
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
-            span.Links = new Links
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
+            span.Links = new Span.Types.Links
             {
                 Link =
                 {
-                    new Link
+                    new Span.Types.Link
                     {
                         SpanId = ByteString.CopyFrom(GenerateRandomId(16).Item2),
                         TraceId = ByteString.CopyFrom(GenerateRandomId(8).Item2),
-                        Type = Link.Types.Type.ChildLinkedSpan,
-                        Attributes = new Attributes { AttributeMap = { ["some.attribute"] = CreateAttributeValue("foo")} }
+                        Type = Span.Types.Link.Types.Type.ChildLinkedSpan,
+                        Attributes = new Span.Types.Attributes { AttributeMap = { ["some.attribute"] = this.CreateAttributeValue("foo")} }
                     }
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual(4, dependency.Properties.Count);
 
             Assert.IsTrue(dependency.Properties.ContainsKey("link0_some.attribute"));
@@ -957,35 +956,35 @@ namespace Test.Library
             var (link1SpanId, link1SpanIdBytes) = GenerateRandomId(8);
             var (link2SpanId, link2SpanIdBytes) = GenerateRandomId(8);
 
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
-            span.Links = new Links
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
+            span.Links = new Span.Types.Links
             {
                 Link =
                 {
-                    new Link
+                    new Span.Types.Link
                     {
                         SpanId = ByteString.CopyFrom(link0SpanIdBytes),
                         TraceId = ByteString.CopyFrom(link0TraceIdBytes),
-                        Type = Link.Types.Type.ChildLinkedSpan
+                        Type = Span.Types.Link.Types.Type.ChildLinkedSpan
                     },
-                    new Link
+                    new Span.Types.Link
                     {
                         SpanId = ByteString.CopyFrom(link1SpanIdBytes),
                         TraceId = ByteString.CopyFrom(link1TraceIdBytes),
-                        Type = Link.Types.Type.ParentLinkedSpan
+                        Type = Span.Types.Link.Types.Type.ParentLinkedSpan
                     },
-                    new Link
+                    new Span.Types.Link
                     {
                         SpanId = ByteString.CopyFrom(link2SpanIdBytes),
                         TraceId = ByteString.CopyFrom(link2TraceIdBytes),
-                        Type = Link.Types.Type.Unspecified
+                        Type = Span.Types.Link.Types.Type.Unspecified
                     }
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(9, request.Properties.Count);
 
             Assert.IsTrue(request.Properties.ContainsKey("link0_traceId"));
@@ -1016,24 +1015,24 @@ namespace Test.Library
         [TestMethod]
         public void OpenCensusTelemetryConverterTests_TracksRequestWithLinksAndAttributes()
         {
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
-            span.Links = new Links
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
+            span.Links = new Span.Types.Links
             {
                 Link =
                 {
-                    new Link
+                    new Span.Types.Link
                     {
                         SpanId = ByteString.CopyFrom(GenerateRandomId(16).Item2),
                         TraceId = ByteString.CopyFrom(GenerateRandomId(8).Item2),
-                        Type = Link.Types.Type.ChildLinkedSpan,
-                        Attributes = new Attributes { AttributeMap = { ["some.attribute"] = CreateAttributeValue("foo")} }
+                        Type = Span.Types.Link.Types.Type.ChildLinkedSpan,
+                        Attributes = new Span.Types.Attributes { AttributeMap = { ["some.attribute"] = this.CreateAttributeValue("foo")} }
                     }
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(4, request.Properties.Count);
 
             Assert.IsTrue(request.Properties.ContainsKey("link0_some.attribute"));
@@ -1044,45 +1043,45 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksRequestWithAnnotations()
         {
             var now = DateTime.UtcNow;
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
-            span.TimeEvents = new TimeEvents
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
+            span.TimeEvents = new Span.Types.TimeEvents
             {
                 TimeEvent =
                 {
-                    new TimeEvent
+                    new Span.Types.TimeEvent
                     {
                         Time = now.ToTimestamp(),
-                        Annotation = new TimeEvent.Types.Annotation
+                        Annotation = new Span.Types.TimeEvent.Types.Annotation
                         {
                             Description = new TruncatableString {Value = "test message1"}
                         }
                     },
-                    new TimeEvent
+                    new Span.Types.TimeEvent
                     {
-                        Annotation = new TimeEvent.Types.Annotation
+                        Annotation = new Span.Types.TimeEvent.Types.Annotation
                         {
                             Description = new TruncatableString {Value = "test message2"},
-                            Attributes = new Attributes {
+                            Attributes = new Span.Types.Attributes {
                                 AttributeMap =
                                 {
-                                    ["custom.stringAttribute"] = CreateAttributeValue("string"),
-                                    ["custom.longAttribute"] = CreateAttributeValue(long.MaxValue),
-                                    ["custom.boolAttribute"] = CreateAttributeValue(true)
+                                    ["custom.stringAttribute"] = this.CreateAttributeValue("string"),
+                                    ["custom.longAttribute"] = this.CreateAttributeValue(long.MaxValue),
+                                    ["custom.boolAttribute"] = this.CreateAttributeValue(true)
                                 }}
                         }
                     }
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            Assert.AreEqual(3, sentItems.Count);
-            Assert.AreEqual(1, sentItems.OfType<RequestTelemetry>().Count());
-            Assert.AreEqual(2, sentItems.OfType<TraceTelemetry>().Count());
+            Assert.AreEqual(3, this.sentItems.Count);
+            Assert.AreEqual(1, this.sentItems.OfType<RequestTelemetry>().Count());
+            Assert.AreEqual(2, this.sentItems.OfType<TraceTelemetry>().Count());
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
-            var trace1 = sentItems.OfType<TraceTelemetry>().First();
-            var trace2 = sentItems.OfType<TraceTelemetry>().Last();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
+            var trace1 = this.sentItems.OfType<TraceTelemetry>().First();
+            var trace2 = this.sentItems.OfType<TraceTelemetry>().Last();
 
             Assert.AreEqual(request.Context.Operation.Id, trace1.Context.Operation.Id);
             Assert.AreEqual(request.Context.Operation.Id, trace2.Context.Operation.Id);
@@ -1112,45 +1111,45 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksDependenciesWithAnnotations()
         {
             var now = DateTime.UtcNow;
-            var span = CreateBasicSpan(SpanKind.Client, "spanName");
-            span.TimeEvents = new TimeEvents
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "spanName");
+            span.TimeEvents = new Span.Types.TimeEvents
             {
                 TimeEvent =
                 {
-                    new TimeEvent
+                    new Span.Types.TimeEvent
                     {
                         Time = now.ToTimestamp(),
-                        Annotation = new TimeEvent.Types.Annotation
+                        Annotation = new Span.Types.TimeEvent.Types.Annotation
                         {
                             Description = new TruncatableString {Value = "test message1"}
                         }
                     },
-                    new TimeEvent
+                    new Span.Types.TimeEvent
                     {
-                        Annotation = new TimeEvent.Types.Annotation
+                        Annotation = new Span.Types.TimeEvent.Types.Annotation
                         {
                             Description = new TruncatableString {Value = "test message2"},
-                            Attributes = new Attributes {
+                            Attributes = new Span.Types.Attributes {
                                 AttributeMap =
                                 {
-                                    ["custom.stringAttribute"] = CreateAttributeValue("string"),
-                                    ["custom.longAttribute"] = CreateAttributeValue(long.MaxValue),
-                                    ["custom.boolAttribute"] = CreateAttributeValue(true)
+                                    ["custom.stringAttribute"] = this.CreateAttributeValue("string"),
+                                    ["custom.longAttribute"] = this.CreateAttributeValue(long.MaxValue),
+                                    ["custom.boolAttribute"] = this.CreateAttributeValue(true)
                                 }}
                         }
                     }
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            Assert.AreEqual(3, sentItems.Count);
-            Assert.AreEqual(1, sentItems.OfType<DependencyTelemetry>().Count());
-            Assert.AreEqual(2, sentItems.OfType<TraceTelemetry>().Count());
+            Assert.AreEqual(3, this.sentItems.Count);
+            Assert.AreEqual(1, this.sentItems.OfType<DependencyTelemetry>().Count());
+            Assert.AreEqual(2, this.sentItems.OfType<TraceTelemetry>().Count());
 
-            var dependency = sentItems.OfType<DependencyTelemetry>().Single();
-            var trace1 = sentItems.OfType<TraceTelemetry>().First();
-            var trace2 = sentItems.OfType<TraceTelemetry>().Last();
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
+            var trace1 = this.sentItems.OfType<TraceTelemetry>().First();
+            var trace2 = this.sentItems.OfType<TraceTelemetry>().Last();
 
             Assert.AreEqual(dependency.Context.Operation.Id, trace1.Context.Operation.Id);
             Assert.AreEqual(dependency.Context.Operation.Id, trace2.Context.Operation.Id);
@@ -1180,54 +1179,54 @@ namespace Test.Library
         public void OpenCensusTelemetryConverterTests_TracksRequestWithMessage()
         {
             var now = DateTime.UtcNow;
-            var span = CreateBasicSpan(SpanKind.Server, "spanName");
-            span.TimeEvents = new TimeEvents
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
+            span.TimeEvents = new Span.Types.TimeEvents
             {
                 TimeEvent =
                 {
-                    new TimeEvent
+                    new Span.Types.TimeEvent
                     {
                         Time = now.ToTimestamp(),
-                        MessageEvent = new TimeEvent.Types.MessageEvent
+                        MessageEvent = new Span.Types.TimeEvent.Types.MessageEvent
                         {
                             Id = 1,
                             CompressedSize = 2,
                             UncompressedSize = 3,
-                            Type = TimeEvent.Types.MessageEvent.Types.Type.Received
+                            Type = Span.Types.TimeEvent.Types.MessageEvent.Types.Type.Received
                         }
                     },
-                    new TimeEvent
+                    new Span.Types.TimeEvent
                     {
                         Time = now.ToTimestamp(),
-                        MessageEvent = new TimeEvent.Types.MessageEvent
+                        MessageEvent = new Span.Types.TimeEvent.Types.MessageEvent
                         {
                             Id = 4,
                             CompressedSize = 5,
                             UncompressedSize = 6,
-                            Type = TimeEvent.Types.MessageEvent.Types.Type.Sent
+                            Type = Span.Types.TimeEvent.Types.MessageEvent.Types.Type.Sent
                         }
                     },
-                    new TimeEvent
+                    new Span.Types.TimeEvent
                     {
-                        MessageEvent = new TimeEvent.Types.MessageEvent
+                        MessageEvent = new Span.Types.TimeEvent.Types.MessageEvent
                         {
                             Id = 7,
                             CompressedSize = 8,
                             UncompressedSize = 9,
-                            Type = TimeEvent.Types.MessageEvent.Types.Type.Unspecified
+                            Type = Span.Types.TimeEvent.Types.MessageEvent.Types.Type.Unspecified
                         }
                     }
                 }
             };
 
-            client.TrackSpan(span);
+            this.client.TrackSpan(span);
 
-            Assert.AreEqual(4, sentItems.Count);
-            Assert.AreEqual(1, sentItems.OfType<RequestTelemetry>().Count());
-            Assert.AreEqual(3, sentItems.OfType<TraceTelemetry>().Count());
+            Assert.AreEqual(4, this.sentItems.Count);
+            Assert.AreEqual(1, this.sentItems.OfType<RequestTelemetry>().Count());
+            Assert.AreEqual(3, this.sentItems.OfType<TraceTelemetry>().Count());
 
-            var request = sentItems.OfType<RequestTelemetry>().Single();
-            var traces = sentItems.OfType<TraceTelemetry>().ToArray();
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
+            var traces = this.sentItems.OfType<TraceTelemetry>().ToArray();
 
             foreach (var t in traces)
             {
@@ -1241,13 +1240,13 @@ namespace Test.Library
             Assert.AreEqual("MessageEvent. messageId: '7', type: 'Unspecified', compressed size: '8', uncompressed size: '9'", traces[2].Message);
         }
 
-        private Span CreateBasicSpan(SpanKind kind, string spanName)
+        private Span CreateBasicSpan(Span.Types.SpanKind kind, string spanName)
         {
             var span = new Span
             {
                 Kind = kind,
-                TraceId = ByteString.CopyFrom(testTraceIdBytes, 0, 16),
-                SpanId = ByteString.CopyFrom(testSpanIdBytes, 0, 8),
+                TraceId = ByteString.CopyFrom(this.testTraceIdBytes, 0, 16),
+                SpanId = ByteString.CopyFrom(this.testSpanIdBytes, 0, 8),
                 Name = new TruncatableString { Value = spanName },
             };
 

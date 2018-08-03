@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from DataPoint.proto</summary>
   public static partial class DataPointReflection {
@@ -32,11 +32,12 @@ namespace Library.Inputs.Contracts {
             "bHVlEikKA21pbhgGIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5Eb3VibGVWYWx1",
             "ZRIpCgNtYXgYByABKAsyHC5nb29nbGUucHJvdG9idWYuRG91YmxlVmFsdWUS",
             "LAoGc3RkRGV2GAggASgLMhwuZ29vZ2xlLnByb3RvYnVmLkRvdWJsZVZhbHVl",
-            "QhuqAhhMaWJyYXJ5LklucHV0cy5Db250cmFjdHNiBnByb3RvMw=="));
+            "QjSqAjFNaWNyb3NvZnQuTG9jYWxGb3J3YXJkZXIuTGlicmFyeS5JbnB1dHMu",
+            "Q29udHJhY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, global::Library.Inputs.Contracts.DataPointTypeReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPointTypeReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.DataPoint), global::Library.Inputs.Contracts.DataPoint.Parser, new[]{ "Ns", "Name", "Kind", "Value", "Count", "Min", "Max", "StdDev" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPoint), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPoint.Parser, new[]{ "Ns", "Name", "Kind", "Value", "Count", "Min", "Max", "StdDev" }, null, null, null)
           }));
     }
     #endregion
@@ -51,7 +52,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.DataPointReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPointReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -108,12 +109,12 @@ namespace Library.Inputs.Contracts {
 
     /// <summary>Field number for the "kind" field.</summary>
     public const int KindFieldNumber = 3;
-    private global::Library.Inputs.Contracts.DataPointType kind_ = 0;
+    private global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPointType kind_ = 0;
     /// <summary>
     /// Metric type. Single measurement or aggregated value
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.DataPointType Kind {
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPointType Kind {
       get { return kind_; }
       set {
         kind_ = value;
@@ -369,7 +370,7 @@ namespace Library.Inputs.Contracts {
             break;
           }
           case 24: {
-            kind_ = (global::Library.Inputs.Contracts.DataPointType) input.ReadEnum();
+            kind_ = (global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPointType) input.ReadEnum();
             break;
           }
           case 33: {

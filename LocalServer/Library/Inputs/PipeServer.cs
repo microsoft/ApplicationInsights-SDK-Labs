@@ -1,11 +1,13 @@
-﻿namespace Library.Inputs
+﻿namespace Microsoft.LocalForwarder.Library.Inputs
 {
     using System;
-    using System.Diagnostics;
     using System.IO;
     using System.IO.Pipes;
     using System.Threading;
     using System.Threading.Tasks;
+    using Common;
+    using Contracts;
+    using Exception = System.Exception;
 
     /// <summary>
     /// A PipeServer is responsible for talking to a single client connected to a Named Pipe.
@@ -33,7 +35,7 @@
             this.IsRunning = false;
         }
 
-        public async Task Start(Func<PipeServer, Task> onClientConnected, Func<PipeServer, Task> onClientDisconnected, Func<PipeServer, Contracts.TelemetryBatch, Task> onBatchReceived)
+        public async Task Start(Func<PipeServer, Task> onClientConnected, Func<PipeServer, Task> onClientDisconnected, Func<PipeServer, TelemetryBatch, Task> onBatchReceived)
         {
             try
             {
@@ -84,7 +86,7 @@
 
                 while (!this.cts.IsCancellationRequested)
                 {
-                    Contracts.TelemetryBatch telemetryItemBatch;
+                    TelemetryBatch telemetryItemBatch;
 
                     try
                     {
@@ -104,13 +106,13 @@
                             await onClientDisconnected(this).ConfigureAwait(false);
                         }
 
-                        Common.Diagnostics.Log(FormattableString.Invariant($"The pipe was closed on the other end. {e}"));
+                        Diagnostics.Log(FormattableString.Invariant($"The pipe was closed on the other end. {e}"));
 
                         break;
                     }
                     catch (Exception e)
                     {
-                        Common.Diagnostics.Log(FormattableString.Invariant($"Reading the pipe has failed. Closing the connection. {e}"));
+                        Diagnostics.Log(FormattableString.Invariant($"Reading the pipe has failed. Closing the connection. {e}"));
 
                         break;
                     }
@@ -134,7 +136,7 @@
                 }
                 catch (Exception e)
                 {
-                    Common.Diagnostics.Log(FormattableString.Invariant($"Error while attempting to disconnect the pipe. {e}"));
+                    Diagnostics.Log(FormattableString.Invariant($"Error while attempting to disconnect the pipe. {e}"));
                 }
 
                 this.pipe?.Dispose();
@@ -161,7 +163,7 @@
             {
                 // something went wrong while traing to cancel the operation, let's at least dispose of the pipe
                 
-                Common.Diagnostics.Log(FormattableString.Invariant($"Error while attempting to cancel a pipe operation. {e}"));
+                Diagnostics.Log(FormattableString.Invariant($"Error while attempting to cancel a pipe operation. {e}"));
 
                 this.pipe.Dispose();
             }

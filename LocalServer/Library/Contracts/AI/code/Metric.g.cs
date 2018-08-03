@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from Metric.proto</summary>
   public static partial class MetricReflection {
@@ -28,12 +28,13 @@ namespace Library.Inputs.Contracts {
             "CgZNZXRyaWMSCwoDdmVyGAEgASgFEiUKB21ldHJpY3MYAiADKAsyFC5jb250",
             "cmFjdHMuRGF0YVBvaW50EjUKCnByb3BlcnRpZXMYAyADKAsyIS5jb250cmFj",
             "dHMuTWV0cmljLlByb3BlcnRpZXNFbnRyeRoxCg9Qcm9wZXJ0aWVzRW50cnkS",
-            "CwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4AUIbqgIYTGlicmFyeS5J",
-            "bnB1dHMuQ29udHJhY3RzYgZwcm90bzM="));
+            "CwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4AUI0qgIxTWljcm9zb2Z0",
+            "LkxvY2FsRm9yd2FyZGVyLkxpYnJhcnkuSW5wdXRzLkNvbnRyYWN0c2IGcHJv",
+            "dG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Library.Inputs.Contracts.DataPointReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPointReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.Metric), global::Library.Inputs.Contracts.Metric.Parser, new[]{ "Ver", "Metrics", "Properties" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, })
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Metric), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Metric.Parser, new[]{ "Ver", "Metrics", "Properties" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, })
           }));
     }
     #endregion
@@ -48,7 +49,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.MetricReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.MetricReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -89,14 +90,14 @@ namespace Library.Inputs.Contracts {
 
     /// <summary>Field number for the "metrics" field.</summary>
     public const int MetricsFieldNumber = 2;
-    private static readonly pb::FieldCodec<global::Library.Inputs.Contracts.DataPoint> _repeated_metrics_codec
-        = pb::FieldCodec.ForMessage(18, global::Library.Inputs.Contracts.DataPoint.Parser);
-    private readonly pbc::RepeatedField<global::Library.Inputs.Contracts.DataPoint> metrics_ = new pbc::RepeatedField<global::Library.Inputs.Contracts.DataPoint>();
+    private static readonly pb::FieldCodec<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPoint> _repeated_metrics_codec
+        = pb::FieldCodec.ForMessage(18, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPoint.Parser);
+    private readonly pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPoint> metrics_ = new pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPoint>();
     /// <summary>
     /// only one metric in the list is currently supported by Application Insights storage. If multiple data points were sent only the first one will be used.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Library.Inputs.Contracts.DataPoint> Metrics {
+    public pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPoint> Metrics {
       get { return metrics_; }
     }
 

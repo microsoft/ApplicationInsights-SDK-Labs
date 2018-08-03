@@ -1,10 +1,12 @@
-﻿namespace Library.Inputs
+﻿namespace Microsoft.LocalForwarder.Library.Inputs
 {
     using System;
     using System.IO;
     using System.IO.Pipes;
     using System.Threading;
     using System.Threading.Tasks;
+    using Contracts;
+    using Exception = System.Exception;
 
     internal class StreamReader
     {
@@ -39,7 +41,7 @@
         //    }
         //}
 
-        public async Task<Contracts.TelemetryBatch> ReadPipe(NamedPipeServerStream stream, PipeServerStats stats, CancellationToken ct)
+        public async Task<TelemetryBatch> ReadPipe(NamedPipeServerStream stream, PipeServerStats stats, CancellationToken ct)
         {
             await StreamReader.ReadPipe(stream, this.incomingBatchLengthRaw, this.incomingBatchLengthRaw.Length, null, ct).ConfigureAwait(false);
 
@@ -52,7 +54,7 @@
 
             await StreamReader.ReadPipe(stream, this.incomingBatchRaw, itemLength, stats, ct).ConfigureAwait(false);
 
-            return Contracts.TelemetryBatch.Parser.ParseFrom(this.incomingBatchRaw, 0, itemLength);
+            return TelemetryBatch.Parser.ParseFrom(this.incomingBatchRaw, 0, itemLength);
         }
 
         //public static async Task ReadSocket(NetworkStream stream, byte[] bytes, int count, Action<int> bytesRead)

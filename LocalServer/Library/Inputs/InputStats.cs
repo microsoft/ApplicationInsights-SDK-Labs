@@ -1,7 +1,5 @@
-﻿namespace Library.Inputs
+﻿namespace Microsoft.LocalForwarder.Library.Inputs
 {
-    using System;
-
     /// <summary>
     /// Statistics regarding the current state of an Input.
     /// </summary>

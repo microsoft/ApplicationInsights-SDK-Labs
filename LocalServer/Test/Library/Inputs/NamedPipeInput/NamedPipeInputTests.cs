@@ -1,15 +1,14 @@
-namespace Test.Library.Inputs.NamedPipeInput
+namespace Microsoft.LocalForwarder.Test.Library.Inputs.NamedPipeInput
 {
-    using global::Library.Inputs.Contracts;
-    using global::Library.Inputs.NamedPipeInput;
-    using Google.Protobuf;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Google.Protobuf;
+    using LocalForwarder.Library.Inputs.Contracts;
+    using LocalForwarder.Library.Inputs.NamedPipeInput;
+    using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class NamedPipeInputTests

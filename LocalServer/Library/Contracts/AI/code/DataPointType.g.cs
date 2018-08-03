@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from DataPointType.proto</summary>
   public static partial class DataPointTypeReflection {
@@ -25,11 +25,12 @@ namespace Library.Inputs.Contracts {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChNEYXRhUG9pbnRUeXBlLnByb3RvEgljb250cmFjdHMqMQoNRGF0YVBvaW50",
-            "VHlwZRIPCgtNZWFzdXJlbWVudBAAEg8KC0FnZ3JlZ2F0aW9uEAFCG6oCGExp",
-            "YnJhcnkuSW5wdXRzLkNvbnRyYWN0c2IGcHJvdG8z"));
+            "VHlwZRIPCgtNZWFzdXJlbWVudBAAEg8KC0FnZ3JlZ2F0aW9uEAFCNKoCMU1p",
+            "Y3Jvc29mdC5Mb2NhbEZvcndhcmRlci5MaWJyYXJ5LklucHV0cy5Db250cmFj",
+            "dHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Library.Inputs.Contracts.DataPointType), }, null));
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DataPointType), }, null));
     }
     #endregion
 

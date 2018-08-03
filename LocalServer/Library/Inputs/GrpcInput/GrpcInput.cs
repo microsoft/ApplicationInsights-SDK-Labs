@@ -1,11 +1,12 @@
-﻿namespace Library.Inputs.GrpcInput
+﻿namespace Microsoft.LocalForwarder.Library.Inputs.GrpcInput
 {
-    using Contracts;
-    using Grpc.Core;
-    using Opencensus.Proto.Exporter;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Common;
+    using Contracts;
+    using Grpc.Core;
+    using Opencensus.Proto.Exporter;
 
     /// <summary>
     /// gRpc-based input
@@ -130,7 +131,7 @@
                         // unexpected exception occured while processing the batch
                         Interlocked.Increment(ref this.stats.BatchesFailed);
 
-                        Common.Diagnostics.Log(FormattableString.Invariant($"Unknown exception while processing a batch received through the gRpc input. {e.ToString()}"));
+                        Diagnostics.Log(FormattableString.Invariant($"Unknown exception while processing a batch received through the gRpc input. {e.ToString()}"));
                     }
                 }
             }
@@ -141,7 +142,7 @@
             catch (System.Exception e)
             {
                 // unexpected exception occured
-                Common.Diagnostics.Log(FormattableString.Invariant($"Unknown exception while reading from gRpc stream. {e.ToString()}"));
+                Diagnostics.Log(FormattableString.Invariant($"Unknown exception while reading from gRpc stream. {e.ToString()}"));
 
                 this.Stop();
             }

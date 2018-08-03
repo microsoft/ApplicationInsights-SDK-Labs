@@ -1,11 +1,13 @@
-namespace Test.Library
+namespace Microsoft.LocalForwarder.Test
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Threading;
+    using VisualStudio.TestTools.UnitTesting;
 
     public static class Common
     {
+        private static readonly Random rand = new Random();
+
         public static byte[] EncodeLengthPrefix(int length)
         {
             // little endian
@@ -18,6 +20,18 @@ namespace Test.Library
         {
             timeout = timeout ?? Timeout.InfiniteTimeSpan;
             Assert.IsTrue(SpinWait.SpinUntil(condition, timeout.Value));
+        }
+
+        public static void AssertIsFalseEventually(Func<bool> condition, TimeSpan? timeout = null)
+        {
+            timeout = timeout ?? Timeout.InfiniteTimeSpan;
+            Assert.IsFalse(SpinWait.SpinUntil(condition, timeout.Value));
+        }
+
+        public static int GetPort()
+        {
+            // dynamic port range
+            return rand.Next(49152, 65535);
         }
     }
 }

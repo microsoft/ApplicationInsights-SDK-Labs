@@ -1,24 +1,23 @@
-namespace Test.Library.Inputs.NamedPipeInput
+namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 {
-    using global::Library.Inputs.Contracts;
-    using global::Library.Inputs.GrpcInput;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using LocalForwarder.Library.Inputs.GrpcInput;
     using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using LocalForwarder.Library.Inputs.Contracts;
+    using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class GrpcAiInputTests
     {
-        private static readonly Random rand = new Random();
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
 
         [TestMethod]
         public async Task GrpcAiInputTests_StartsAndStops()
         {
             // ARRANGE
-            int port = GetPort();
+            int port = Common.GetPort();
             var input = new GrpcAiInput("localhost", port);
 
             // ACT
@@ -38,7 +37,7 @@ namespace Test.Library.Inputs.NamedPipeInput
         public async Task GrpcAiInputTests_CantStartWhileRunning()
         {
             // ARRANGE
-            int port = GetPort();
+            int port = Common.GetPort();
             var input = new GrpcAiInput("localhost", port);
 
             input.Start(null);
@@ -56,7 +55,7 @@ namespace Test.Library.Inputs.NamedPipeInput
         public async Task GrpcAiInputTests_CantStopWhileStopped()
         {
             // ARRANGE
-            int port = GetPort();
+            int port = Common.GetPort();
             var input = new GrpcAiInput("localhost", port);
             
             // ACT
@@ -72,7 +71,7 @@ namespace Test.Library.Inputs.NamedPipeInput
             int batchesReceived = 0;
             TelemetryBatch receivedBatch = null;
 
-            int port = GetPort();
+            int port = Common.GetPort();
             var input = new GrpcAiInput("localhost", port);
             input.Start(telemetryBatch =>
             {
@@ -105,7 +104,7 @@ namespace Test.Library.Inputs.NamedPipeInput
             int batchesReceived = 0;
             TelemetryBatch receivedBatch = null;
             
-            int port = GetPort();
+            int port = Common.GetPort();
             var input = new GrpcAiInput("localhost", port);
             input.Start(telemetryBatch =>
             {
@@ -140,7 +139,7 @@ namespace Test.Library.Inputs.NamedPipeInput
             int batchesReceived = 0;
             TelemetryBatch receivedBatch = null;
 
-            int port = GetPort();
+            int port = Common.GetPort();
             var input = new GrpcAiInput("localhost", port);
 
             input.Start(telemetryBatch =>
@@ -178,7 +177,7 @@ namespace Test.Library.Inputs.NamedPipeInput
             int batchesReceived = 0;
             TelemetryBatch receivedBatch = null;
 
-            int port = GetPort();
+            int port = Common.GetPort();
             var input = new GrpcAiInput("localhost", port);
 
             input.Start(telemetryBatch =>
@@ -229,7 +228,7 @@ namespace Test.Library.Inputs.NamedPipeInput
         public async Task GrpcAiInputTests_HandlesExceptionsInProcessingHandler()
         {
             // ARRANGE
-            int port = GetPort();
+            int port = Common.GetPort();
             var input = new GrpcAiInput("localhost", port);
 
             input.Start(telemetryBatch => throw new InvalidOperationException());
@@ -257,12 +256,6 @@ namespace Test.Library.Inputs.NamedPipeInput
             Common.AssertIsTrueEventually(
                 () => input.IsRunning && input.GetStats().BatchesReceived == 0 && input.GetStats().BatchesFailed == 2,
                 GrpcAiInputTests.DefaultTimeout);
-        }
-
-        private static int GetPort()
-        {
-            // dynamic port range
-            return rand.Next(49152, 65535);
         }
     }
 }

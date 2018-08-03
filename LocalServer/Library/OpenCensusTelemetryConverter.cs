@@ -1,17 +1,14 @@
-﻿using System.ComponentModel;
-using Google.Protobuf.WellKnownTypes;
-
-namespace Library
+﻿namespace Microsoft.LocalForwarder.Library
 {
-    using Google.Protobuf;
-    using Microsoft.ApplicationInsights;
-    using Microsoft.ApplicationInsights.Channel;
-    using Microsoft.ApplicationInsights.DataContracts;
-    using Microsoft.ApplicationInsights.Extensibility.Implementation;
-    using Opencensus.Proto.Trace;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using ApplicationInsights;
+    using ApplicationInsights.Channel;
+    using ApplicationInsights.DataContracts;
+    using ApplicationInsights.Extensibility.Implementation;
+    using Google.Protobuf;
+    using Opencensus.Proto.Trace;
 
     static class OpenCensusTelemetryConverter
     {

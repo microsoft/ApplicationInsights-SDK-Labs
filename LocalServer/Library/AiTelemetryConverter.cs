@@ -1,14 +1,15 @@
-﻿namespace Library
+﻿namespace Microsoft.LocalForwarder.Library
 {
-    using Google.Protobuf.Collections;
-    using Inputs.Contracts;
-    using Microsoft.ApplicationInsights.Channel;
-    using Microsoft.ApplicationInsights.DataContracts;
-    using Microsoft.ApplicationInsights.Extensibility.Implementation;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using ApplicationInsights.Channel;
+    using ApplicationInsights.DataContracts;
+    using ApplicationInsights.Extensibility.Implementation;
+    using Common;
+    using Google.Protobuf.Collections;
+    using Inputs.Contracts;
 
     static class AiTelemetryConverter
     {
@@ -83,7 +84,7 @@
         public static ExceptionTelemetry ConvertExceptionToSdkApi(Telemetry inputTelemetry)
         {
             //!!! make sure we're onboarded onto a release version of AI SDK
-            Inputs.Contracts.Exception item = inputTelemetry.Exception;
+            var item = inputTelemetry.Exception;
 
             var result = new ExceptionTelemetry(
                 item.Exceptions.Select(ed => new ExceptionDetailsInfo(ed.Id, ed.OuterId, ed.TypeName, ed.Message, ed.HasFullStack.Value, ed.Stack,
@@ -307,7 +308,7 @@
                 else
                 {
                     // unknown tag, log and ignore
-                    Common.Diagnostics.Log(FormattableString.Invariant($"Unknown tag. Ignoring. {tag.Key}"));
+                    Diagnostics.Log(FormattableString.Invariant($"Unknown tag. Ignoring. {tag.Key}"));
                 }
             }
         }

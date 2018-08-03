@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from Availability.proto</summary>
   public static partial class AvailabilityReflection {
@@ -34,11 +34,12 @@ namespace Library.Inputs.Contracts {
             "bnRyYWN0cy5BdmFpbGFiaWxpdHkuTWVhc3VyZW1lbnRzRW50cnkaMQoPUHJv",
             "cGVydGllc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEa",
             "MwoRTWVhc3VyZW1lbnRzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIg",
-            "ASgBOgI4AUIbqgIYTGlicmFyeS5JbnB1dHMuQ29udHJhY3RzYgZwcm90bzM="));
+            "ASgBOgI4AUI0qgIxTWljcm9zb2Z0LkxvY2FsRm9yd2FyZGVyLkxpYnJhcnku",
+            "SW5wdXRzLkNvbnRyYWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.DurationReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.Availability), global::Library.Inputs.Contracts.Availability.Parser, new[]{ "Ver", "Id", "Name", "Duration", "Success", "RunLocation", "Message", "Properties", "Measurements" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, })
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Availability), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Availability.Parser, new[]{ "Ver", "Id", "Name", "Duration", "Success", "RunLocation", "Message", "Properties", "Measurements" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, })
           }));
     }
     #endregion
@@ -53,7 +54,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.AvailabilityReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.AvailabilityReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

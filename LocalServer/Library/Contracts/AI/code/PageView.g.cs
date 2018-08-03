@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from PageView.proto</summary>
   public static partial class PageViewReflection {
@@ -28,12 +28,13 @@ namespace Library.Inputs.Contracts {
             "cm90b2J1Zi9kdXJhdGlvbi5wcm90bxoLRXZlbnQucHJvdG8ihgEKCFBhZ2VW",
             "aWV3Eh8KBWV2ZW50GAEgASgLMhAuY29udHJhY3RzLkV2ZW50EgsKA3VybBgC",
             "IAEoCRIrCghkdXJhdGlvbhgDIAEoCzIZLmdvb2dsZS5wcm90b2J1Zi5EdXJh",
-            "dGlvbhIKCgJpZBgEIAEoCRITCgtyZWZlcnJlclVyaRgFIAEoCUIbqgIYTGli",
-            "cmFyeS5JbnB1dHMuQ29udHJhY3RzYgZwcm90bzM="));
+            "dGlvbhIKCgJpZBgEIAEoCRITCgtyZWZlcnJlclVyaRgFIAEoCUI0qgIxTWlj",
+            "cm9zb2Z0LkxvY2FsRm9yd2FyZGVyLkxpYnJhcnkuSW5wdXRzLkNvbnRyYWN0",
+            "c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.DurationReflection.Descriptor, global::Library.Inputs.Contracts.EventReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.DurationReflection.Descriptor, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.EventReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.PageView), global::Library.Inputs.Contracts.PageView.Parser, new[]{ "Event", "Url", "Duration", "Id", "ReferrerUri" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.PageView), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.PageView.Parser, new[]{ "Event", "Url", "Duration", "Id", "ReferrerUri" }, null, null, null)
           }));
     }
     #endregion
@@ -48,7 +49,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.PageViewReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.PageViewReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -80,9 +81,9 @@ namespace Library.Inputs.Contracts {
 
     /// <summary>Field number for the "event" field.</summary>
     public const int EventFieldNumber = 1;
-    private global::Library.Inputs.Contracts.Event event_;
+    private global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Event event_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.Event Event {
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Event Event {
       get { return event_; }
       set {
         event_ = value;
@@ -231,7 +232,7 @@ namespace Library.Inputs.Contracts {
       }
       if (other.event_ != null) {
         if (event_ == null) {
-          event_ = new global::Library.Inputs.Contracts.Event();
+          event_ = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Event();
         }
         Event.MergeFrom(other.Event);
       }
@@ -263,7 +264,7 @@ namespace Library.Inputs.Contracts {
             break;
           case 10: {
             if (event_ == null) {
-              event_ = new global::Library.Inputs.Contracts.Event();
+              event_ = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Event();
             }
             input.ReadMessage(event_);
             break;

@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from ExceptionDetails.proto</summary>
   public static partial class ExceptionDetailsReflection {
@@ -30,12 +30,12 @@ namespace Library.Inputs.Contracts {
             "SWQYAiABKAUSEAoIdHlwZU5hbWUYAyABKAkSDwoHbWVzc2FnZRgEIAEoCRIw",
             "CgxoYXNGdWxsU3RhY2sYBSABKAsyGi5nb29nbGUucHJvdG9idWYuQm9vbFZh",
             "bHVlEg0KBXN0YWNrGAYgASgJEioKC3BhcnNlZFN0YWNrGAcgAygLMhUuY29u",
-            "dHJhY3RzLlN0YWNrRnJhbWVCG6oCGExpYnJhcnkuSW5wdXRzLkNvbnRyYWN0",
-            "c2IGcHJvdG8z"));
+            "dHJhY3RzLlN0YWNrRnJhbWVCNKoCMU1pY3Jvc29mdC5Mb2NhbEZvcndhcmRl",
+            "ci5MaWJyYXJ5LklucHV0cy5Db250cmFjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Library.Inputs.Contracts.StackFrameReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Microsoft.LocalForwarder.Library.Inputs.Contracts.StackFrameReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.ExceptionDetails), global::Library.Inputs.Contracts.ExceptionDetails.Parser, new[]{ "Id", "OuterId", "TypeName", "Message", "HasFullStack", "Stack", "ParsedStack" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.ExceptionDetails), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.ExceptionDetails.Parser, new[]{ "Id", "OuterId", "TypeName", "Message", "HasFullStack", "Stack", "ParsedStack" }, null, null, null)
           }));
     }
     #endregion
@@ -50,7 +50,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.ExceptionDetailsReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.ExceptionDetailsReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -153,11 +153,11 @@ namespace Library.Inputs.Contracts {
 
     /// <summary>Field number for the "parsedStack" field.</summary>
     public const int ParsedStackFieldNumber = 7;
-    private static readonly pb::FieldCodec<global::Library.Inputs.Contracts.StackFrame> _repeated_parsedStack_codec
-        = pb::FieldCodec.ForMessage(58, global::Library.Inputs.Contracts.StackFrame.Parser);
-    private readonly pbc::RepeatedField<global::Library.Inputs.Contracts.StackFrame> parsedStack_ = new pbc::RepeatedField<global::Library.Inputs.Contracts.StackFrame>();
+    private static readonly pb::FieldCodec<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.StackFrame> _repeated_parsedStack_codec
+        = pb::FieldCodec.ForMessage(58, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.StackFrame.Parser);
+    private readonly pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.StackFrame> parsedStack_ = new pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.StackFrame>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Library.Inputs.Contracts.StackFrame> ParsedStack {
+    public pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.StackFrame> ParsedStack {
       get { return parsedStack_; }
     }
 

@@ -1,10 +1,10 @@
-namespace Test.Library
+namespace Microsoft.LocalForwarder.Test
 {
-    using global::Library.Inputs.Contracts;
     using Grpc.Core;
+    using LocalForwarder.Library.Inputs.Contracts;
+    using Opencensus.Proto.Exporter;
     using System;
     using System.Threading.Tasks;
-    using Opencensus.Proto.Exporter;
 
     public class GrpcWriter
     {

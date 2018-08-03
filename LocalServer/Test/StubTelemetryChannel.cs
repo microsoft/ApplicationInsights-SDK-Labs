@@ -1,7 +1,7 @@
-﻿namespace Test
+﻿namespace Microsoft.LocalForwarder.Test
 {
     using System;
-    using Microsoft.ApplicationInsights.Channel;
+    using ApplicationInsights.Channel;
 
     /// <summary>
     /// A stub of <see cref="ITelemetryChannel"/>.

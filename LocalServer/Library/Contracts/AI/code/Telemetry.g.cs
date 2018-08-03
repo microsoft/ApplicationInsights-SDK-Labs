@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from Telemetry.proto</summary>
   public static partial class TelemetryReflection {
@@ -41,12 +41,13 @@ namespace Library.Inputs.Contracts {
             "IAEoCzIXLmNvbnRyYWN0cy5BdmFpbGFiaWxpdHlIABInCghwYWdlVmlldxgO",
             "IAEoCzITLmNvbnRyYWN0cy5QYWdlVmlld0gAEiUKB3JlcXVlc3QYDyABKAsy",
             "Ei5jb250cmFjdHMuUmVxdWVzdEgAGisKCVRhZ3NFbnRyeRILCgNrZXkYASAB",
-            "KAkSDQoFdmFsdWUYAiABKAk6AjgBQgYKBGRhdGFCG6oCGExpYnJhcnkuSW5w",
-            "dXRzLkNvbnRyYWN0c2IGcHJvdG8z"));
+            "KAkSDQoFdmFsdWUYAiABKAk6AjgBQgYKBGRhdGFCNKoCMU1pY3Jvc29mdC5M",
+            "b2NhbEZvcndhcmRlci5MaWJyYXJ5LklucHV0cy5Db250cmFjdHNiBnByb3Rv",
+            "Mw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, global::Library.Inputs.Contracts.EventReflection.Descriptor, global::Library.Inputs.Contracts.MessageReflection.Descriptor, global::Library.Inputs.Contracts.MetricReflection.Descriptor, global::Library.Inputs.Contracts.ExceptionReflection.Descriptor, global::Library.Inputs.Contracts.DependencyReflection.Descriptor, global::Library.Inputs.Contracts.AvailabilityReflection.Descriptor, global::Library.Inputs.Contracts.PageViewReflection.Descriptor, global::Library.Inputs.Contracts.RequestReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.EventReflection.Descriptor, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.MessageReflection.Descriptor, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.MetricReflection.Descriptor, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.ExceptionReflection.Descriptor, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.DependencyReflection.Descriptor, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.AvailabilityReflection.Descriptor, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.PageViewReflection.Descriptor, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.RequestReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.Telemetry), global::Library.Inputs.Contracts.Telemetry.Parser, new[]{ "Ver", "DataTypeName", "DateTime", "SamplingRate", "SequenceNumber", "InstrumentationKey", "Tags", "Event", "Message", "Metric", "Exception", "Dependency", "Availability", "PageView", "Request" }, new[]{ "Data" }, null, new pbr::GeneratedClrTypeInfo[] { null, })
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Telemetry), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Telemetry.Parser, new[]{ "Ver", "DataTypeName", "DateTime", "SamplingRate", "SequenceNumber", "InstrumentationKey", "Tags", "Event", "Message", "Metric", "Exception", "Dependency", "Availability", "PageView", "Request" }, new[]{ "Data" }, null, new pbr::GeneratedClrTypeInfo[] { null, })
           }));
     }
     #endregion
@@ -61,7 +62,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.TelemetryReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -207,8 +208,8 @@ namespace Library.Inputs.Contracts {
     /// <summary>Field number for the "event" field.</summary>
     public const int EventFieldNumber = 8;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.Event Event {
-      get { return dataCase_ == DataOneofCase.Event ? (global::Library.Inputs.Contracts.Event) data_ : null; }
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Event Event {
+      get { return dataCase_ == DataOneofCase.Event ? (global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Event) data_ : null; }
       set {
         data_ = value;
         dataCase_ = value == null ? DataOneofCase.None : DataOneofCase.Event;
@@ -218,8 +219,8 @@ namespace Library.Inputs.Contracts {
     /// <summary>Field number for the "message" field.</summary>
     public const int MessageFieldNumber = 9;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.Message Message {
-      get { return dataCase_ == DataOneofCase.Message ? (global::Library.Inputs.Contracts.Message) data_ : null; }
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Message Message {
+      get { return dataCase_ == DataOneofCase.Message ? (global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Message) data_ : null; }
       set {
         data_ = value;
         dataCase_ = value == null ? DataOneofCase.None : DataOneofCase.Message;
@@ -229,8 +230,8 @@ namespace Library.Inputs.Contracts {
     /// <summary>Field number for the "metric" field.</summary>
     public const int MetricFieldNumber = 10;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.Metric Metric {
-      get { return dataCase_ == DataOneofCase.Metric ? (global::Library.Inputs.Contracts.Metric) data_ : null; }
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Metric Metric {
+      get { return dataCase_ == DataOneofCase.Metric ? (global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Metric) data_ : null; }
       set {
         data_ = value;
         dataCase_ = value == null ? DataOneofCase.None : DataOneofCase.Metric;
@@ -240,8 +241,8 @@ namespace Library.Inputs.Contracts {
     /// <summary>Field number for the "exception" field.</summary>
     public const int ExceptionFieldNumber = 11;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.Exception Exception {
-      get { return dataCase_ == DataOneofCase.Exception ? (global::Library.Inputs.Contracts.Exception) data_ : null; }
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Exception Exception {
+      get { return dataCase_ == DataOneofCase.Exception ? (global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Exception) data_ : null; }
       set {
         data_ = value;
         dataCase_ = value == null ? DataOneofCase.None : DataOneofCase.Exception;
@@ -251,8 +252,8 @@ namespace Library.Inputs.Contracts {
     /// <summary>Field number for the "dependency" field.</summary>
     public const int DependencyFieldNumber = 12;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.Dependency Dependency {
-      get { return dataCase_ == DataOneofCase.Dependency ? (global::Library.Inputs.Contracts.Dependency) data_ : null; }
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Dependency Dependency {
+      get { return dataCase_ == DataOneofCase.Dependency ? (global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Dependency) data_ : null; }
       set {
         data_ = value;
         dataCase_ = value == null ? DataOneofCase.None : DataOneofCase.Dependency;
@@ -262,8 +263,8 @@ namespace Library.Inputs.Contracts {
     /// <summary>Field number for the "availability" field.</summary>
     public const int AvailabilityFieldNumber = 13;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.Availability Availability {
-      get { return dataCase_ == DataOneofCase.Availability ? (global::Library.Inputs.Contracts.Availability) data_ : null; }
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Availability Availability {
+      get { return dataCase_ == DataOneofCase.Availability ? (global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Availability) data_ : null; }
       set {
         data_ = value;
         dataCase_ = value == null ? DataOneofCase.None : DataOneofCase.Availability;
@@ -273,8 +274,8 @@ namespace Library.Inputs.Contracts {
     /// <summary>Field number for the "pageView" field.</summary>
     public const int PageViewFieldNumber = 14;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.PageView PageView {
-      get { return dataCase_ == DataOneofCase.PageView ? (global::Library.Inputs.Contracts.PageView) data_ : null; }
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.PageView PageView {
+      get { return dataCase_ == DataOneofCase.PageView ? (global::Microsoft.LocalForwarder.Library.Inputs.Contracts.PageView) data_ : null; }
       set {
         data_ = value;
         dataCase_ = value == null ? DataOneofCase.None : DataOneofCase.PageView;
@@ -284,8 +285,8 @@ namespace Library.Inputs.Contracts {
     /// <summary>Field number for the "request" field.</summary>
     public const int RequestFieldNumber = 15;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.Request Request {
-      get { return dataCase_ == DataOneofCase.Request ? (global::Library.Inputs.Contracts.Request) data_ : null; }
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Request Request {
+      get { return dataCase_ == DataOneofCase.Request ? (global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Request) data_ : null; }
       set {
         data_ = value;
         dataCase_ = value == null ? DataOneofCase.None : DataOneofCase.Request;
@@ -525,49 +526,49 @@ namespace Library.Inputs.Contracts {
       switch (other.DataCase) {
         case DataOneofCase.Event:
           if (Event == null) {
-            Event = new global::Library.Inputs.Contracts.Event();
+            Event = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Event();
           }
           Event.MergeFrom(other.Event);
           break;
         case DataOneofCase.Message:
           if (Message == null) {
-            Message = new global::Library.Inputs.Contracts.Message();
+            Message = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Message();
           }
           Message.MergeFrom(other.Message);
           break;
         case DataOneofCase.Metric:
           if (Metric == null) {
-            Metric = new global::Library.Inputs.Contracts.Metric();
+            Metric = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Metric();
           }
           Metric.MergeFrom(other.Metric);
           break;
         case DataOneofCase.Exception:
           if (Exception == null) {
-            Exception = new global::Library.Inputs.Contracts.Exception();
+            Exception = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Exception();
           }
           Exception.MergeFrom(other.Exception);
           break;
         case DataOneofCase.Dependency:
           if (Dependency == null) {
-            Dependency = new global::Library.Inputs.Contracts.Dependency();
+            Dependency = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Dependency();
           }
           Dependency.MergeFrom(other.Dependency);
           break;
         case DataOneofCase.Availability:
           if (Availability == null) {
-            Availability = new global::Library.Inputs.Contracts.Availability();
+            Availability = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Availability();
           }
           Availability.MergeFrom(other.Availability);
           break;
         case DataOneofCase.PageView:
           if (PageView == null) {
-            PageView = new global::Library.Inputs.Contracts.PageView();
+            PageView = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.PageView();
           }
           PageView.MergeFrom(other.PageView);
           break;
         case DataOneofCase.Request:
           if (Request == null) {
-            Request = new global::Library.Inputs.Contracts.Request();
+            Request = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Request();
           }
           Request.MergeFrom(other.Request);
           break;
@@ -616,7 +617,7 @@ namespace Library.Inputs.Contracts {
             break;
           }
           case 66: {
-            global::Library.Inputs.Contracts.Event subBuilder = new global::Library.Inputs.Contracts.Event();
+            global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Event subBuilder = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Event();
             if (dataCase_ == DataOneofCase.Event) {
               subBuilder.MergeFrom(Event);
             }
@@ -625,7 +626,7 @@ namespace Library.Inputs.Contracts {
             break;
           }
           case 74: {
-            global::Library.Inputs.Contracts.Message subBuilder = new global::Library.Inputs.Contracts.Message();
+            global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Message subBuilder = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Message();
             if (dataCase_ == DataOneofCase.Message) {
               subBuilder.MergeFrom(Message);
             }
@@ -634,7 +635,7 @@ namespace Library.Inputs.Contracts {
             break;
           }
           case 82: {
-            global::Library.Inputs.Contracts.Metric subBuilder = new global::Library.Inputs.Contracts.Metric();
+            global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Metric subBuilder = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Metric();
             if (dataCase_ == DataOneofCase.Metric) {
               subBuilder.MergeFrom(Metric);
             }
@@ -643,7 +644,7 @@ namespace Library.Inputs.Contracts {
             break;
           }
           case 90: {
-            global::Library.Inputs.Contracts.Exception subBuilder = new global::Library.Inputs.Contracts.Exception();
+            global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Exception subBuilder = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Exception();
             if (dataCase_ == DataOneofCase.Exception) {
               subBuilder.MergeFrom(Exception);
             }
@@ -652,7 +653,7 @@ namespace Library.Inputs.Contracts {
             break;
           }
           case 98: {
-            global::Library.Inputs.Contracts.Dependency subBuilder = new global::Library.Inputs.Contracts.Dependency();
+            global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Dependency subBuilder = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Dependency();
             if (dataCase_ == DataOneofCase.Dependency) {
               subBuilder.MergeFrom(Dependency);
             }
@@ -661,7 +662,7 @@ namespace Library.Inputs.Contracts {
             break;
           }
           case 106: {
-            global::Library.Inputs.Contracts.Availability subBuilder = new global::Library.Inputs.Contracts.Availability();
+            global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Availability subBuilder = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Availability();
             if (dataCase_ == DataOneofCase.Availability) {
               subBuilder.MergeFrom(Availability);
             }
@@ -670,7 +671,7 @@ namespace Library.Inputs.Contracts {
             break;
           }
           case 114: {
-            global::Library.Inputs.Contracts.PageView subBuilder = new global::Library.Inputs.Contracts.PageView();
+            global::Microsoft.LocalForwarder.Library.Inputs.Contracts.PageView subBuilder = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.PageView();
             if (dataCase_ == DataOneofCase.PageView) {
               subBuilder.MergeFrom(PageView);
             }
@@ -679,7 +680,7 @@ namespace Library.Inputs.Contracts {
             break;
           }
           case 122: {
-            global::Library.Inputs.Contracts.Request subBuilder = new global::Library.Inputs.Contracts.Request();
+            global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Request subBuilder = new global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Request();
             if (dataCase_ == DataOneofCase.Request) {
               subBuilder.MergeFrom(Request);
             }

@@ -1,13 +1,13 @@
-namespace Test.Library.Inputs.NamedPipeInput
+namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 {
-    using global::Library.Inputs.GrpcInput;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Opencensus.Proto.Exporter;
-    using Opencensus.Proto.Trace;
+    using LocalForwarder.Library.Inputs.GrpcInput;
     using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Opencensus.Proto.Exporter;
+    using Opencensus.Proto.Trace;
+    using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class GrpcOpenCensusInputTests

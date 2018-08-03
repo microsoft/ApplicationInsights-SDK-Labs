@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from Message.proto</summary>
   public static partial class MessageReflection {
@@ -29,12 +29,12 @@ namespace Library.Inputs.Contracts {
             "LwoNc2V2ZXJpdHlMZXZlbBgDIAEoDjIYLmNvbnRyYWN0cy5TZXZlcml0eUxl",
             "dmVsEjYKCnByb3BlcnRpZXMYBCADKAsyIi5jb250cmFjdHMuTWVzc2FnZS5Q",
             "cm9wZXJ0aWVzRW50cnkaMQoPUHJvcGVydGllc0VudHJ5EgsKA2tleRgBIAEo",
-            "CRINCgV2YWx1ZRgCIAEoCToCOAFCG6oCGExpYnJhcnkuSW5wdXRzLkNvbnRy",
-            "YWN0c2IGcHJvdG8z"));
+            "CRINCgV2YWx1ZRgCIAEoCToCOAFCNKoCMU1pY3Jvc29mdC5Mb2NhbEZvcndh",
+            "cmRlci5MaWJyYXJ5LklucHV0cy5Db250cmFjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Library.Inputs.Contracts.SeverityLevelReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Microsoft.LocalForwarder.Library.Inputs.Contracts.SeverityLevelReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.Message), global::Library.Inputs.Contracts.Message.Parser, new[]{ "Ver", "Message_", "SeverityLevel", "Properties" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, })
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Message), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Message.Parser, new[]{ "Ver", "Message_", "SeverityLevel", "Properties" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, })
           }));
     }
     #endregion
@@ -49,7 +49,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.MessageReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.MessageReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -102,9 +102,9 @@ namespace Library.Inputs.Contracts {
 
     /// <summary>Field number for the "severityLevel" field.</summary>
     public const int SeverityLevelFieldNumber = 3;
-    private global::Library.Inputs.Contracts.SeverityLevel severityLevel_ = 0;
+    private global::Microsoft.LocalForwarder.Library.Inputs.Contracts.SeverityLevel severityLevel_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.SeverityLevel SeverityLevel {
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.SeverityLevel SeverityLevel {
       get { return severityLevel_; }
       set {
         severityLevel_ = value;
@@ -233,7 +233,7 @@ namespace Library.Inputs.Contracts {
             break;
           }
           case 24: {
-            severityLevel_ = (global::Library.Inputs.Contracts.SeverityLevel) input.ReadEnum();
+            severityLevel_ = (global::Microsoft.LocalForwarder.Library.Inputs.Contracts.SeverityLevel) input.ReadEnum();
             break;
           }
           case 34: {

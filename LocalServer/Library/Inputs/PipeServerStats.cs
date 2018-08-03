@@ -1,9 +1,5 @@
-﻿using System.Globalization;
-
-namespace Library.Inputs
+﻿namespace Microsoft.LocalForwarder.Library.Inputs
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// Statistics regarding the current state of a PipeServer.
     /// </summary>

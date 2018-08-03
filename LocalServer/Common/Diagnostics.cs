@@ -1,12 +1,83 @@
-﻿namespace Common
+﻿namespace Microsoft.LocalForwarder.Common
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
     using System.Threading;
+    using System.Xml;
     using NLog;
+    using NLog.Config;
 
-    public class Diagnostics
+    public static class Diagnostics
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger logger;
         private static SpinLock spinLock = new SpinLock();
+
+        //!!! no test coverage in this file
+
+        static Diagnostics()
+        {
+            logger = LogManager.GetCurrentClassLogger();
+
+            try
+            {
+                if (LogManager.Configuration?.LoggingRules?.Any() == true)
+                {
+                    // config file has been read, use that
+                }
+                else
+                {
+                    // no config file, use default config
+                    string nlogConfigXml = ReadDefaultConfiguration();
+
+                    SetDefaultConfiguration(nlogConfigXml);
+                }
+            }
+            catch (Exception)
+            {
+                // telemetry can never crash the application, swallow the exception
+                // this probably means no logging
+            }
+        }
+
+        private static void SetDefaultConfiguration(string configXml)
+        {
+            using (var sr = new StringReader(configXml))
+            {
+                using (var xr = XmlReader.Create(sr))
+                {
+                    LogManager.Configuration = new XmlLoggingConfiguration(xr, null);
+                }
+            }
+
+            LogManager.ReconfigExistingLoggers();
+        }
+
+        private static string ReadDefaultConfiguration()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "Microsoft.LocalForwarder.Common.NLog.config";
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Do not use during normal operation.
+        /// Unit test use only.
+        /// </summary>
+        internal static void Shutdown(TimeSpan timeout)
+        {
+            LogManager.Flush(timeout);
+
+            LogManager.Shutdown();
+        }
 
         public static void Log(string message)
         {
@@ -20,6 +91,11 @@
 
                 spinLock.Exit();
             }
+        }
+
+        public static void Flush(TimeSpan timeout)
+        {
+            LogManager.Flush(timeout);
         }
     }
 }

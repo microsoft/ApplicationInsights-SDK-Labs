@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\Host\LocalForwarder.config" Link="LocalForwarder.config" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.1" />
     <PackageReference Include="MSTest.TestFramework" Version="1.2.1" />
@@ -23,6 +27,7 @@
   <PropertyGroup>
     <DebugType>Full</DebugType>
     <AssemblyName>Microsoft.LocalForwarder.Test</AssemblyName>
+    <RootNamespace>Microsoft.LocalForwarder.Test</RootNamespace>
   </PropertyGroup>
 
 </Project>

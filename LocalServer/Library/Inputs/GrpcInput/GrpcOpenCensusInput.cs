@@ -1,4 +1,4 @@
-﻿namespace Library.Inputs.GrpcInput
+﻿namespace Microsoft.LocalForwarder.Library.Inputs.GrpcInput
 {
     using Opencensus.Proto.Exporter;
 

@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from Exception.proto</summary>
   public static partial class ExceptionReflection {
@@ -33,12 +33,13 @@ namespace Library.Inputs.Contracts {
             "RW50cnkSPAoMbWVhc3VyZW1lbnRzGAYgAygLMiYuY29udHJhY3RzLkV4Y2Vw",
             "dGlvbi5NZWFzdXJlbWVudHNFbnRyeRoxCg9Qcm9wZXJ0aWVzRW50cnkSCwoD",
             "a2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ARozChFNZWFzdXJlbWVudHNF",
-            "bnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAE6AjgBQhuqAhhMaWJy",
-            "YXJ5LklucHV0cy5Db250cmFjdHNiBnByb3RvMw=="));
+            "bnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAE6AjgBQjSqAjFNaWNy",
+            "b3NvZnQuTG9jYWxGb3J3YXJkZXIuTGlicmFyeS5JbnB1dHMuQ29udHJhY3Rz",
+            "YgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Library.Inputs.Contracts.ExceptionDetailsReflection.Descriptor, global::Library.Inputs.Contracts.SeverityLevelReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Microsoft.LocalForwarder.Library.Inputs.Contracts.ExceptionDetailsReflection.Descriptor, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.SeverityLevelReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.Exception), global::Library.Inputs.Contracts.Exception.Parser, new[]{ "Ver", "Exceptions", "SeverityLevel", "ProblemId", "Properties", "Measurements" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, })
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Exception), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Exception.Parser, new[]{ "Ver", "Exceptions", "SeverityLevel", "ProblemId", "Properties", "Measurements" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, })
           }));
     }
     #endregion
@@ -53,7 +54,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.ExceptionReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.ExceptionReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -97,19 +98,19 @@ namespace Library.Inputs.Contracts {
 
     /// <summary>Field number for the "exceptions" field.</summary>
     public const int ExceptionsFieldNumber = 2;
-    private static readonly pb::FieldCodec<global::Library.Inputs.Contracts.ExceptionDetails> _repeated_exceptions_codec
-        = pb::FieldCodec.ForMessage(18, global::Library.Inputs.Contracts.ExceptionDetails.Parser);
-    private readonly pbc::RepeatedField<global::Library.Inputs.Contracts.ExceptionDetails> exceptions_ = new pbc::RepeatedField<global::Library.Inputs.Contracts.ExceptionDetails>();
+    private static readonly pb::FieldCodec<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.ExceptionDetails> _repeated_exceptions_codec
+        = pb::FieldCodec.ForMessage(18, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.ExceptionDetails.Parser);
+    private readonly pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.ExceptionDetails> exceptions_ = new pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.ExceptionDetails>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Library.Inputs.Contracts.ExceptionDetails> Exceptions {
+    public pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.ExceptionDetails> Exceptions {
       get { return exceptions_; }
     }
 
     /// <summary>Field number for the "severityLevel" field.</summary>
     public const int SeverityLevelFieldNumber = 3;
-    private global::Library.Inputs.Contracts.SeverityLevel severityLevel_ = 0;
+    private global::Microsoft.LocalForwarder.Library.Inputs.Contracts.SeverityLevel severityLevel_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Library.Inputs.Contracts.SeverityLevel SeverityLevel {
+    public global::Microsoft.LocalForwarder.Library.Inputs.Contracts.SeverityLevel SeverityLevel {
       get { return severityLevel_; }
       set {
         severityLevel_ = value;
@@ -269,7 +270,7 @@ namespace Library.Inputs.Contracts {
             break;
           }
           case 24: {
-            severityLevel_ = (global::Library.Inputs.Contracts.SeverityLevel) input.ReadEnum();
+            severityLevel_ = (global::Microsoft.LocalForwarder.Library.Inputs.Contracts.SeverityLevel) input.ReadEnum();
             break;
           }
           case 34: {

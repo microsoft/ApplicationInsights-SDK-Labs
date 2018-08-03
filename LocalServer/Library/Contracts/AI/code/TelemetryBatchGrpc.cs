@@ -7,7 +7,7 @@
 
 using grpc = global::Grpc.Core;
 
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
   /// <summary>
   /// gRPC service to transmit telemetry
   /// </summary>
@@ -15,10 +15,10 @@ namespace Library.Inputs.Contracts {
   {
     static readonly string __ServiceName = "contracts.AITelemetryService";
 
-    static readonly grpc::Marshaller<global::Library.Inputs.Contracts.TelemetryBatch> __Marshaller_TelemetryBatch = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Library.Inputs.Contracts.TelemetryBatch.Parser.ParseFrom);
-    static readonly grpc::Marshaller<global::Library.Inputs.Contracts.AiResponse> __Marshaller_AiResponse = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Library.Inputs.Contracts.AiResponse.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatch> __Marshaller_TelemetryBatch = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatch.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.AiResponse> __Marshaller_AiResponse = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.AiResponse.Parser.ParseFrom);
 
-    static readonly grpc::Method<global::Library.Inputs.Contracts.TelemetryBatch, global::Library.Inputs.Contracts.AiResponse> __Method_SendTelemetryBatch = new grpc::Method<global::Library.Inputs.Contracts.TelemetryBatch, global::Library.Inputs.Contracts.AiResponse>(
+    static readonly grpc::Method<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatch, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.AiResponse> __Method_SendTelemetryBatch = new grpc::Method<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatch, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.AiResponse>(
         grpc::MethodType.DuplexStreaming,
         __ServiceName,
         "SendTelemetryBatch",
@@ -28,13 +28,13 @@ namespace Library.Inputs.Contracts {
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
     {
-      get { return global::Library.Inputs.Contracts.TelemetryBatchReflection.Descriptor.Services[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatchReflection.Descriptor.Services[0]; }
     }
 
     /// <summary>Base class for server-side implementations of AITelemetryService</summary>
     public abstract partial class AITelemetryServiceBase
     {
-      public virtual global::System.Threading.Tasks.Task SendTelemetryBatch(grpc::IAsyncStreamReader<global::Library.Inputs.Contracts.TelemetryBatch> requestStream, grpc::IServerStreamWriter<global::Library.Inputs.Contracts.AiResponse> responseStream, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task SendTelemetryBatch(grpc::IAsyncStreamReader<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatch> requestStream, grpc::IServerStreamWriter<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.AiResponse> responseStream, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -64,11 +64,11 @@ namespace Library.Inputs.Contracts {
       {
       }
 
-      public virtual grpc::AsyncDuplexStreamingCall<global::Library.Inputs.Contracts.TelemetryBatch, global::Library.Inputs.Contracts.AiResponse> SendTelemetryBatch(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual grpc::AsyncDuplexStreamingCall<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatch, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.AiResponse> SendTelemetryBatch(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
         return SendTelemetryBatch(new grpc::CallOptions(headers, deadline, cancellationToken));
       }
-      public virtual grpc::AsyncDuplexStreamingCall<global::Library.Inputs.Contracts.TelemetryBatch, global::Library.Inputs.Contracts.AiResponse> SendTelemetryBatch(grpc::CallOptions options)
+      public virtual grpc::AsyncDuplexStreamingCall<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatch, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.AiResponse> SendTelemetryBatch(grpc::CallOptions options)
       {
         return CallInvoker.AsyncDuplexStreamingCall(__Method_SendTelemetryBatch, null, options);
       }

@@ -1,12 +1,13 @@
-﻿namespace Library.Inputs.NamedPipeInput
+﻿namespace Microsoft.LocalForwarder.Library.Inputs.NamedPipeInput
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Google.Protobuf.WellKnownTypes;
+    using Common;
+    using Contracts;
+    using Exception = System.Exception;
 
     /// <summary>
     /// Named pipe-based input
@@ -18,7 +19,7 @@
 
         private InputStats stats;
 
-        private Action<Contracts.TelemetryBatch> onBatchReceived;
+        private Action<TelemetryBatch> onBatchReceived;
 
         private CancellationTokenSource cts;
 
@@ -35,7 +36,7 @@
         /// Starts listening for data.
         /// </summary>
         /// <param name="onBatchReceived">A callback to be invoked every time there is a new incoming telemetry batch. No guarantees are provided as to which thread the callback is called on.</param>
-        public void Start(Action<Contracts.TelemetryBatch> onBatchReceived)
+        public void Start(Action<TelemetryBatch> onBatchReceived)
         {
             if (this.IsRunning)
             {
@@ -198,7 +199,7 @@
                 // keep serving existing clients, but no new servers will start. Ever.
                 lock (this.pipeServers)
                 {
-                    Common.Diagnostics.Log(FormattableString.Invariant(
+                    Diagnostics.Log(FormattableString.Invariant(
                         $"Could not start the next pipe server. Pipe server count: {this.pipeServers.Count}. {e.ToString()}"));
                 }
             }
@@ -228,12 +229,12 @@
             catch (Exception e)
             {
                 // this is unexpected, not much we can do
-                Common.Diagnostics.Log(
+                Diagnostics.Log(
                     FormattableString.Invariant($"Error stopping a pipe server. {e.ToString()}"));
             }
         }
 
-        private async Task OnBatchReceived(PipeServer pipeServer, Contracts.TelemetryBatch batch)
+        private async Task OnBatchReceived(PipeServer pipeServer, TelemetryBatch batch)
         {
             Interlocked.Increment(ref this.stats.BatchesReceived);
 
@@ -245,7 +246,7 @@
             {
                 // our client has thrown in a callback
                 // log and carry on
-                Common.Diagnostics.Log(
+                Diagnostics.Log(
                     FormattableString.Invariant($"OnBatchReceived callback threw. {e.ToString()}"));
             }
         }

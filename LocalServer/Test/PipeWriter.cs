@@ -1,10 +1,9 @@
-namespace Test.Library
+namespace Microsoft.LocalForwarder.Test
 {
     using System;
     using System.IO.Pipes;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     public class PipeWriter
     {

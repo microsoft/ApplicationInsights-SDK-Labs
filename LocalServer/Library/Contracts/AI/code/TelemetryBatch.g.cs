@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from TelemetryBatch.proto</summary>
   public static partial class TelemetryBatchReflection {
@@ -28,13 +28,14 @@ namespace Library.Inputs.Contracts {
             "cHJvdG8iDAoKQWlSZXNwb25zZSI1Cg5UZWxlbWV0cnlCYXRjaBIjCgVpdGVt",
             "cxgBIAMoCzIULmNvbnRyYWN0cy5UZWxlbWV0cnkyYgoSQUlUZWxlbWV0cnlT",
             "ZXJ2aWNlEkwKElNlbmRUZWxlbWV0cnlCYXRjaBIZLmNvbnRyYWN0cy5UZWxl",
-            "bWV0cnlCYXRjaBoVLmNvbnRyYWN0cy5BaVJlc3BvbnNlIgAoATABQhuqAhhM",
-            "aWJyYXJ5LklucHV0cy5Db250cmFjdHNiBnByb3RvMw=="));
+            "bWV0cnlCYXRjaBoVLmNvbnRyYWN0cy5BaVJlc3BvbnNlIgAoATABQjSqAjFN",
+            "aWNyb3NvZnQuTG9jYWxGb3J3YXJkZXIuTGlicmFyeS5JbnB1dHMuQ29udHJh",
+            "Y3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Library.Inputs.Contracts.TelemetryReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.AiResponse), global::Library.Inputs.Contracts.AiResponse.Parser, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.TelemetryBatch), global::Library.Inputs.Contracts.TelemetryBatch.Parser, new[]{ "Items" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.AiResponse), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.AiResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatch), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatch.Parser, new[]{ "Items" }, null, null, null)
           }));
     }
     #endregion
@@ -49,7 +50,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.TelemetryBatchReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatchReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -150,7 +151,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.TelemetryBatchReflection.Descriptor.MessageTypes[1]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.TelemetryBatchReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -178,11 +179,11 @@ namespace Library.Inputs.Contracts {
 
     /// <summary>Field number for the "items" field.</summary>
     public const int ItemsFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Library.Inputs.Contracts.Telemetry> _repeated_items_codec
-        = pb::FieldCodec.ForMessage(10, global::Library.Inputs.Contracts.Telemetry.Parser);
-    private readonly pbc::RepeatedField<global::Library.Inputs.Contracts.Telemetry> items_ = new pbc::RepeatedField<global::Library.Inputs.Contracts.Telemetry>();
+    private static readonly pb::FieldCodec<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Telemetry> _repeated_items_codec
+        = pb::FieldCodec.ForMessage(10, global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Telemetry.Parser);
+    private readonly pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Telemetry> items_ = new pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Telemetry>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Library.Inputs.Contracts.Telemetry> Items {
+    public pbc::RepeatedField<global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Telemetry> Items {
       get { return items_; }
     }
 

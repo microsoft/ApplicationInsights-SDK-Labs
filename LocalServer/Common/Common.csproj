@@ -7,6 +7,7 @@
   <PropertyGroup>
     <DebugType>Full</DebugType>
     <AssemblyName>Microsoft.LocalForwarder.Common</AssemblyName>
+    <RootNamespace>Microsoft.LocalForwarder.Common</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="NLog.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

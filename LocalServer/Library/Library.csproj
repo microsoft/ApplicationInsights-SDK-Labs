@@ -19,6 +19,7 @@
   <PropertyGroup>
     <DebugType>Full</DebugType>
     <AssemblyName>Microsoft.LocalForwarder.Library</AssemblyName>
+    <RootNamespace>Microsoft.LocalForwarder.Library</RootNamespace>
   </PropertyGroup>
 
 </Project>

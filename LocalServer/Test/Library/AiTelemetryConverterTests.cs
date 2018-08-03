@@ -1,6 +1,6 @@
-namespace Test.Library.Inputs.NamedPipeInput
+namespace Microsoft.LocalForwarder.Test.Library
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class AiTelemetryConverterTests

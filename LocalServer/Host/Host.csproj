@@ -8,10 +8,17 @@
   <PropertyGroup>
     <DebugType>Full</DebugType>
     <AssemblyName>Microsoft.LocalForwarder.Host</AssemblyName>
+    <RootNamespace>Microsoft.LocalForwarder.Host</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.LocalForwarder.Library" Version="1.0.3-alpha" />
+    <PackageReference Include="Microsoft.LocalForwarder.Library" Version="1.0.14-alpha" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LocalForwarder.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

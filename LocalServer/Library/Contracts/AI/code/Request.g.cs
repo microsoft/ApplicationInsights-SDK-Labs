@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from Request.proto</summary>
   public static partial class RequestReflection {
@@ -35,12 +35,12 @@ namespace Library.Inputs.Contracts {
             "YXN1cmVtZW50cxgKIAMoCzIkLmNvbnRyYWN0cy5SZXF1ZXN0Lk1lYXN1cmVt",
             "ZW50c0VudHJ5GjEKD1Byb3BlcnRpZXNFbnRyeRILCgNrZXkYASABKAkSDQoF",
             "dmFsdWUYAiABKAk6AjgBGjMKEU1lYXN1cmVtZW50c0VudHJ5EgsKA2tleRgB",
-            "IAEoCRINCgV2YWx1ZRgCIAEoAToCOAFCG6oCGExpYnJhcnkuSW5wdXRzLkNv",
-            "bnRyYWN0c2IGcHJvdG8z"));
+            "IAEoCRINCgV2YWx1ZRgCIAEoAToCOAFCNKoCMU1pY3Jvc29mdC5Mb2NhbEZv",
+            "cndhcmRlci5MaWJyYXJ5LklucHV0cy5Db250cmFjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.DurationReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.Request), global::Library.Inputs.Contracts.Request.Parser, new[]{ "Ver", "Id", "Duration", "ResponseCode", "Success", "Source", "Name", "Url", "Properties", "Measurements" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, })
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Request), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.Request.Parser, new[]{ "Ver", "Id", "Duration", "ResponseCode", "Success", "Source", "Name", "Url", "Properties", "Measurements" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, })
           }));
     }
     #endregion
@@ -55,7 +55,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.RequestReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.RequestReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

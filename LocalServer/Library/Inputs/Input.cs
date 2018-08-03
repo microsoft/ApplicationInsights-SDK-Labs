@@ -1,7 +1,6 @@
-﻿namespace Library.Inputs
+﻿namespace Microsoft.LocalForwarder.Library.Inputs
 {
     using System;
-    using System.Threading.Tasks;
     using Contracts;
 
     /// <summary>

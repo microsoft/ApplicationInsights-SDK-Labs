@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from StackFrame.proto</summary>
   public static partial class StackFrameReflection {
@@ -26,12 +26,13 @@ namespace Library.Inputs.Contracts {
           string.Concat(
             "ChBTdGFja0ZyYW1lLnByb3RvEgljb250cmFjdHMiXQoKU3RhY2tGcmFtZRIN",
             "CgVsZXZlbBgBIAEoBRIOCgZtZXRob2QYAiABKAkSEAoIYXNzZW1ibHkYAyAB",
-            "KAkSEAoIZmlsZU5hbWUYBCABKAkSDAoEbGluZRgFIAEoBUIbqgIYTGlicmFy",
-            "eS5JbnB1dHMuQ29udHJhY3RzYgZwcm90bzM="));
+            "KAkSEAoIZmlsZU5hbWUYBCABKAkSDAoEbGluZRgFIAEoBUI0qgIxTWljcm9z",
+            "b2Z0LkxvY2FsRm9yd2FyZGVyLkxpYnJhcnkuSW5wdXRzLkNvbnRyYWN0c2IG",
+            "cHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Library.Inputs.Contracts.StackFrame), global::Library.Inputs.Contracts.StackFrame.Parser, new[]{ "Level", "Method", "Assembly", "FileName", "Line" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.StackFrame), global::Microsoft.LocalForwarder.Library.Inputs.Contracts.StackFrame.Parser, new[]{ "Level", "Method", "Assembly", "FileName", "Line" }, null, null, null)
           }));
     }
     #endregion
@@ -46,7 +47,7 @@ namespace Library.Inputs.Contracts {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Library.Inputs.Contracts.StackFrameReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Microsoft.LocalForwarder.Library.Inputs.Contracts.StackFrameReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

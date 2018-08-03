@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Library.Inputs.Contracts {
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts {
 
   /// <summary>Holder for reflection information generated from SeverityLevel.proto</summary>
   public static partial class SeverityLevelReflection {
@@ -26,11 +26,12 @@ namespace Library.Inputs.Contracts {
           string.Concat(
             "ChNTZXZlcml0eUxldmVsLnByb3RvEgljb250cmFjdHMqYAoNU2V2ZXJpdHlM",
             "ZXZlbBILCgdVbmtub3duEAASCwoHVmVyYm9zZRABEg8KC0luZm9ybWF0aW9u",
-            "EAISCwoHV2FybmluZxADEgkKBUVycm9yEAQSDAoIQ3JpdGljYWwQBUIbqgIY",
-            "TGlicmFyeS5JbnB1dHMuQ29udHJhY3RzYgZwcm90bzM="));
+            "EAISCwoHV2FybmluZxADEgkKBUVycm9yEAQSDAoIQ3JpdGljYWwQBUI0qgIx",
+            "TWljcm9zb2Z0LkxvY2FsRm9yd2FyZGVyLkxpYnJhcnkuSW5wdXRzLkNvbnRy",
+            "YWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Library.Inputs.Contracts.SeverityLevel), }, null));
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Microsoft.LocalForwarder.Library.Inputs.Contracts.SeverityLevel), }, null));
     }
     #endregion
 

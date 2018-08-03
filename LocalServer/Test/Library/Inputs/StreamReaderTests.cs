@@ -1,9 +1,8 @@
-namespace Test.Library.Inputs.NamedPipeInput
+namespace Microsoft.LocalForwarder.Test.Library.Inputs
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using System.IO;
     using System.Reflection;
     using System.Threading.Tasks;
+    using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class StreamReaderTests
@@ -16,7 +15,7 @@ namespace Test.Library.Inputs.NamedPipeInput
             byte[] encodedLengthPrefix = Common.EncodeLengthPrefix(length);
 
             // ACT
-            int decodedLength = (int) typeof(global::Library.Inputs.StreamReader).InvokeMember("DecodeLengthPrefix",
+            int decodedLength = (int) typeof(global::Microsoft.LocalForwarder.Library.Inputs.StreamReader).InvokeMember("DecodeLengthPrefix",
                 BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new[] {encodedLengthPrefix});
 
             // ASSERT

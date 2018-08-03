@@ -1,4 +1,4 @@
-namespace Library.Inputs.Contracts
+namespace Microsoft.LocalForwarder.Library.Inputs.Contracts
 {
     public class ContextTagKeys
     {
