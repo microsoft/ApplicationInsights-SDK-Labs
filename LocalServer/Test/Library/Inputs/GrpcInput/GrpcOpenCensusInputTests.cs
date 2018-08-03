@@ -82,7 +82,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
             });
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcOpenCensusInputTests.DefaultTimeout));
 
-            var grpcWriter = new GrpcWriter(false, port, GrpcOpenCensusInputTests.DefaultTimeout);
+            var grpcWriter = new GrpcWriter(false, port);
 
             // ACT
             ExportSpanRequest batch = new ExportSpanRequest();
@@ -121,7 +121,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 
             Parallel.For(0, 1000, new ParallelOptions() {MaxDegreeOfParallelism = 1000}, async i =>
             {
-                var grpcWriter = new GrpcWriter(false, port, GrpcOpenCensusInputTests.DefaultTimeout);
+                var grpcWriter = new GrpcWriter(false, port);
 
                 await grpcWriter.Write(batch).ConfigureAwait(false);
             });
@@ -152,7 +152,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcOpenCensusInputTests.DefaultTimeout));
 
-            var grpcWriter = new GrpcWriter(false, port, GrpcOpenCensusInputTests.DefaultTimeout);
+            var grpcWriter = new GrpcWriter(false, port);
 
             ExportSpanRequest batch = new ExportSpanRequest();
             batch.Spans.Add(new Span() { Name = new TruncatableString() { Value = "Event1" } });
@@ -190,7 +190,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcOpenCensusInputTests.DefaultTimeout));
 
-            var grpcWriter = new GrpcWriter(false, port, GrpcOpenCensusInputTests.DefaultTimeout);
+            var grpcWriter = new GrpcWriter(false, port);
 
             ExportSpanRequest batch = new ExportSpanRequest();
             batch.Spans.Add(new Span() { Name = new TruncatableString() { Value = "Event1" } });
@@ -216,7 +216,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcOpenCensusInputTests.DefaultTimeout));
 
-            grpcWriter = new GrpcWriter(false, port, GrpcOpenCensusInputTests.DefaultTimeout);
+            grpcWriter = new GrpcWriter(false, port);
             batch.Spans.Single().Name.Value = "Event2";
             await grpcWriter.Write(batch).ConfigureAwait(false);
 
@@ -237,7 +237,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcOpenCensusInputTests.DefaultTimeout));
 
-            var grpcWriter = new GrpcWriter(false, port, GrpcOpenCensusInputTests.DefaultTimeout);
+            var grpcWriter = new GrpcWriter(false, port);
 
             ExportSpanRequest batch = new ExportSpanRequest();
             batch.Spans.Add(new Span() { Name = new TruncatableString() { Value = "Event1" } });

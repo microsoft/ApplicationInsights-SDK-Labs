@@ -80,7 +80,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
             });
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcAiInputTests.DefaultTimeout));
 
-            var grpcWriter = new GrpcWriter(true, port, GrpcAiInputTests.DefaultTimeout);
+            var grpcWriter = new GrpcWriter(true, port);
 
             // ACT
             TelemetryBatch batch = new TelemetryBatch();
@@ -119,7 +119,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 
             Parallel.For(0, 1000, new ParallelOptions() {MaxDegreeOfParallelism = 1000}, async i =>
             {
-                var grpcWriter = new GrpcWriter(true, port, GrpcAiInputTests.DefaultTimeout);
+                var grpcWriter = new GrpcWriter(true, port);
 
                 await grpcWriter.Write(batch).ConfigureAwait(false);
             });
@@ -150,7 +150,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcAiInputTests.DefaultTimeout));
 
-            var grpcWriter = new GrpcWriter(true, port, GrpcAiInputTests.DefaultTimeout);
+            var grpcWriter = new GrpcWriter(true, port);
 
             TelemetryBatch batch = new TelemetryBatch();
             batch.Items.Add(new Telemetry() {Event = new Event() {Name = "Event1"}});
@@ -188,7 +188,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcAiInputTests.DefaultTimeout));
 
-            var grpcWriter = new GrpcWriter(true, port, GrpcAiInputTests.DefaultTimeout);
+            var grpcWriter = new GrpcWriter(true, port);
 
             TelemetryBatch batch = new TelemetryBatch();
             batch.Items.Add(new Telemetry() {Event = new Event() {Name = "Event1"}});
@@ -214,7 +214,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcAiInputTests.DefaultTimeout));
 
-            grpcWriter = new GrpcWriter(true, port, GrpcAiInputTests.DefaultTimeout);
+            grpcWriter = new GrpcWriter(true, port);
             batch.Items.Single().Event.Name = "Event2";
             await grpcWriter.Write(batch).ConfigureAwait(false);
 
@@ -235,7 +235,7 @@ namespace Microsoft.LocalForwarder.Test.Library.Inputs.GrpcInput
 
             Assert.IsTrue(SpinWait.SpinUntil(() => input.IsRunning, GrpcAiInputTests.DefaultTimeout));
 
-            var grpcWriter = new GrpcWriter(true, port, GrpcAiInputTests.DefaultTimeout);
+            var grpcWriter = new GrpcWriter(true, port);
 
             TelemetryBatch batch = new TelemetryBatch();
             batch.Items.Add(new Telemetry() {Event = new Event() {Name = "Event1"}});

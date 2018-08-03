@@ -18,7 +18,7 @@ namespace Microsoft.LocalForwarder.Test
 
         public static void AssertIsTrueEventually(Func<bool> condition, TimeSpan? timeout = null)
         {
-            timeout = timeout ?? Timeout.InfiniteTimeSpan;
+            timeout = timeout ?? TimeSpan.FromSeconds(10);
             Assert.IsTrue(SpinWait.SpinUntil(condition, timeout.Value));
         }
 

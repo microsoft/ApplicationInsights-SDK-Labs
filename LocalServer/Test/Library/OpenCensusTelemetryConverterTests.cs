@@ -54,7 +54,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             span.EndTime = now.ToTimestamp();
 
             // ACT
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             // ASSERT
             Assert.AreEqual(1, this.sentItems.Count);
@@ -83,7 +83,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             span.ParentSpanId = ByteString.CopyFrom(this.testParentSpanIdBytes, 0, 8);
 
             // ACT
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             // ASSERT
             Assert.AreEqual(TestParentSpanId, ((RequestTelemetry)this.sentItems.Single()).Context.Operation.ParentId);
@@ -97,7 +97,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             span.Status = new Status {Code = 0};
 
             // ACT
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             // ASSERT
             var request = (RequestTelemetry)this.sentItems.Single();
@@ -115,7 +115,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             span.Status = new Status {Code = 0, Message = "all good"};
 
             // ACT
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             // ASSERT
             var request = (RequestTelemetry)this.sentItems.Single();
@@ -133,7 +133,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             span.Status = new Status { Code = 1, Message = "all bad" };
 
             // ACT
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             // ASSERT
             var request = (RequestTelemetry)this.sentItems.Single();
@@ -152,7 +152,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 AttributeMap = { ["error"] = this.CreateAttributeValue(true) }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.IsTrue(request.Success.HasValue);
@@ -170,7 +170,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             span.EndTime = now.ToTimestamp();
 
             // ACT
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             // ASSERT
             Assert.AreEqual(1, this.sentItems.Count);
@@ -201,7 +201,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             span.ParentSpanId = ByteString.CopyFrom(this.testParentSpanIdBytes, 0, 8);
 
             // ACT
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             // ASSERT
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
@@ -216,7 +216,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             span.Status = new Status {Code = 0};
 
             // ACT
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             // ASSERT
             var dependency = (DependencyTelemetry)this.sentItems.Single();
@@ -235,7 +235,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             span.Status = new Status {Code = 0, Message = "all good"};
 
             // ACT
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             // ASSERT
             var dependency = (DependencyTelemetry)this.sentItems.Single();
@@ -256,7 +256,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             span.Status = new Status { Code = 1, Message = "all bad" };
 
             // ACT
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             // ASSERT
             var dependency = (DependencyTelemetry)this.sentItems.Single();
@@ -277,7 +277,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 AttributeMap = { ["error"] = this.CreateAttributeValue(true) }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.IsTrue(dependency.Success.HasValue);
@@ -293,7 +293,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 AttributeMap = { ["span.kind"] = this.CreateAttributeValue("server") }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.IsInstanceOfType(this.sentItems.Single(), typeof(RequestTelemetry));
         }
@@ -304,7 +304,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
             span.SameProcessAsParentSpan = null;
             span.ParentSpanId = ByteString.CopyFrom(this.testParentSpanIdBytes, 0, 8);
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.IsInstanceOfType(this.sentItems.Single(), typeof(RequestTelemetry));
         }
@@ -316,7 +316,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             span.SameProcessAsParentSpan = null;
             span.ParentSpanId = ByteString.CopyFrom(this.testParentSpanIdBytes, 0, 8);
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.IsInstanceOfType(this.sentItems.Single(), typeof(DependencyTelemetry));
         }
@@ -330,7 +330,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 AttributeMap = { ["span.kind"] = this.CreateAttributeValue("client") }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.IsInstanceOfType(this.sentItems.Single(), typeof(DependencyTelemetry));
         }
@@ -340,7 +340,7 @@ namespace Microsoft.LocalForwarder.Test.Library
         {
             var span = this.CreateBasicSpan(Span.Types.SpanKind.Unspecified, "spanName");
             span.SameProcessAsParentSpan = false;
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.IsInstanceOfType(this.sentItems.Single(), typeof(RequestTelemetry));
         }
@@ -350,7 +350,7 @@ namespace Microsoft.LocalForwarder.Test.Library
         {
             var span = this.CreateBasicSpan(Span.Types.SpanKind.Unspecified, "spanName");
             span.SameProcessAsParentSpan = true;
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.IsInstanceOfType(this.sentItems.Single(), typeof(DependencyTelemetry));
         }
@@ -360,7 +360,7 @@ namespace Microsoft.LocalForwarder.Test.Library
         {
             var span = this.CreateBasicSpan(Span.Types.SpanKind.Unspecified, "spanName");
             span.SameProcessAsParentSpan = null;
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.IsInstanceOfType(this.sentItems.Single(), typeof(DependencyTelemetry));
         }
@@ -376,7 +376,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 SpanId = ByteString.CopyFrom(this.testSpanIdBytes, 0, 8),
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.IsNull(this.sentItems.OfType<RequestTelemetry>().Single().Name);
         }
@@ -391,7 +391,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 Name = new TruncatableString { Value = "spanName" }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.IsInstanceOfType(this.sentItems.Single(), typeof(DependencyTelemetry));
         }
@@ -407,7 +407,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 Name = new TruncatableString { Value = "spanName" }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.IsTrue(Math.Abs((request.Timestamp - DateTime.UtcNow).TotalSeconds) < 1);
@@ -429,7 +429,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(url.ToString(), request.Url.ToString());
@@ -453,7 +453,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(url.ToString(), request.Url.ToString());
@@ -475,7 +475,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(url.ToString(), request.Url.ToString());
@@ -501,7 +501,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(url.ToString(), request.Url.ToString());
@@ -525,7 +525,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual("https://host:123/path", request.Url.ToString());
@@ -548,7 +548,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual("https://host/path", request.Url.ToString());
@@ -570,7 +570,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual("https://host/", request.Url.ToString());
@@ -591,7 +591,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.IsNull(request.Url);
@@ -614,7 +614,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(userAgent, request.Context.User.UserAgent);
@@ -635,7 +635,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual(url.ToString(), dependency.Data);
@@ -663,7 +663,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual(url.ToString(), dependency.Data);
@@ -689,7 +689,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual("https://host:123/path", dependency.Data);
@@ -715,7 +715,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual("https://host:123/", dependency.Data);
@@ -740,7 +740,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual("https://host/", dependency.Data);
@@ -763,7 +763,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.IsNull(dependency.Data);
@@ -785,7 +785,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.IsNull(dependency.Data);
@@ -809,7 +809,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual(3, dependency.Properties.Count);
@@ -837,7 +837,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(3, request.Properties.Count);
@@ -888,7 +888,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual(9, dependency.Properties.Count);
@@ -936,7 +936,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
             Assert.AreEqual(4, dependency.Properties.Count);
@@ -982,7 +982,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(9, request.Properties.Count);
@@ -1030,7 +1030,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             var request = this.sentItems.OfType<RequestTelemetry>().Single();
             Assert.AreEqual(4, request.Properties.Count);
@@ -1073,7 +1073,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.AreEqual(3, this.sentItems.Count);
             Assert.AreEqual(1, this.sentItems.OfType<RequestTelemetry>().Count());
@@ -1141,7 +1141,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.AreEqual(3, this.sentItems.Count);
             Assert.AreEqual(1, this.sentItems.OfType<DependencyTelemetry>().Count());
@@ -1219,7 +1219,7 @@ namespace Microsoft.LocalForwarder.Test.Library
                 }
             };
 
-            this.client.TrackSpan(span);
+            this.client.TrackSpan(span, string.Empty);
 
             Assert.AreEqual(4, this.sentItems.Count);
             Assert.AreEqual(1, this.sentItems.OfType<RequestTelemetry>().Count());
@@ -1238,6 +1238,84 @@ namespace Microsoft.LocalForwarder.Test.Library
             Assert.AreEqual("MessageEvent. messageId: '1', type: 'Received', compressed size: '2', uncompressed size: '3'", traces[0].Message);
             Assert.AreEqual("MessageEvent. messageId: '4', type: 'Sent', compressed size: '5', uncompressed size: '6'", traces[1].Message);
             Assert.AreEqual("MessageEvent. messageId: '7', type: 'Unspecified', compressed size: '8', uncompressed size: '9'", traces[2].Message);
+        }
+
+        [TestMethod]
+        public void OpenCensusTelemetryConverterTests_TracksRequestWithCorrectIkey()
+        {
+            // ARRANGE
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "HttpIn");
+
+            // ACT
+            this.client.TrackSpan(span, "ikey1");
+
+            // ASSERT
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
+            Assert.AreEqual("ikey1", request.Context.InstrumentationKey);
+        }
+
+        [TestMethod]
+        public void OpenCensusTelemetryConverterTests_TracksDependencyWithCorrectIkey()
+        {
+            // ARRANGE
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Client, "HttpOut");
+
+            // ACT
+            this.client.TrackSpan(span, "ikey1");
+
+            // ASSERT
+            var dependency = this.sentItems.OfType<DependencyTelemetry>().Single();
+            Assert.AreEqual("ikey1", dependency.Context.InstrumentationKey);
+        }
+
+        [TestMethod]
+        public void OpenCensusTelemetryConverterTests_TracksTraceWithCorrectIkey()
+        {
+            // ARRANGE
+            var now = DateTime.UtcNow;
+            var span = this.CreateBasicSpan(Span.Types.SpanKind.Server, "spanName");
+            span.TimeEvents = new Span.Types.TimeEvents
+            {
+                TimeEvent =
+                {
+                    new Span.Types.TimeEvent
+                    {
+                        Time = now.ToTimestamp(),
+                        Annotation = new Span.Types.TimeEvent.Types.Annotation
+                        {
+                            Description = new TruncatableString {Value = "test message1"}
+                        }
+                    },
+                    new Span.Types.TimeEvent
+                    {
+                        Annotation = new Span.Types.TimeEvent.Types.Annotation
+                        {
+                            Description = new TruncatableString {Value = "test message2"},
+                            Attributes = new Span.Types.Attributes
+                            {
+                                AttributeMap =
+                                {
+                                    ["custom.stringAttribute"] = this.CreateAttributeValue("string"),
+                                    ["custom.longAttribute"] = this.CreateAttributeValue(long.MaxValue),
+                                    ["custom.boolAttribute"] = this.CreateAttributeValue(true)
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            // ACT
+            this.client.TrackSpan(span, "ikey1");
+
+            // ASSERT
+            var request = this.sentItems.OfType<RequestTelemetry>().Single();
+            var trace1 = this.sentItems.OfType<TraceTelemetry>().First();
+            var trace2 = this.sentItems.OfType<TraceTelemetry>().Last();
+
+            Assert.AreEqual("ikey1", request.Context.InstrumentationKey);
+            Assert.AreEqual("ikey1", trace1.Context.InstrumentationKey);
+            Assert.AreEqual("ikey1", trace2.Context.InstrumentationKey);
         }
 
         private Span CreateBasicSpan(Span.Types.SpanKind kind, string spanName)

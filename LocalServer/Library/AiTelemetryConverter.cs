@@ -1,15 +1,15 @@
 ﻿namespace Microsoft.LocalForwarder.Library
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
     using ApplicationInsights.Channel;
     using ApplicationInsights.DataContracts;
     using ApplicationInsights.Extensibility.Implementation;
     using Common;
     using Google.Protobuf.Collections;
     using Inputs.Contracts;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
 
     static class AiTelemetryConverter
     {
@@ -87,7 +87,7 @@
             var item = inputTelemetry.Exception;
 
             var result = new ExceptionTelemetry(
-                item.Exceptions.Select(ed => new ExceptionDetailsInfo(ed.Id, ed.OuterId, ed.TypeName, ed.Message, ed.HasFullStack.Value, ed.Stack,
+                item.Exceptions.Select(ed => new ExceptionDetailsInfo(ed.Id, ed.OuterId, ed.TypeName, ed.Message, ed.HasFullStack?.Value ?? true, ed.Stack,
                     ed.ParsedStack.Select(f => new Microsoft.ApplicationInsights.DataContracts.StackFrame(f.Assembly, f.FileName, f.Level, f.Line, f.Method)))),
                 AiTelemetryConverter.ConvertSeverityLevel(item.SeverityLevel), item.ProblemId, item.Properties, item.Measurements);
 
@@ -109,9 +109,12 @@
             result.Name = item.Name;
             result.Data = item.Data;
 
-            result.Timestamp = DateTimeOffset.ParseExact(inputTelemetry.DateTime, "0", CultureInfo.InvariantCulture);
+            if (DateTimeOffset.TryParseExact(inputTelemetry.DateTime, "0", CultureInfo.InvariantCulture, DateTimeStyles.None, out var timestamp))
+            {
+                result.Timestamp = timestamp;
+            }
 
-            result.Duration = item.Duration.ToTimeSpan();
+            result.Duration = item.Duration?.ToTimeSpan() ?? TimeSpan.Zero;
             result.ResultCode = item.ResultCode;
             result.Success = item.Success?.Value ?? true;
             result.Id = item.Id;
@@ -133,9 +136,12 @@
 
             result.Name = item.Name;
 
-            result.Timestamp = DateTimeOffset.ParseExact(inputTelemetry.DateTime, "0", CultureInfo.InvariantCulture);
+            if (DateTimeOffset.TryParseExact(inputTelemetry.DateTime, "0", CultureInfo.InvariantCulture, DateTimeStyles.None, out var timestamp))
+            {
+                result.Timestamp = timestamp;
+            }
 
-            result.Duration = item.Duration.ToTimeSpan();
+            result.Duration = item.Duration?.ToTimeSpan() ?? TimeSpan.Zero;
             result.RunLocation = item.RunLocation;
             result.Success = item.Success;
             result.Message = item.Message;
@@ -156,8 +162,14 @@
 
             item.Event = item.Event ?? new Event();
 
-            result.Url = new Uri(item.Url);
-            result.Duration = item.Duration.ToTimeSpan();
+            result.Id = item.Id;
+
+            if (Uri.TryCreate(item.Url, UriKind.RelativeOrAbsolute, out var uri))
+            {
+                result.Url = uri;
+            }
+
+            result.Duration = item.Duration?.ToTimeSpan() ?? TimeSpan.Zero;
             
             result.Name = item.Event.Name;
 
@@ -178,9 +190,12 @@
 
             result.Name = item.Name;
 
-            result.Timestamp = DateTimeOffset.ParseExact(inputTelemetry.DateTime, "0", CultureInfo.InvariantCulture);
+            if (DateTimeOffset.TryParseExact(inputTelemetry.DateTime, "0", CultureInfo.InvariantCulture, DateTimeStyles.None, out var timestamp))
+            {
+                result.Timestamp = timestamp;
+            }
 
-            result.Duration = item.Duration.ToTimeSpan();
+            result.Duration = item.Duration?.ToTimeSpan() ?? TimeSpan.Zero;
             result.ResponseCode = item.ResponseCode;
             result.Success = item.Success?.Value;
 
@@ -196,7 +211,10 @@
         private static void CopyCommonFields(Telemetry inputTelemetry, ITelemetry telemetry)
         {
             telemetry.Sequence = inputTelemetry.SequenceNumber;
-            telemetry.Timestamp = DateTimeOffset.ParseExact(inputTelemetry.DateTime, "0", CultureInfo.InvariantCulture);
+            if (DateTimeOffset.TryParseExact(inputTelemetry.DateTime, "0", CultureInfo.InvariantCulture, DateTimeStyles.None, out var timestamp))
+            {
+                telemetry.Timestamp = timestamp;
+            }
             telemetry.Context.InstrumentationKey = inputTelemetry.InstrumentationKey;
 
             AiTelemetryConverter.PopulateContext(inputTelemetry, telemetry);

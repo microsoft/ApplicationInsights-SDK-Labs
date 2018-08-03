@@ -9,16 +9,14 @@ namespace Microsoft.LocalForwarder.Test
     public class GrpcWriter
     {
         private readonly bool aiMode;
-        private readonly TimeSpan timeout;
 
         AsyncDuplexStreamingCall<TelemetryBatch, AiResponse> aiStreamingCall;
         AsyncDuplexStreamingCall<ExportSpanRequest, ExportSpanResponse> openCensusStreamingCall;
         private int port;
 
-        public GrpcWriter(bool aiMode, int port, TimeSpan timeout)
+        public GrpcWriter(bool aiMode, int port)
         {
             this.aiMode = aiMode;
-            this.timeout = timeout;
             this.port = port;
 
             try

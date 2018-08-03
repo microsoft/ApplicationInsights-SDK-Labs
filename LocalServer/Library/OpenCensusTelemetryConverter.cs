@@ -42,7 +42,7 @@
         private const string SdkVersion = "oclf"; // todo version
         private static readonly uint[] Lookup32 = CreateLookup32();
 
-        public static void TrackSpan(this TelemetryClient telemetryClient, Span span)
+        public static void TrackSpan(this TelemetryClient telemetryClient, Span span, string ikey)
         {
             if (span == null)
             {
@@ -51,18 +51,18 @@
 
             if (GetSpanKind(span) == Span.Types.SpanKind.Client)
             {
-                telemetryClient.TrackDependencyFromSpan(span);
+                telemetryClient.TrackDependencyFromSpan(span, ikey);
             }
             else
             {
-                telemetryClient.TrackRequestFromSpan(span);
+                telemetryClient.TrackRequestFromSpan(span, ikey);
             }
 
             if (span.TimeEvents != null)
             {
                 foreach (var evnt in span.TimeEvents.TimeEvent)
                 {
-                    telemetryClient.TrackTraceFromTimeEvent(evnt, span);
+                    telemetryClient.TrackTraceFromTimeEvent(evnt, span, ikey);
                 }
             }
         }
@@ -87,7 +87,7 @@
             return span.Kind;
         }
 
-        private static void TrackRequestFromSpan(this TelemetryClient telemetryClient, Span span)
+        private static void TrackRequestFromSpan(this TelemetryClient telemetryClient, Span span, string ikey)
         {
             RequestTelemetry request = new RequestTelemetry();
 
@@ -152,10 +152,11 @@
                 }
             }
 
+            request.Context.InstrumentationKey = ikey;
             telemetryClient.TrackRequest(request);
         }
 
-        private static void TrackDependencyFromSpan(this TelemetryClient telemetryClient, Span span)
+        private static void TrackDependencyFromSpan(this TelemetryClient telemetryClient, Span span, string ikey)
         {
             string host = GetHost(span.Attributes?.AttributeMap);
             if (IsApplicationInsightsUrl(host))
@@ -236,6 +237,7 @@
                 }
             }
 
+            dependency.Context.InstrumentationKey = ikey;
             telemetryClient.TrackDependency(dependency);
         }
 
@@ -245,12 +247,12 @@
                    || host.StartsWith("rt.services.visualstudio.com"));
         }
 
-        private static void TrackTraceFromTimeEvent(this TelemetryClient telemetryClient, Span.Types.TimeEvent evnt, Span span)
+        private static void TrackTraceFromTimeEvent(this TelemetryClient telemetryClient, Span.Types.TimeEvent evnt, Span span, string ikey)
         {
             Span.Types.TimeEvent.Types.Annotation annotation = evnt.Annotation;
             if (annotation != null)
             {
-                telemetryClient.TrackTrace(span, evnt, annotation.Description.Value,
+                telemetryClient.TrackTrace(span, evnt, annotation.Description.Value, ikey,
                     annotation.Attributes?.AttributeMap);
             }
 
@@ -258,7 +260,7 @@
             if (message != null)
             {
                 telemetryClient.TrackTrace(span, evnt,
-                    $"MessageEvent. messageId: '{message.Id}', type: '{message.Type}', compressed size: '{message.CompressedSize}', uncompressed size: '{message.UncompressedSize}'");
+                    $"MessageEvent. messageId: '{message.Id}', type: '{message.Type}', compressed size: '{message.CompressedSize}', uncompressed size: '{message.UncompressedSize}'", ikey);
             }
         }
 
@@ -266,6 +268,7 @@
             Span span, 
             Span.Types.TimeEvent evnt,
             string message,
+            string ikey,
             IDictionary<string, AttributeValue> attributes = null)
         {
             TraceTelemetry trace = new TraceTelemetry(message);
@@ -280,6 +283,7 @@
                 }
             }
 
+            trace.Context.InstrumentationKey = ikey;
             telemetryClient.TrackTrace(trace);
         }
 

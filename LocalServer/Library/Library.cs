@@ -20,6 +20,14 @@
 
         private readonly Configuration config;
 
+        /// <summary>
+        /// For unit tests only.
+        /// </summary>
+        internal Library(string configuration, TelemetryClient telemetryClient) : this(configuration)
+        {
+            this.telemetryClient = telemetryClient;
+        }
+
         public Library(string configuration)
         {
             this.config = new Configuration(configuration);
@@ -93,7 +101,7 @@
         {
             try
             {
-                this.gRpcAiInput?.Start(this.OnBatchReceived);
+                this.gRpcAiInput?.Start(this.OnAiBatchReceived);
             }
             catch (Exception e)
             {
@@ -106,7 +114,7 @@
 
             try
             {
-                this.gRpcOpenCensusInput?.Start(this.OnBatchReceived);
+                this.gRpcOpenCensusInput?.Start(this.OnOcBatchReceived);
             }
             catch (Exception e)
             {
@@ -149,7 +157,7 @@
         /// Processes an incoming telemetry batch for AI channel.
         /// </summary>
         /// <remarks>This method may be called from multiple threads concurrently.</remarks>
-        private void OnBatchReceived(TelemetryBatch batch)
+        private void OnAiBatchReceived(TelemetryBatch batch)
         {
             try
             {
@@ -207,8 +215,6 @@
                     {
                         if (convertedTelemetry != null)
                         {
-                            convertedTelemetry.Context.InstrumentationKey = this.config.OpenCensusToApplicationInsights_InstrumentationKey;
-
                             this.telemetryClient.Track(convertedTelemetry);
                         }
                     }
@@ -236,7 +242,7 @@
         /// Processes an incoming telemetry batch for OpenCensus channel.
         /// </summary>
         /// <remarks>This method may be called from multiple threads concurrently.</remarks>
-        private void OnBatchReceived(ExportSpanRequest batch)
+        private void OnOcBatchReceived(ExportSpanRequest batch)
         {
             try
             {
@@ -248,7 +254,7 @@
                         //!!!
                         Diagnostics.Log($"OpenCensus message received: {batch.Spans.Count} spans, first span: {batch.Spans.First().Name}");
 
-                        this.telemetryClient.TrackSpan(span);
+                        this.telemetryClient.TrackSpan(span, this.config.OpenCensusToApplicationInsights_InstrumentationKey);
                     }
                     catch (Exception e)
                     {

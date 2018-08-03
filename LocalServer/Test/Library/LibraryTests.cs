@@ -1,17 +1,31 @@
 namespace Microsoft.LocalForwarder.Test.Library
 {
-    using System;
-    using System.Linq;
-    using System.Net.NetworkInformation;
-    using System.Net.Sockets;
-    using System.Threading;
+    using ApplicationInsights;
+    using ApplicationInsights.Channel;
+    using ApplicationInsights.DataContracts;
+    using ApplicationInsights.Extensibility;
     using LocalForwarder.Library;
+    using LocalForwarder.Library.Inputs.Contracts;
+    using Opencensus.Proto.Exporter;
+    using Opencensus.Proto.Trace;
+    using System;
+    using System.Collections.Concurrent;
+    using System.Linq;
+    using System.Net.Sockets;
+    using System.Threading.Tasks;
     using VisualStudio.TestTools.UnitTesting;
+    using Exception = System.Exception;
 
     [TestClass]
     public class LibraryTests
     {
         private static readonly TimeSpan LongTimeout = TimeSpan.FromSeconds(5);
+
+        private TelemetryConfiguration configuration;
+        private StubTelemetryChannel channel;
+        private TelemetryClient telemetryClient;
+        private readonly ConcurrentQueue<ITelemetry> sentItems = new ConcurrentQueue<ITelemetry>();
+
 
         [TestMethod]
         public void LibraryTests_LibraryStartsAndStopsWithCorrectConfig()
@@ -580,9 +594,11 @@ namespace Microsoft.LocalForwarder.Test.Library
         }
 
         [TestMethod]
-        public void LibraryTests_LibraryProcessesBatchesCorrectly()
+        public async Task LibraryTests_LibraryProcessesAiBatchesCorrectly()
         {
             // ARRANGE
+            this.SetupStubTelemetryClient();
+
             int portAI = Common.GetPort();
             int portOC = Common.GetPort();
 
@@ -599,20 +615,105 @@ namespace Microsoft.LocalForwarder.Test.Library
     </OpenCensusInput>
   </Inputs>
   <OpenCensusToApplicationInsights>
-    <InstrumentationKey>[SPECIFY INSTRUMENTATION KEY HERE]</InstrumentationKey>
+    <InstrumentationKey>ikey1</InstrumentationKey>
   </OpenCensusToApplicationInsights>
 </LocalForwarderConfiguration>
 ";
 
-            var lib = new Library(config);
+            var telemetryBatch = new TelemetryBatch();
+            telemetryBatch.Items.Add(new Telemetry() {Event = new Event() {Name = "Event1"}});
+            telemetryBatch.Items.Add(new Telemetry() {Message = new Message() {Message_ = "Message1"}});
+            telemetryBatch.Items.Add(new Telemetry() {Metric = new LocalForwarder.Library.Inputs.Contracts.Metric() {Metrics = {new DataPoint() {Name = "Metric1", Value = 1}}}});
+            telemetryBatch.Items.Add(new Telemetry() {Exception = new LocalForwarder.Library.Inputs.Contracts.Exception() {ProblemId = "Exception1", Exceptions = {new ExceptionDetails() {Message = "Exception1"}}}});
+            telemetryBatch.Items.Add(new Telemetry() {Dependency = new Dependency() {Name = "Dependency1"}});
+            telemetryBatch.Items.Add(new Telemetry() {Availability = new Availability() {Name = "Availability1"}});
+            telemetryBatch.Items.Add(new Telemetry() {PageView = new PageView() {Id = "PageView1"}});
+            telemetryBatch.Items.Add(new Telemetry() {Request = new Request() {Name = "Request1"}});
+
+            var lib = new Library(config, this.telemetryClient);
             lib.Run();
 
-            
             // ACT
-            lib.Stop();
+            var writer = new GrpcWriter(true, portAI);
+            await writer.Write(telemetryBatch).ConfigureAwait(false);
 
             // ASSERT
-            Assert.Fail();
+            Common.AssertIsTrueEventually(() => this.sentItems.Count == 8);
+
+            lib.Stop();
+
+            Assert.AreEqual("Event1", (this.sentItems.Skip(0).First() as EventTelemetry).Name);
+            Assert.AreEqual("Message1", (this.sentItems.Skip(1).First() as TraceTelemetry).Message);
+            Assert.AreEqual("Metric1", (this.sentItems.Skip(2).First() as MetricTelemetry).Name);
+            Assert.AreEqual(1, (this.sentItems.Skip(2).First() as MetricTelemetry).Value);
+            Assert.AreEqual("Exception1", (this.sentItems.Skip(3).First() as ExceptionTelemetry).ProblemId);
+            Assert.AreEqual("Exception1", (this.sentItems.Skip(3).First() as ExceptionTelemetry).ExceptionDetailsInfoList.Single().Message);
+            Assert.AreEqual("Dependency1", (this.sentItems.Skip(4).First() as DependencyTelemetry).Name);
+            Assert.AreEqual("Availability1", (this.sentItems.Skip(5).First() as AvailabilityTelemetry).Name);
+            Assert.AreEqual("PageView1", (this.sentItems.Skip(6).First() as PageViewTelemetry).Id);
+            Assert.AreEqual("Request1", (this.sentItems.Skip(7).First() as RequestTelemetry).Name);
+        }
+
+        [TestMethod]
+        public async Task LibraryTests_LibraryProcessesOcBatchesCorrectly()
+        {
+            // ARRANGE
+            this.SetupStubTelemetryClient();
+
+            int portAI = Common.GetPort();
+            int portOC = Common.GetPort();
+
+            var config = $@"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<LocalForwarderConfiguration>
+  <Inputs>
+    <ApplicationInsightsInput Enabled=""true"">
+      <Host>0.0.0.0</Host>
+      <Port>{portAI}</Port>
+    </ApplicationInsightsInput>
+    <OpenCensusInput Enabled=""true"">
+      <Host>0.0.0.0</Host>
+      <Port>{portOC}</Port>
+    </OpenCensusInput>
+  </Inputs>
+  <OpenCensusToApplicationInsights>
+    <InstrumentationKey>ikey1</InstrumentationKey>
+  </OpenCensusToApplicationInsights>
+</LocalForwarderConfiguration>
+";
+
+            var telemetryBatch = new ExportSpanRequest();
+            telemetryBatch.Spans.Add(new Span() {Name = new TruncatableString() {Value = "Span1"}, Kind = Span.Types.SpanKind.Server});
+            telemetryBatch.Spans.Add(new Span() {Name = new TruncatableString() {Value = "Span2"}, Kind = Span.Types.SpanKind.Client});
+
+            var lib = new Library(config, this.telemetryClient);
+            lib.Run();
+
+            // ACT
+            var writer = new GrpcWriter(false, portOC);
+            await writer.Write(telemetryBatch).ConfigureAwait(false);
+
+            // ASSERT
+            Common.AssertIsTrueEventually(() => this.sentItems.Count == 2);
+
+            lib.Stop();
+
+            Assert.AreEqual("Span1", (this.sentItems.Skip(0).First() as RequestTelemetry).Name);
+            Assert.AreEqual("Span2", (this.sentItems.Skip(1).First() as DependencyTelemetry).Name);
+        }
+
+        private void SetupStubTelemetryClient()
+        {
+            this.configuration = new TelemetryConfiguration();
+            this.channel = new StubTelemetryChannel
+            {
+                OnSend = delegate(ITelemetry t)
+                {
+                    this.sentItems.Enqueue(t);
+                }
+            };
+
+            this.configuration.TelemetryChannel = this.channel;
+            this.telemetryClient = new TelemetryClient(this.configuration);
         }
     }
 }
