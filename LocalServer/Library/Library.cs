@@ -19,6 +19,7 @@
         private readonly GrpcOpenCensusInput gRpcOpenCensusInput = null;
 
         private readonly Configuration config;
+        private readonly string ocToAiInstrumentationKey;
 
         /// <summary>
         /// For unit tests only.
@@ -31,7 +32,9 @@
         public Library(string configuration)
         {
             this.config = new Configuration(configuration);
-            
+
+            this.ocToAiInstrumentationKey = config.OpenCensusToApplicationInsights_InstrumentationKey;
+
             Diagnostics.Log(
                 FormattableString.Invariant($"Loaded configuration. {Environment.NewLine}{configuration}"));
 
@@ -254,7 +257,7 @@
                         //!!!
                         Diagnostics.Log($"OpenCensus message received: {batch.Spans.Count} spans, first span: {batch.Spans.First().Name}");
 
-                        this.telemetryClient.TrackSpan(span, this.config.OpenCensusToApplicationInsights_InstrumentationKey);
+                        this.telemetryClient.TrackSpan(span, this.ocToAiInstrumentationKey);
                     }
                     catch (Exception e)
                     {
