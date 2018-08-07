@@ -7,12 +7,12 @@
 
   <PropertyGroup>
     <DebugType>Full</DebugType>
-    <AssemblyName>Microsoft.LocalForwarder.Host</AssemblyName>
-    <RootNamespace>Microsoft.LocalForwarder.Host</RootNamespace>
+    <AssemblyName>Microsoft.LocalForwarder.ConsoleHost</AssemblyName>
+    <RootNamespace>Microsoft.LocalForwarder.ConsoleHost</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.LocalForwarder.Library" Version="1.0.14-alpha" />
+    <PackageReference Include="Microsoft.LocalForwarder.Library" Version="1.0.17-alpha" />
   </ItemGroup>
 
   <ItemGroup>

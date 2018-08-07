@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\Host\LocalForwarder.config" Link="LocalForwarder.config" />
+    <EmbeddedResource Include="..\ConsoleHost\LocalForwarder.config" Link="LocalForwarder.config" />
   </ItemGroup>
 
   <ItemGroup>
