@@ -8,6 +8,8 @@
     {
         static void Main(string[] args)
         {
+            Common.Diagnostics.Log("Starting the console host...");
+
             Host host = new Host();
 
             try
@@ -16,9 +18,9 @@
 
                 string config = ReadConfiguratiion();
 
-                host.Start(config);
+                host.Run(config, TimeSpan.FromSeconds(5));
 
-                Common.Diagnostics.Log("The host is running.");                
+                Common.Diagnostics.Log("The host is running");
             }
             catch (Exception e)
             {
@@ -32,11 +34,13 @@
 
             try
             {
+                Common.Diagnostics.Log("Stopping the console host...");
+
                 Common.Diagnostics.Log("Stopping the host...");
 
                 host.Stop();
                 
-                Common.Diagnostics.Log("The host is stopped.");
+                Common.Diagnostics.Log("The host is stopped");
             }
             catch (Exception e)
             {
@@ -44,6 +48,7 @@
             }
             finally
             {
+                Common.Diagnostics.Log("The console host is stopped");
                 Console.ReadKey();
             }
         }

@@ -1,6 +1,10 @@
 namespace Microsoft.LocalForwarder.Test
 {
+    using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.Channel;
+    using Microsoft.ApplicationInsights.Extensibility;
     using System;
+    using System.Collections.Concurrent;
     using System.Threading;
     using VisualStudio.TestTools.UnitTesting;
 
@@ -32,6 +36,26 @@ namespace Microsoft.LocalForwarder.Test
         {
             // dynamic port range
             return rand.Next(49152, 65535);
+        }
+
+        public static TelemetryClient SetupStubTelemetryClient(out ConcurrentQueue<ITelemetry> sentItems)
+        {
+            var configuration = new TelemetryConfiguration();
+            var queue = new ConcurrentQueue<ITelemetry>();
+
+            var channel = new StubTelemetryChannel
+            {
+                OnSend = delegate (ITelemetry t)
+                {
+                    queue.Enqueue(t);
+                }
+            };
+
+            sentItems = queue;
+
+            configuration.TelemetryChannel = channel;
+
+            return new TelemetryClient(configuration);
         }
     }
 }

@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.LocalForwarder.Library" Version="1.0.17-alpha" />
+    <PackageReference Include="Microsoft.LocalForwarder.Library" Version="1.0.22-alpha" />
   </ItemGroup>
 
   <ItemGroup>

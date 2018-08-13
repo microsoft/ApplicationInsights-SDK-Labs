@@ -21,12 +21,6 @@ namespace Microsoft.LocalForwarder.Test.Library
     {
         private static readonly TimeSpan LongTimeout = TimeSpan.FromSeconds(5);
 
-        private TelemetryConfiguration configuration;
-        private StubTelemetryChannel channel;
-        private TelemetryClient telemetryClient;
-        private readonly ConcurrentQueue<ITelemetry> sentItems = new ConcurrentQueue<ITelemetry>();
-
-
         [TestMethod]
         public void LibraryTests_LibraryStartsAndStopsWithCorrectConfig()
         {
@@ -597,7 +591,7 @@ namespace Microsoft.LocalForwarder.Test.Library
         public async Task LibraryTests_LibraryProcessesAiBatchesCorrectly()
         {
             // ARRANGE
-            this.SetupStubTelemetryClient();
+            var telemetryClient = Common.SetupStubTelemetryClient(out var sentItems);
 
             int portAI = Common.GetPort();
             int portOC = Common.GetPort();
@@ -630,7 +624,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             telemetryBatch.Items.Add(new Telemetry() {PageView = new PageView() {Id = "PageView1"}});
             telemetryBatch.Items.Add(new Telemetry() {Request = new Request() {Name = "Request1"}});
 
-            var lib = new Library(config, this.telemetryClient);
+            var lib = new Library(config, telemetryClient);
             lib.Run();
 
             // ACT
@@ -638,27 +632,27 @@ namespace Microsoft.LocalForwarder.Test.Library
             await writer.Write(telemetryBatch).ConfigureAwait(false);
 
             // ASSERT
-            Common.AssertIsTrueEventually(() => this.sentItems.Count == 8);
+            Common.AssertIsTrueEventually(() => sentItems.Count == 8);
 
             lib.Stop();
 
-            Assert.AreEqual("Event1", (this.sentItems.Skip(0).First() as EventTelemetry).Name);
-            Assert.AreEqual("Message1", (this.sentItems.Skip(1).First() as TraceTelemetry).Message);
-            Assert.AreEqual("Metric1", (this.sentItems.Skip(2).First() as MetricTelemetry).Name);
-            Assert.AreEqual(1, (this.sentItems.Skip(2).First() as MetricTelemetry).Value);
-            Assert.AreEqual("Exception1", (this.sentItems.Skip(3).First() as ExceptionTelemetry).ProblemId);
-            Assert.AreEqual("Exception1", (this.sentItems.Skip(3).First() as ExceptionTelemetry).ExceptionDetailsInfoList.Single().Message);
-            Assert.AreEqual("Dependency1", (this.sentItems.Skip(4).First() as DependencyTelemetry).Name);
-            Assert.AreEqual("Availability1", (this.sentItems.Skip(5).First() as AvailabilityTelemetry).Name);
-            Assert.AreEqual("PageView1", (this.sentItems.Skip(6).First() as PageViewTelemetry).Id);
-            Assert.AreEqual("Request1", (this.sentItems.Skip(7).First() as RequestTelemetry).Name);
+            Assert.AreEqual("Event1", (sentItems.Skip(0).First() as EventTelemetry).Name);
+            Assert.AreEqual("Message1", (sentItems.Skip(1).First() as TraceTelemetry).Message);
+            Assert.AreEqual("Metric1", (sentItems.Skip(2).First() as MetricTelemetry).Name);
+            Assert.AreEqual(1, (sentItems.Skip(2).First() as MetricTelemetry).Value);
+            Assert.AreEqual("Exception1", (sentItems.Skip(3).First() as ExceptionTelemetry).ProblemId);
+            Assert.AreEqual("Exception1", (sentItems.Skip(3).First() as ExceptionTelemetry).ExceptionDetailsInfoList.Single().Message);
+            Assert.AreEqual("Dependency1", (sentItems.Skip(4).First() as DependencyTelemetry).Name);
+            Assert.AreEqual("Availability1", (sentItems.Skip(5).First() as AvailabilityTelemetry).Name);
+            Assert.AreEqual("PageView1", (sentItems.Skip(6).First() as PageViewTelemetry).Id);
+            Assert.AreEqual("Request1", (sentItems.Skip(7).First() as RequestTelemetry).Name);
         }
 
         [TestMethod]
         public async Task LibraryTests_LibraryProcessesOcBatchesCorrectly()
         {
             // ARRANGE
-            this.SetupStubTelemetryClient();
+            var telemetryClient = Common.SetupStubTelemetryClient(out var sentItems);
 
             int portAI = Common.GetPort();
             int portOC = Common.GetPort();
@@ -685,7 +679,7 @@ namespace Microsoft.LocalForwarder.Test.Library
             telemetryBatch.Spans.Add(new Span() {Name = new TruncatableString() {Value = "Span1"}, Kind = Span.Types.SpanKind.Server});
             telemetryBatch.Spans.Add(new Span() {Name = new TruncatableString() {Value = "Span2"}, Kind = Span.Types.SpanKind.Client});
 
-            var lib = new Library(config, this.telemetryClient);
+            var lib = new Library(config, telemetryClient);
             lib.Run();
 
             // ACT
@@ -693,27 +687,12 @@ namespace Microsoft.LocalForwarder.Test.Library
             await writer.Write(telemetryBatch).ConfigureAwait(false);
 
             // ASSERT
-            Common.AssertIsTrueEventually(() => this.sentItems.Count == 2);
+            Common.AssertIsTrueEventually(() => sentItems.Count == 2);
 
             lib.Stop();
 
-            Assert.AreEqual("Span1", (this.sentItems.Skip(0).First() as RequestTelemetry).Name);
-            Assert.AreEqual("Span2", (this.sentItems.Skip(1).First() as DependencyTelemetry).Name);
-        }
-
-        private void SetupStubTelemetryClient()
-        {
-            this.configuration = new TelemetryConfiguration();
-            this.channel = new StubTelemetryChannel
-            {
-                OnSend = delegate(ITelemetry t)
-                {
-                    this.sentItems.Enqueue(t);
-                }
-            };
-
-            this.configuration.TelemetryChannel = this.channel;
-            this.telemetryClient = new TelemetryClient(this.configuration);
+            Assert.AreEqual("Span1", (sentItems.Skip(0).First() as RequestTelemetry).Name);
+            Assert.AreEqual("Span2", (sentItems.Skip(1).First() as DependencyTelemetry).Name);
         }
     }
 }

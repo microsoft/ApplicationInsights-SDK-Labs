@@ -29,6 +29,8 @@
             this.telemetryClient = telemetryClient;
         }
 
+        public bool IsRunning { get; private set; } = false;
+
         public Library(string configuration)
         {
             this.config = new Configuration(configuration);
@@ -102,6 +104,12 @@
 
         public void Run()
         {
+            if (this.IsRunning)
+            {
+                throw new InvalidOperationException(
+                    FormattableString.Invariant($"Can't Run the library, it's already running"));
+            }
+
             try
             {
                 this.gRpcAiInput?.Start(this.OnAiBatchReceived);
@@ -127,32 +135,47 @@
                 throw new InvalidOperationException(
                     FormattableString.Invariant($"Could not start the gRPC OpenCensus channel. {e.ToString()}"), e);
             }
+
+            this.IsRunning = true;
         }
 
         public void Stop()
         {
-            try
+            if (!this.IsRunning)
             {
-                this.gRpcAiInput?.Stop();
-            }
-            catch (Exception e)
-            {
-                Diagnostics.Log(FormattableString.Invariant($"Could not stop the gRPC AI channel. {e.ToString()}"));
-
                 throw new InvalidOperationException(
-                    FormattableString.Invariant($"Could not stop the gRPC AI channel. {e.ToString()}"), e);
+                    FormattableString.Invariant($"Can't Stop the library, it's not currently running"));
             }
 
             try
             {
-                this.gRpcOpenCensusInput?.Stop();
-            }
-            catch (Exception e)
-            {
-                Diagnostics.Log(FormattableString.Invariant($"Could not stop the gRPC OpenCensus channel. {e.ToString()}"));
+                try
+                {
+                    this.gRpcAiInput?.Stop();
+                }
+                catch (Exception e)
+                {
+                    Diagnostics.Log(FormattableString.Invariant($"Could not stop the gRPC AI channel. {e.ToString()}"));
 
-                throw new InvalidOperationException(
-                    FormattableString.Invariant($"Could not stop the gRPC OpenCensus channel. {e.ToString()}"), e);
+                    throw new InvalidOperationException(
+                        FormattableString.Invariant($"Could not stop the gRPC AI channel. {e.ToString()}"), e);
+                }
+
+                try
+                {
+                    this.gRpcOpenCensusInput?.Stop();
+                }
+                catch (Exception e)
+                {
+                    Diagnostics.Log(FormattableString.Invariant($"Could not stop the gRPC OpenCensus channel. {e.ToString()}"));
+
+                    throw new InvalidOperationException(
+                        FormattableString.Invariant($"Could not stop the gRPC OpenCensus channel. {e.ToString()}"), e);
+                }
+            }
+            finally
+            {
+                this.IsRunning = false;
             }
         }
 

@@ -4,6 +4,7 @@
     using Microsoft.LocalForwarder.Library;
     using System.ServiceProcess;
     using System.IO;
+    using System.Threading;
 
     public partial class LocalForwarderHostService : ServiceBase
     {
@@ -14,12 +15,24 @@
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Unit tests only.
+        /// </summary>
+        internal void TestStartStop(TimeSpan timeToRun)
+        {
+            this.OnStart(null);
+
+            Thread.Sleep(timeToRun);
+
+            this.OnStop();
+        }
+
         protected override void OnStart(string[] args)
         {
-            Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
             Common.Diagnostics.Log("Starting Windows Service...");
-            Common.Diagnostics.Log(FormattableString.Invariant($"Looking for configuration in {Directory.GetCurrentDirectory()}"));
+            Common.Diagnostics.Log(FormattableString.Invariant($"Current directory is set to {Directory.GetCurrentDirectory()}"));
 
             try
             {
@@ -29,9 +42,9 @@
 
                 this.host = new Host();
 
-                host.Start(config);
+                this.host.Run(config, TimeSpan.FromSeconds(5));
 
-                Common.Diagnostics.Log("The host is running.");
+                Common.Diagnostics.Log("The host is running");
             }
             catch (Exception e)
             {
@@ -49,13 +62,15 @@
                 Common.Diagnostics.Log("Stopping the host...");
 
                 this.host.Stop();
-
+            
                 Common.Diagnostics.Log("The host is stopped.");
             }
             catch (Exception e)
             {
                 Common.Diagnostics.Log(FormattableString.Invariant($"Unexpected error while stopping the host. {e.ToString()}"));
             }
+
+            Common.Diagnostics.Log("Windows Service is stopped");
         }
 
         private static string ReadConfiguration()

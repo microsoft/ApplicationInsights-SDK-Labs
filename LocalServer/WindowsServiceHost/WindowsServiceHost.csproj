@@ -14,6 +14,22 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>D:\Git\ApplicationInsights-SDK-Labs\src\LocalServer\publish\WindowsServiceHost\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +49,18 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>A0306DA2DC8287B46AE5A4DEE62007B6E2C659D2</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>WindowsServiceHost_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Google.Protobuf, Version=3.6.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
@@ -60,10 +88,10 @@
       <HintPath>..\..\..\NuGet.Packages\Microsoft.Extensions.Primitives.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.LocalForwarder.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.17-alpha\lib\netstandard\Microsoft.LocalForwarder.Common.dll</HintPath>
+      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.22-alpha\lib\netstandard\Microsoft.LocalForwarder.Common.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.LocalForwarder.Library, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.17-alpha\lib\netstandard\Microsoft.LocalForwarder.Library.dll</HintPath>
+      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.22-alpha\lib\netstandard\Microsoft.LocalForwarder.Library.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\..\..\NuGet.Packages\NLog.4.5.7\lib\net45\NLog.dll</HintPath>
@@ -112,12 +140,19 @@
     </None>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="WindowsServiceHost_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{210eec3b-dd4d-456e-a57c-dfc0e4ad9b25}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\NuGet.Packages\Grpc.Core.1.13.1\build\net45\Grpc.Core.targets" Condition="Exists('..\..\..\NuGet.Packages\Grpc.Core.1.13.1\build\net45\Grpc.Core.targets')" />
