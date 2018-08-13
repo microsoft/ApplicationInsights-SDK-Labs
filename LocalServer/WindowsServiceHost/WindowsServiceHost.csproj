@@ -69,8 +69,8 @@
     <Reference Include="Grpc.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d754f35622e28bad, processorArchitecture=MSIL">
       <HintPath>..\..\..\NuGet.Packages\Grpc.Core.1.13.1\lib\net45\Grpc.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NuGet.Packages\Microsoft.ApplicationInsights.2.7.0-beta4-build20281\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\NuGet.Packages\Microsoft.ApplicationInsights.2.8.0-beta1-build180\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\..\NuGet.Packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
@@ -88,10 +88,10 @@
       <HintPath>..\..\..\NuGet.Packages\Microsoft.Extensions.Primitives.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.LocalForwarder.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.22-alpha\lib\netstandard\Microsoft.LocalForwarder.Common.dll</HintPath>
+      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.24-alpha\lib\netstandard\Microsoft.LocalForwarder.Common.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.LocalForwarder.Library, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.22-alpha\lib\netstandard\Microsoft.LocalForwarder.Library.dll</HintPath>
+      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.24-alpha\lib\netstandard\Microsoft.LocalForwarder.Library.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\..\..\NuGet.Packages\NLog.4.5.7\lib\net45\NLog.dll</HintPath>
@@ -139,7 +139,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="WindowsServiceHost_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

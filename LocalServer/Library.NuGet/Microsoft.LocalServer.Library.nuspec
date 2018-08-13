@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Microsoft.LocalForwarder.Library</id>
-    <version>1.0.22-alpha</version>
+    <version>1.0.24-alpha</version>
     <authors>Microsoft.LocalForwarder.Library</authors>
     <owners>Microsoft.LocalForwarder.Library</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -14,7 +14,7 @@
         <dependency id="Google.Protobuf.Tools" version="3.6.0" />
         <dependency id="Grpc" version="1.13.1" />
         <dependency id="Grpc.Tools" version="1.13.1" />
-        <dependency id="Microsoft.ApplicationInsights" version="2.7.0-beta4-build20281" />
+        <dependency id="Microsoft.ApplicationInsights" version="2.8.0-beta1-build180" />
         <dependency id="NLog.Extensions.Logging" version="1.2.0" />
       </group>
     </dependencies>
