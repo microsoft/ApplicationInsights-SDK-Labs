@@ -88,10 +88,10 @@
       <HintPath>..\..\..\NuGet.Packages\Microsoft.Extensions.Primitives.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.LocalForwarder.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.25-alpha\lib\netstandard\Microsoft.LocalForwarder.Common.dll</HintPath>
+      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.26-alpha\lib\netstandard\Microsoft.LocalForwarder.Common.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.LocalForwarder.Library, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.25-alpha\lib\netstandard\Microsoft.LocalForwarder.Library.dll</HintPath>
+      <HintPath>..\..\..\NuGet.Packages\Microsoft.LocalForwarder.Library.1.0.26-alpha\lib\netstandard\Microsoft.LocalForwarder.Library.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\..\..\NuGet.Packages\NLog.4.5.7\lib\net45\NLog.dll</HintPath>
