@@ -169,8 +169,8 @@ namespace Microsoft.LocalForwarder.Test.Library
             var writer = new GrpcWriter(false, portOC);
             await writer.Write(telemetryBatch).ConfigureAwait(false);
 
-            Thread.Sleep(TimeSpan.FromMilliseconds(250));
-
+            Common.AssertIsTrueEventually(() => sentItems.Count == 2);
+            
             Assert.AreEqual("Span1", (sentItems.Skip(0).First() as RequestTelemetry).Name);
             Assert.AreEqual("Span2", (sentItems.Skip(1).First() as DependencyTelemetry).Name);
         }

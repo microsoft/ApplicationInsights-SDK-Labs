@@ -155,14 +155,21 @@
         {
             try
             {
+                configuration = Environment.ExpandEnvironmentVariables(configuration);
+            }
+            catch(Exception e)
+            {
+                throw new ArgumentException(FormattableString.Invariant($"Error expanding environment variables contained within the configuration"), e);
+            }
+
+            try
+            {
                 this.localForwarderConfiguration = XElement.Parse(configuration);
             }
             catch (Exception e)
             {
                 throw new ArgumentException(FormattableString.Invariant($"Error parsing configuration"), e);
             }
-
-
         }
     }
 }
