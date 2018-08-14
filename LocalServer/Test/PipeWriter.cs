@@ -8,7 +8,7 @@ namespace Microsoft.LocalForwarder.Test
     public class PipeWriter
     {
         private readonly TimeSpan timeout;
-        private NamedPipeClientStream pipe;
+        private readonly NamedPipeClientStream pipe;
 
         public PipeWriter(TimeSpan timeout)
         {

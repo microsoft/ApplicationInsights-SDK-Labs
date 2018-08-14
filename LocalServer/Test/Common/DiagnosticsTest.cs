@@ -20,7 +20,7 @@ namespace Microsoft.LocalForwarder.Test
 
             // ACT
             string testLogMessage = $"Log message here {guid.ToString()}";
-            Diagnostics.Log(testLogMessage);
+            Diagnostics.LogTrace(testLogMessage);
 
             // ASSERT
             Diagnostics.Shutdown(TimeSpan.FromSeconds(1));

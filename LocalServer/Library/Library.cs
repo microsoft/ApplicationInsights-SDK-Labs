@@ -37,7 +37,7 @@
 
             this.ocToAiInstrumentationKey = config.OpenCensusToApplicationInsights_InstrumentationKey;
 
-            Diagnostics.Log(
+            Diagnostics.LogInfo(
                 FormattableString.Invariant($"Loaded configuration. {Environment.NewLine}{configuration}"));
 
             try
@@ -46,7 +46,7 @@
             }
             catch (Exception e)
             {
-                Diagnostics.Log(
+                Diagnostics.LogError(
                     FormattableString.Invariant($"Could not initialize AI SDK. {e.ToString()}"));
 
                 throw new InvalidOperationException(
@@ -59,18 +59,18 @@
                 {
                     this.gRpcAiInput = new GrpcAiInput(this.config.ApplicationInsightsInput_Host, this.config.ApplicationInsightsInput_Port);
 
-                    Diagnostics.Log(
+                    Diagnostics.LogInfo(
                         FormattableString.Invariant($"We will listen for AI data on {this.config.ApplicationInsightsInput_Host}:{this.config.ApplicationInsightsInput_Port}"));
                 }
                 else
                 {
-                    Diagnostics.Log(
+                    Diagnostics.LogInfo(
                         FormattableString.Invariant($"We will not listen for AI data"));
                 }
             }
             catch (Exception e)
             {
-                Diagnostics.Log(
+                Diagnostics.LogError(
                     FormattableString.Invariant($"Could not create the gRPC AI channel. {e.ToString()}"));
 
                 throw new InvalidOperationException(
@@ -83,18 +83,18 @@
                 {
                     this.gRpcOpenCensusInput = new GrpcOpenCensusInput(this.config.OpenCensusInput_Host, this.config.OpenCensusInput_Port);
 
-                    Diagnostics.Log(
+                    Diagnostics.LogInfo(
                         FormattableString.Invariant($"We will listen for OpenCensus data on {this.config.OpenCensusInput_Host}:{this.config.OpenCensusInput_Port}"));
                 }
                 else
                 {
-                    Diagnostics.Log(
+                    Diagnostics.LogInfo(
                         FormattableString.Invariant($"We will not listen for OpenCensus data"));
                 }
             }
             catch (Exception e)
             {
-                Diagnostics.Log(
+                Diagnostics.LogError(
                     FormattableString.Invariant($"Could not create the gRPC OpenCensus channel. {e.ToString()}"));
 
                 throw new InvalidOperationException(
@@ -116,7 +116,7 @@
             }
             catch (Exception e)
             {
-                Diagnostics.Log(
+                Diagnostics.LogError(
                     FormattableString.Invariant($"Could not start the gRPC AI channel. {e.ToString()}"));
 
                 throw new InvalidOperationException(
@@ -129,7 +129,7 @@
             }
             catch (Exception e)
             {
-                Diagnostics.Log(
+                Diagnostics.LogError(
                     FormattableString.Invariant($"Could not start the gRPC OpenCensus channel. {e.ToString()}"));
 
                 throw new InvalidOperationException(
@@ -155,7 +155,7 @@
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.Log(FormattableString.Invariant($"Could not stop the gRPC AI channel. {e.ToString()}"));
+                    Diagnostics.LogError(FormattableString.Invariant($"Could not stop the gRPC AI channel. {e.ToString()}"));
 
                     throw new InvalidOperationException(
                         FormattableString.Invariant($"Could not stop the gRPC AI channel. {e.ToString()}"), e);
@@ -167,7 +167,7 @@
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.Log(FormattableString.Invariant($"Could not stop the gRPC OpenCensus channel. {e.ToString()}"));
+                    Diagnostics.LogError(FormattableString.Invariant($"Could not stop the gRPC OpenCensus channel. {e.ToString()}"));
 
                     throw new InvalidOperationException(
                         FormattableString.Invariant($"Could not stop the gRPC OpenCensus channel. {e.ToString()}"), e);
@@ -232,7 +232,7 @@
                     {
                         // an unexpected issue during conversion
                         // log and carry on
-                        Diagnostics.Log(
+                        Diagnostics.LogError(
                             FormattableString.Invariant(
                                 $"Could not convert an incoming AI telemetry item. {e.ToString()}"));
                     }
@@ -248,7 +248,7 @@
                     {
                         // an unexpected issue while tracking an item
                         // log and carry on
-                        Diagnostics.Log(
+                        Diagnostics.LogError(
                             FormattableString.Invariant(
                                 $"Could not track an incoming AI telemetry item. {e.ToString()}"));
                     }
@@ -258,7 +258,7 @@
             {
                 // an unexpected issue while processing the batch
                 // log and carry on
-                Diagnostics.Log(
+                Diagnostics.LogError(
                     FormattableString.Invariant(
                         $"Could not process an incoming AI telemetry batch. {e.ToString()}"));
             }
@@ -278,7 +278,7 @@
                     try
                     {
                         //!!!
-                        Diagnostics.Log($"OpenCensus message received: {batch.Spans.Count} spans, first span: {batch.Spans.First().Name}");
+                        Diagnostics.LogTrace($"OpenCensus message received: {batch.Spans.Count} spans, first span: {batch.Spans.First().Name}");
 
                         this.telemetryClient.TrackSpan(span, this.ocToAiInstrumentationKey);
                     }
@@ -286,7 +286,7 @@
                     {
                         // an unexpected issue while tracking an item
                         // log and carry on
-                        Diagnostics.Log(
+                        Diagnostics.LogError(
                             FormattableString.Invariant(
                                 $"Could not track an incoming OpenCensus telemetry item. {e.ToString()}"));
                     }
@@ -296,7 +296,7 @@
             {
                 // an unexpected issue while processing the batch
                 // log and carry on
-                Diagnostics.Log(
+                Diagnostics.LogError(
                     FormattableString.Invariant(
                         $"Could not process an incoming OpenCensus telemetry batch. {e.ToString()}"));
             }

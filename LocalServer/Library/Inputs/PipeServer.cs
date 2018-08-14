@@ -106,13 +106,13 @@
                             await onClientDisconnected(this).ConfigureAwait(false);
                         }
 
-                        Diagnostics.Log(FormattableString.Invariant($"The pipe was closed on the other end. {e}"));
+                        Diagnostics.LogError(FormattableString.Invariant($"The pipe was closed on the other end. {e}"));
 
                         break;
                     }
                     catch (Exception e)
                     {
-                        Diagnostics.Log(FormattableString.Invariant($"Reading the pipe has failed. Closing the connection. {e}"));
+                        Diagnostics.LogError(FormattableString.Invariant($"Reading the pipe has failed. Closing the connection. {e}"));
 
                         break;
                     }
@@ -136,7 +136,7 @@
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.Log(FormattableString.Invariant($"Error while attempting to disconnect the pipe. {e}"));
+                    Diagnostics.LogError(FormattableString.Invariant($"Error while attempting to disconnect the pipe. {e}"));
                 }
 
                 this.pipe?.Dispose();
@@ -163,7 +163,7 @@
             {
                 // something went wrong while traing to cancel the operation, let's at least dispose of the pipe
                 
-                Diagnostics.Log(FormattableString.Invariant($"Error while attempting to cancel a pipe operation. {e}"));
+                Diagnostics.LogError(FormattableString.Invariant($"Error while attempting to cancel a pipe operation. {e}"));
 
                 this.pipe.Dispose();
             }

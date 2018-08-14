@@ -68,6 +68,20 @@
             }
         }
 
+        private static void Log(string message, LogLevel logLevel)
+        {
+            bool lockTaken = false;
+            spinLock.Enter(ref lockTaken);
+
+            if (lockTaken)
+            {
+                // ok to lose the message in an unlikely case that lockTaken is false
+                logger.Log(logLevel, message);
+
+                spinLock.Exit();
+            }
+        }
+
         /// <summary>
         /// Do not use during normal operation.
         /// Unit test use only.
@@ -79,23 +93,30 @@
             LogManager.Shutdown();
         }
 
-        public static void Log(string message)
-        {
-            bool lockTaken = false;
-            spinLock.Enter(ref lockTaken);
-
-            if (lockTaken)
-            {
-                // ok to lose the message in an unlikely case that lockTaken is false
-                logger.Log(LogLevel.Error, message);
-
-                spinLock.Exit();
-            }
-        }
-
         public static void Flush(TimeSpan timeout)
         {
             LogManager.Flush(timeout);
         }
+
+        public static void LogTrace(string message)
+        {
+            Diagnostics.Log(message, LogLevel.Trace);
+        }
+
+        public static void LogInfo(string message)
+        {
+            Diagnostics.Log(message, LogLevel.Info);
+        }
+
+        public static void LogWarn(string message)
+        {
+            Diagnostics.Log(message, LogLevel.Warn);
+        }
+
+        public static void LogError(string message)
+        {
+            Diagnostics.Log(message, LogLevel.Error);
+        }
+
     }
 }

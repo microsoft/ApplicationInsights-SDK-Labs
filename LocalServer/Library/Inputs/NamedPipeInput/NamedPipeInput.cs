@@ -199,7 +199,7 @@
                 // keep serving existing clients, but no new servers will start. Ever.
                 lock (this.pipeServers)
                 {
-                    Diagnostics.Log(FormattableString.Invariant(
+                    Diagnostics.LogError(FormattableString.Invariant(
                         $"Could not start the next pipe server. Pipe server count: {this.pipeServers.Count}. {e.ToString()}"));
                 }
             }
@@ -229,7 +229,7 @@
             catch (Exception e)
             {
                 // this is unexpected, not much we can do
-                Diagnostics.Log(
+                Diagnostics.LogError(
                     FormattableString.Invariant($"Error stopping a pipe server. {e.ToString()}"));
             }
         }
@@ -246,7 +246,7 @@
             {
                 // our client has thrown in a callback
                 // log and carry on
-                Diagnostics.Log(
+                Diagnostics.LogError(
                     FormattableString.Invariant($"OnBatchReceived callback threw. {e.ToString()}"));
             }
         }

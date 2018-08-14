@@ -31,12 +31,12 @@
         {
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
-            Common.Diagnostics.Log("Starting Windows Service...");
-            Common.Diagnostics.Log(FormattableString.Invariant($"Current directory is set to {Directory.GetCurrentDirectory()}"));
+            Common.Diagnostics.LogInfo("Starting Windows Service...");
+            Common.Diagnostics.LogTrace(FormattableString.Invariant($"Current directory is set to {Directory.GetCurrentDirectory()}"));
 
             try
             {
-                Common.Diagnostics.Log("Starting the host...");
+                Common.Diagnostics.LogInfo("Starting the host...");
 
                 string config = ReadConfiguration();
 
@@ -44,33 +44,33 @@
 
                 this.host.Run(config, TimeSpan.FromSeconds(5));
 
-                Common.Diagnostics.Log("The host is running");
+                Common.Diagnostics.LogInfo("The host is running");
             }
             catch (Exception e)
             {
-                Common.Diagnostics.Log(FormattableString.Invariant($"Unexpected error while starting the host. {e.ToString()}"));
+                Common.Diagnostics.LogError(FormattableString.Invariant($"Unexpected error while starting the host. {e.ToString()}"));
                 throw;
             }
         }
 
         protected override void OnStop()
         {
-            Common.Diagnostics.Log("Stopping Windows Service...");
+            Common.Diagnostics.LogInfo("Stopping Windows Service...");
 
             try
             {
-                Common.Diagnostics.Log("Stopping the host...");
+                Common.Diagnostics.LogInfo("Stopping the host...");
 
                 this.host.Stop();
             
-                Common.Diagnostics.Log("The host is stopped.");
+                Common.Diagnostics.LogInfo("The host is stopped.");
             }
             catch (Exception e)
             {
-                Common.Diagnostics.Log(FormattableString.Invariant($"Unexpected error while stopping the host. {e.ToString()}"));
+                Common.Diagnostics.LogError(FormattableString.Invariant($"Unexpected error while stopping the host. {e.ToString()}"));
             }
 
-            Common.Diagnostics.Log("Windows Service is stopped");
+            Common.Diagnostics.LogInfo("Windows Service is stopped");
         }
 
         private static string ReadConfiguration()

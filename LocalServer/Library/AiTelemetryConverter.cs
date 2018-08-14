@@ -326,7 +326,7 @@
                 else
                 {
                     // unknown tag, log and ignore
-                    Diagnostics.Log(FormattableString.Invariant($"Unknown tag. Ignoring. {tag.Key}"));
+                    Diagnostics.LogWarn(FormattableString.Invariant($"Unknown tag. Ignoring. {tag.Key}"));
                 }
             }
         }

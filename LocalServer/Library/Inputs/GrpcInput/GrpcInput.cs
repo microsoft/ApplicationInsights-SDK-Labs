@@ -13,8 +13,8 @@
     /// </summary>
     class GrpcInput<TTelemetryBatch, TResponse>
     {
-        private GrpcAiServer aiServer = null;
-        private GrpcOpenCensusServer openCensusServer = null;
+        private readonly GrpcAiServer aiServer = null;
+        private readonly GrpcOpenCensusServer openCensusServer = null;
 
         private CancellationTokenSource cts;
         private Action<TTelemetryBatch> onBatchReceived;
@@ -131,7 +131,7 @@
                         // unexpected exception occured while processing the batch
                         Interlocked.Increment(ref this.stats.BatchesFailed);
 
-                        Diagnostics.Log(FormattableString.Invariant($"Unknown exception while processing a batch received through the gRpc input. {e.ToString()}"));
+                        Diagnostics.LogError(FormattableString.Invariant($"Unknown exception while processing a batch received through the gRpc input. {e.ToString()}"));
                     }
                 }
             }
@@ -142,7 +142,7 @@
             catch (System.Exception e)
             {
                 // unexpected exception occured
-                Diagnostics.Log(FormattableString.Invariant($"Unknown exception while reading from gRpc stream. {e.ToString()}"));
+                Diagnostics.LogError(FormattableString.Invariant($"Unknown exception while reading from gRpc stream. {e.ToString()}"));
 
                 this.Stop();
             }

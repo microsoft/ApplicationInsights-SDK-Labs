@@ -10,13 +10,13 @@
     /// </summary>
     public class Host
     {
-        private object sync = new object();
+        private readonly object sync = new object();
 
         private Library library;
 
         private bool isRunning;
 
-        private TelemetryClient telemetryClient = null;
+        private readonly TelemetryClient telemetryClient = null;
 
         public Host()
         {
@@ -62,7 +62,7 @@
                     }
                     catch (Exception e)
                     {
-                        Common.Diagnostics.Log(FormattableString.Invariant($"The library has failed to start. We'll restart it in a while. {e.ToString()}"));
+                        Common.Diagnostics.LogError(FormattableString.Invariant($"The library has failed to start. We'll restart it in a while. {e.ToString()}"));
                     }
 
                     Thread.Sleep(checkInterval);
@@ -88,19 +88,19 @@
         {
             try
             {
-                Common.Diagnostics.Log("Starting the library...");
+                Common.Diagnostics.LogInfo("Starting the library...");
 
                 Library library = telemetryClient != null ? new Library(configuration, telemetryClient) : new Library(configuration);
 
                 library.Run();
 
-                Common.Diagnostics.Log("The library is running");
+                Common.Diagnostics.LogInfo("The library is running");
 
                 return library;
             }
             catch (Exception e)
             {
-                Common.Diagnostics.Log(FormattableString.Invariant($"Unexpected error at start-up of the library. {e.ToString()}"));
+                Common.Diagnostics.LogError(FormattableString.Invariant($"Unexpected error at start-up of the library. {e.ToString()}"));
                 throw;
             }
         }
@@ -116,12 +116,12 @@
             {
                 library.Stop();
 
-                Common.Diagnostics.Log("The library is stopped");
+                Common.Diagnostics.LogInfo("The library is stopped");
             }
             catch (Exception e)
             {
                 // swallow
-                Common.Diagnostics.Log(FormattableString.Invariant($"Unexpected error while stopping the library. {e.ToString()}"));
+                Common.Diagnostics.LogError(FormattableString.Invariant($"Unexpected error while stopping the library. {e.ToString()}"));
             }
         }
     }

@@ -8,23 +8,23 @@
     {
         static void Main(string[] args)
         {
-            Common.Diagnostics.Log("Starting the console host...");
+            Common.Diagnostics.LogInfo("Starting the console host...");
 
             Host host = new Host();
 
             try
             {
-                Common.Diagnostics.Log("Starting the host...");
+                Common.Diagnostics.LogInfo("Starting the host...");
 
                 string config = ReadConfiguratiion();
 
                 host.Run(config, TimeSpan.FromSeconds(5));
 
-                Common.Diagnostics.Log("The host is running");
+                Common.Diagnostics.LogInfo("The host is running");
             }
             catch (Exception e)
             {
-                Common.Diagnostics.Log(FormattableString.Invariant($"Unexpected error while starting the host. {e.ToString()}"));
+                Common.Diagnostics.LogError(FormattableString.Invariant($"Unexpected error while starting the host. {e.ToString()}"));
                 throw;
             }
             finally
@@ -34,21 +34,21 @@
 
             try
             {
-                Common.Diagnostics.Log("Stopping the console host...");
+                Common.Diagnostics.LogInfo("Stopping the console host...");
 
-                Common.Diagnostics.Log("Stopping the host...");
+                Common.Diagnostics.LogInfo("Stopping the host...");
 
                 host.Stop();
                 
-                Common.Diagnostics.Log("The host is stopped");
+                Common.Diagnostics.LogInfo("The host is stopped");
             }
             catch (Exception e)
             {
-                Common.Diagnostics.Log(FormattableString.Invariant($"Unexpected error while stopping the host. {e.ToString()}"));
+                Common.Diagnostics.LogError(FormattableString.Invariant($"Unexpected error while stopping the host. {e.ToString()}"));
             }
             finally
             {
-                Common.Diagnostics.Log("The console host is stopped");
+                Common.Diagnostics.LogInfo("The console host is stopped");
                 Console.ReadKey();
             }
         }
