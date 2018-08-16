@@ -101,7 +101,6 @@ namespace Microsoft.LocalForwarder.Test.Library
             Thread.Sleep(TimeSpan.FromMilliseconds(250));
 
             // ACT
-
             host.Stop();
             Thread.Sleep(TimeSpan.FromMilliseconds(250));
 

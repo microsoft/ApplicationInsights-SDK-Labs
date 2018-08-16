@@ -9,7 +9,7 @@
     <PackageReference Include="Google.Protobuf.Tools" Version="3.6.0" />
     <PackageReference Include="Grpc" Version="1.13.1" />
     <PackageReference Include="Grpc.Tools" Version="1.13.1" />
-    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.8.0-beta1-build180" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.8.0-beta1" />
   </ItemGroup>
 
   <ItemGroup>
