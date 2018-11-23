@@ -38,7 +38,15 @@
 
         public override BindingElement Clone()
         {
-            return new ClientTelemetryBindingElement(this.telemetryClient, this.operationMap);
+            return new ClientTelemetryBindingElement(this.telemetryClient, this.operationMap)
+            {
+                RootOperationIdHeaderName = this.RootOperationIdHeaderName,
+                ParentOperationIdHeaderName = this.ParentOperationIdHeaderName,
+                SoapRootOperationIdHeaderName = this.SoapRootOperationIdHeaderName,
+                SoapParentOperationIdHeaderName = this.SoapParentOperationIdHeaderName,
+                SoapHeaderNamespace = this.SoapHeaderNamespace,
+                IgnoreChannelEvents = this.IgnoreChannelEvents
+            }; 
         }
 
         public override T GetProperty<T>(BindingContext context)
