@@ -1,31 +1,31 @@
-﻿using System;
-using System.Configuration;
-using System.ServiceModel.Configuration;
-
-namespace Microsoft.ApplicationInsights.Wcf
+﻿namespace Microsoft.ApplicationInsights.Wcf
 {
+    using System;
+    using System.Configuration;
+    using System.ServiceModel.Configuration;
+
     /// <summary>
     /// Supports adding Application Insights telemetry to WCF services
-    /// through the configuration file
+    /// through the configuration file.
     /// </summary>
     public class ServiceTelemetryExtensionElement : BehaviorExtensionElement
     {
         private ConfigurationPropertyCollection properties;
 
         /// <summary>
-        /// The Application Insights instrumentation key
+        /// Gets or sets the Application Insights instrumentation key.
         /// </summary>
         /// <remarks>
-        /// You can use this as an alternative to setting the instrumentation key in the ApplicationInsights.config file
+        /// You can use this as an alternative to setting the instrumentation key in the ApplicationInsights.config file.
         /// </remarks>
-        public String InstrumentationKey
+        public string InstrumentationKey
         {
-            get { return (String)base["instrumentationKey"]; }
+            get { return (string)base["instrumentationKey"]; }
             set { base["instrumentationKey"] = value; }
         }
 
         /// <summary>
-        /// Gets the type of the behavior
+        /// Gets the type of the behavior.
         /// </summary>
         public override Type BehaviorType
         {
@@ -33,29 +33,34 @@ namespace Microsoft.ApplicationInsights.Wcf
         }
 
         /// <summary>
-        /// The list of properties supported by this behavior
+        /// Gets the list of properties supported by this behavior.
         /// </summary>
         protected override System.Configuration.ConfigurationPropertyCollection Properties
         {
             get
             {
-                if ( properties == null )
+                if (this.properties == null)
                 {
-                    properties = new ConfigurationPropertyCollection();
-                    properties.Add(new ConfigurationProperty("instrumentationKey", typeof(String), "", ConfigurationPropertyOptions.None));
+                    this.properties = new ConfigurationPropertyCollection
+                    {
+                        new ConfigurationProperty("instrumentationKey", typeof(string), string.Empty, ConfigurationPropertyOptions.None)
+                    };
                 }
-                return properties;
+
+                return this.properties;
             }
         }
 
         /// <summary>
-        /// Creates the ApplicationInsights behavior
+        /// Creates the behavior.
         /// </summary>
-        /// <returns>A new instance of <c ref="ApplicationInsightsAttribute">ApplicationInsightsAttribute</c></returns>
+        /// <returns>A new instance of <see cref="ServiceTelemetryAttribute"/> class.</returns>.
         protected override object CreateBehavior()
         {
-            var behavior = new ServiceTelemetryAttribute();
-            behavior.InstrumentationKey = InstrumentationKey;
+            var behavior = new ServiceTelemetryAttribute()
+            {
+                InstrumentationKey = this.InstrumentationKey
+            };
             return behavior;
         }
     }

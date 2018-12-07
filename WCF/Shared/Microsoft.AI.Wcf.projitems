@@ -10,16 +10,41 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ClientIpTelemetryInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryEndpointBehavior.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientTelemetryExtensionElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CorrelationHeaders.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\TryReceiveAsyncResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ReceiveAsyncResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\RequestAsyncResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SendAsyncResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\OpenAsyncResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ChannelAsyncResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientExceptionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientOperation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryChannelFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryDuplexChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryBindingElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryOutputChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientTelemetryRequestChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\ContractFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\DependencyConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\Executor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\IChannelManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\MessageCorrelator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\OperationFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\PlatformContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ClientContract.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\ProfilerWcfClientProcessing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\RequestTrackingConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\SdkVersionUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfClientEventSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfOperationContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfEventSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\WcfInterceptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IOperationContextState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IWcfMessageTrace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationContextExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationCorrelationTelemetryInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OperationTelemetryAttribute.cs" />
@@ -33,6 +58,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)RequestTrackingTelemetryModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserAgentTelemetryInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserTelemetryInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WcfDependencyTrackingTelemetryModule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WcfTelemetryInitializer.cs" />
   </ItemGroup>
 </Project>

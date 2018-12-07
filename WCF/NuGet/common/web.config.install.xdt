@@ -5,6 +5,7 @@
       <extensions xdt:Transform="InsertIfMissing">
           <behaviorExtensions xdt:Transform="InsertIfMissing">
               <add xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" name="serviceTelemetry" type="Microsoft.ApplicationInsights.Wcf.ServiceTelemetryExtensionElement, Microsoft.AI.Wcf" />
+              <add xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" name="clientTelemetry" type="Microsoft.ApplicationInsights.Wcf.ClientTelemetryExtensionElement, Microsoft.AI.Wcf" />
           </behaviorExtensions>
       </extensions>
       <behaviors xdt:Transform="InsertIfMissing">

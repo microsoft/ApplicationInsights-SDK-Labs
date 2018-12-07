@@ -1,11 +1,11 @@
-﻿using System;
-using System.Globalization;
-using System.Reflection;
-using System.ServiceModel.Description;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
-    class ContractBuilder
+    using System;
+    using System.Globalization;
+    using System.Reflection;
+    using System.ServiceModel.Description;
+
+    internal class ContractBuilder
     {
         public static ContractDescription CreateDescription(Type contractType, Type serviceType)
         {
@@ -16,10 +16,10 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             return (ContractDescription)typeLoaderType.InvokeMember(
                 "LoadContractDescription",
                 BindingFlags.InvokeMethod,
-                null, typeLoader,
+                null,
+                typeLoader,
                 new object[] { contractType, serviceType },
-                CultureInfo.InvariantCulture
-                );
+                CultureInfo.InvariantCulture);
         }
     }
 }

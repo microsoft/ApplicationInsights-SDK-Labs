@@ -4,6 +4,7 @@
         <extensions>
             <behaviorExtensions>
                 <add xdt:Transform="Remove" xdt:Locator="Match(name)" name="serviceTelemetry" type="Microsoft.ApplicationInsights.Wcf.ServiceTelemetryExtensionElement, Microsoft.AI.Wcf" />
+                <add xdt:Transform="Remove" xdt:Locator="Match(name)" name="clientTelemetry" type="Microsoft.ApplicationInsights.Wcf.ClientTelemetryExtensionElement, Microsoft.AI.Wcf" />
             </behaviorExtensions>
         </extensions>
         <behaviors>

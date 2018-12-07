@@ -1,10 +1,10 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.ServiceModel.Channels;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.ServiceModel.Channels;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class UserAgentTelemetryInitializerTests
     {
@@ -24,6 +24,37 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             initializer.Initialize(telemetry, context);
 
             Assert.AreEqual("MyUserAgent", telemetry.Context.User.UserAgent);
+        }
+
+        [TestMethod]
+        public void UserAgentIsCopiedFromRequestIfPresent()
+        {
+            var context = new MockOperationContext();
+            context.EndpointUri = new Uri("http://localhost/Service1.svc");
+            context.OperationName = "GetData";
+            context.Request.Context.User.UserAgent = "MyUserAgent";
+
+            var initializer = new UserAgentTelemetryInitializer();
+            var telemetry = new EventTelemetry();
+            initializer.Initialize(telemetry, context);
+
+            Assert.AreEqual(context.Request.Context.User.UserAgent, telemetry.Context.User.UserAgent);
+        }
+
+        [TestMethod]
+        public void UserAgentIsObtainedFromOperationContextIfPresent()
+        {
+            var context = new MockOperationContext();
+            context.SetState("UATI_UserAgent", "MyAgent");
+
+            context.EndpointUri = new Uri("http://localhost/Service1.svc");
+            context.OperationName = "GetData";
+
+            var initializer = new UserAgentTelemetryInitializer();
+            var telemetry = new EventTelemetry();
+            initializer.Initialize(telemetry, context);
+
+            Assert.AreEqual("MyAgent", telemetry.Context.User.UserAgent);
         }
     }
 }

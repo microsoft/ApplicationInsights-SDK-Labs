@@ -1,39 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel.Description;
-
-namespace Microsoft.ApplicationInsights.Wcf.Implementation
+﻿namespace Microsoft.ApplicationInsights.Wcf.Implementation
 {
-    class OperationFilter
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.ServiceModel.Description;
+
+    internal class OperationFilter
     {
-        private HashSet<String> instrumentedOperations;
+        private HashSet<string> instrumentedOperations;
 
         public OperationFilter(ContractDescription serviceContract)
         {
-            instrumentedOperations = InspectContract(serviceContract);
+            this.instrumentedOperations = this.InspectContract(serviceContract);
         }
 
-        public bool ShouldProcess(String operationName)
+        public bool ShouldProcess(string operationName)
         {
             // if no operations had [OperationTelemetry], all are instrumented
-            if ( instrumentedOperations == null || instrumentedOperations.Count == 0 )
+            if (this.instrumentedOperations == null || this.instrumentedOperations.Count == 0)
+            {
                 return true;
-            return instrumentedOperations.Contains(operationName);
+            }
+
+            return this.instrumentedOperations.Contains(operationName);
         }
 
-        private HashSet<String> InspectContract(ContractDescription serviceContract)
+        private HashSet<string> InspectContract(ContractDescription serviceContract)
         {
-            HashSet<String> result = null;
-            foreach ( var op in serviceContract.Operations )
+            HashSet<string> result = null;
+            foreach (var op in serviceContract.Operations)
             {
-                if ( ShouldInstrument(op) )
+                if (this.ShouldInstrument(op))
                 {
-                    if ( result == null )
-                        result = new HashSet<String>();
+                    if (result == null)
+                    {
+                        result = new HashSet<string>();
+                    }
+
                     result.Add(op.Name);
                 }
             }
+
             return result;
         }
 

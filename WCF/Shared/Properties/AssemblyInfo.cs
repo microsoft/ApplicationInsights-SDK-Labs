@@ -9,7 +9,6 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("Microsoft.AI.Wcf.Tests.Net40, PublicKey=" + AssemblyInfo.PublicKey)]
 [assembly: InternalsVisibleTo("Microsoft.AI.Wcf.Tests.Net45, PublicKey=" + AssemblyInfo.PublicKey)]
 
-
 internal static class AssemblyInfo
 {
 #if PUBLIC_RELEASE

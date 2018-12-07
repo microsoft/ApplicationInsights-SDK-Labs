@@ -1,12 +1,12 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
-using Microsoft.ApplicationInsights.Wcf.Tests.Service;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 {
+    using System;
+    using System.Linq;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Service;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class OneWayTests
     {
@@ -15,12 +15,13 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public void SuccessfulOneWayCallGeneratesRequestEvent()
         {
             TestTelemetryChannel.Clear();
-            using ( var host = new HostingContext<OneWayService, IOneWayService>() )
+            using (var host = new HostingContext<OneWayService, IOneWayService>())
             {
                 host.Open();
                 IOneWayService client = host.GetChannel();
                 client.SuccessfullOneWayCall();
             }
+
             var req = TestTelemetryChannel.CollectedData()
                      .FirstOrDefault(x => x is RequestTelemetry);
 
@@ -34,17 +35,19 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
             TestTelemetryChannel.Clear();
             var host = new HostingContext<OneWayService, IOneWayService>()
                       .ExpectFailure().ShouldWaitForCompletion();
-            using ( host )
+            using (host)
             {
                 host.Open();
                 IOneWayService client = host.GetChannel();
                 try
                 {
                     client.FailureOneWayCall();
-                } catch
+                }
+                catch
                 {
                 }
             }
+
             var req = TestTelemetryChannel.CollectedData()
                      .FirstOrDefault(x => x is ExceptionTelemetry);
 

@@ -1,9 +1,10 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.ServiceModel.Channels;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests
 {
+    using System;
+    using System.ServiceModel.Channels;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class OperationCorrelationTelemetryInitializerTests
     {
@@ -125,6 +126,5 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests
             Assert.AreEqual(null, requestTelemetry.Context.Operation.ParentId);
             Assert.AreEqual(requestTelemetry.Id, requestTelemetry.Context.Operation.Id);
         }
-
     }
 }

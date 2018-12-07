@@ -1,12 +1,12 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Wcf.Implementation;
-using System;
-using System.ServiceModel;
-
-namespace Microsoft.ApplicationInsights.Wcf
+﻿namespace Microsoft.ApplicationInsights.Wcf
 {
+    using System;
+    using System.ServiceModel;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Wcf.Implementation;
+
     /// <summary>
-    /// Provides extensions methods for accessing Application Insights Objects
+    /// Provides extensions methods for accessing Application Insights Objects.
     /// </summary>
     public static class OperationContextExtensions
     {
@@ -15,29 +15,27 @@ namespace Microsoft.ApplicationInsights.Wcf
         /// the Application Insights WCF SDK.
         /// </summary>
         /// <param name="context">The WCF OperationContext instance
-        /// associated with the current request</param>
-        /// <returns>The request object or null</returns>
+        /// associated with the current request.</param>
+        /// <returns>The request object or null.</returns>
         public static RequestTelemetry GetRequestTelemetry(this OperationContext context)
         {
-            if ( context == null )
-                return null;
             var icontext = WcfOperationContext.FindContext(context);
-
-            return icontext != null ? icontext.Request : null;
+            return icontext?.Request;
         }
 
         /// <summary>
         /// Returns true if the OperationContext object is associated with
-        /// a client-side channel
+        /// a client-side channel.
         /// </summary>
-        /// <param name="context">The WCF operation context instance</param>
+        /// <param name="context">The WCF operation context instance.</param>
         /// <returns>True for a client-side channel, false otherwise.</returns>
         internal static bool IsClientSideContext(this OperationContext context)
         {
-            if ( context == null )
+            if (context == null)
             {
                 throw new ArgumentNullException("context");
             }
+
             // OperationContext.IsUserContext probably does the same thing
             // but exact semantics are not documented.
             return context.Host == null;

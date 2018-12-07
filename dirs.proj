@@ -2,9 +2,9 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project=".\Global.props" />
   <ItemGroup>
-    <Solution Include="AggregateMetrics\AggregateMetrics.sln" />
     <Solution Include="DependencyCallstacks\DependencyCallstacks.sln" />
     <Solution Include="WCF\WCF.sln" />
+    <Solution Include="Metrics\Microsoft.ApplicationInsights.Metrics.sln" />
   </ItemGroup>
   <Target Name="Build">
     <Exec Command='IF EXIST "%(Solution.FullPath)" nuget.exe restore "%(Solution.FullPath)" -NonInteractive' 

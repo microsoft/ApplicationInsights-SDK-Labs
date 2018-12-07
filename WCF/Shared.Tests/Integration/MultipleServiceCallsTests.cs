@@ -1,10 +1,10 @@
-﻿using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
-using Microsoft.ApplicationInsights.Wcf.Tests.Service;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-
-namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
+﻿namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
 {
+    using System;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Channels;
+    using Microsoft.ApplicationInsights.Wcf.Tests.Service;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class MultipleServiceCallsTests
     {
@@ -13,8 +13,8 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
         public void OperationMethodThatCallsAnotherServiceDoesNotLoseOperationContext()
         {
             TestTelemetryChannel.Clear();
-            using ( var host = new HostingContext<SimpleService, ISimpleService>() )
-            using ( var hostSecond = new HostingContext<SimpleService, ISimpleService>() )
+            using (var host = new HostingContext<SimpleService, ISimpleService>())
+            using (var hostSecond = new HostingContext<SimpleService, ISimpleService>())
             {
                 host.IncludeDetailsInFaults();
                 host.Open();
@@ -24,6 +24,5 @@ namespace Microsoft.ApplicationInsights.Wcf.Tests.Integration
                 Assert.IsTrue(TestTelemetryChannel.CollectedData().Count > 0);
             }
         }
-
     }
 }

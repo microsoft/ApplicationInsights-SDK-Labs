@@ -42,7 +42,10 @@
     <Content Include="common\web.config.uninstall.xdt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Package.nuspec" />
+    <None Include="app.config" />
+    <None Include="Package.nuspec">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\net40\Microsoft.AI.Wcf.Net40.csproj">

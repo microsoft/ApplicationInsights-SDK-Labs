@@ -1,42 +1,43 @@
-﻿using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
-using System;
-
-namespace Microsoft.ApplicationInsights.Wcf
+﻿namespace Microsoft.ApplicationInsights.Wcf
 {
+    using System;
+    using Microsoft.ApplicationInsights.Channel;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.ApplicationInsights.Extensibility.Implementation;
+
     /// <summary>
-    /// Telemetry initializer that collects the operation name
+    /// Telemetry initializer that collects the operation name.
     /// </summary>
     public sealed class OperationNameTelemetryInitializer : WcfTelemetryInitializer
     {
         /// <summary>
-        /// Called when a telemetry item is available
+        /// Called when a telemetry item is available.
         /// </summary>
-        /// <param name="telemetry">The telemetry item to augment</param>
-        /// <param name="operation">The operation context</param>
+        /// <param name="telemetry">The telemetry item to augment.</param>
+        /// <param name="operation">The operation context.</param>
         protected override void OnInitialize(ITelemetry telemetry, IOperationContext operation)
         {
-            if ( String.IsNullOrEmpty(telemetry.Context.Operation.Name) )
+            if (string.IsNullOrEmpty(telemetry.Context.Operation.Name))
             {
-                var opContext = operation.Request.Context.Operation;
-                if ( String.IsNullOrEmpty(opContext.Name) )
+                var operationContext = operation.Request.Context.Operation;
+                if (string.IsNullOrEmpty(operationContext.Name))
                 {
-                    UpdateOperationContext(operation, opContext);
+                    this.UpdateOperationContext(operation, operationContext);
                 }
-                telemetry.Context.Operation.Name = opContext.Name;
 
-                RequestTelemetry request = telemetry as RequestTelemetry;
-                if ( request != null )
+                telemetry.Context.Operation.Name = operationContext.Name;
+
+                var request = telemetry as RequestTelemetry;
+                if (request != null)
                 {
-                    request.Name = opContext.Name;
+                    request.Name = operationContext.Name;
                 }
             }
         }
 
-        private void UpdateOperationContext(IOperationContext operation, OperationContext opContext)
+        private void UpdateOperationContext(IOperationContext operation, OperationContext context)
         {
-            opContext.Name = operation.ContractName + '.' + operation.OperationName;
+            context.Name = operation.ContractName + '.' + operation.OperationName;
         }
     }
 }
