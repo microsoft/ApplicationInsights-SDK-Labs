@@ -1,5 +1,5 @@
 # ApplicationInsights-SDK-Labs
-Application Insights experimental projects repository.
+Application Insights experimental projects repository. Note that Azure Monitor only provides support when using the [supported SDKs](https://docs.microsoft.com/en-us/azure/azure-monitor/app/platforms). We’re constantly assessing opportunities to expand our support for other languages, so follow our [GitHub Announcements](https://github.com/microsoft/ApplicationInsights-Announcements/issues) page to receive the latest SDK news.
 
 # How to use
 All NuGet packages from this repository being hosted in the SDK Labs [NuGet gallery](https://www.myget.org/gallery/applicationinsights-sdk-labs). 
