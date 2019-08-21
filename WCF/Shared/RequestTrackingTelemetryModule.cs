@@ -49,7 +49,7 @@
             }
 
             telemetry.Url = operation.EndpointUri;
-            telemetry.Name = operation.OperationName;
+            telemetry.Name = operation.ContractName + '.' + operation.OperationName;
             telemetry.Properties["soapAction"] = operation.SoapAction;
 
             var httpHeaders = operation.GetHttpRequestHeaders();
