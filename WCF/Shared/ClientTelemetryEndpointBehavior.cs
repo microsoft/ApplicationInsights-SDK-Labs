@@ -103,6 +103,7 @@
                 SoapRootOperationIdHeaderName = this.SoapRootOperationIdHeaderName,
                 SoapParentOperationIdHeaderName = this.SoapParentOperationIdHeaderName,
                 SoapHeaderNamespace = this.SoapHeaderNamespace,
+                IgnoreChannelEvents = this.IgnoreChannelEvents
             };
             var originalBinding = endpoint.Binding;
 
