@@ -1,0 +1,26 @@
+PSTOPIC
+    about_PSApplicationInsights
+
+SHORT DESCRIPTION
+    PSApplicationInsights is a module that provides PowerShell friendly overloads for the core Application Insights SDK.
+
+LONG DESCRIPTION
+    PSApplicationInsights provides a new PowerShell cmdlet, New-TelemetryClient, and overloads existing Track* calls
+    to support Hashtables which have a more natual syntax in PowerShell. It is packaged as a single module with the latest
+    version of Application Insights and has working examples for all of the Track* calls. 
+
+DETAILED DESCRIPTION
+    PSApplicationInsights was written with two scenarios in mind
+    1) Allowing a PowerShell developer to more easily integrate PowerShell scripts and telemetry to existing apps
+
+    Example: A web app hosted in Azure with a SQL Azure backend is likely to have existing web app telemetry. 
+    This app may perform common automation tasks such as invoking a webhook as an alert rule, or scheduled scale up and 
+    scale down of the SQL Azure database. Using PSApplicationInsights one can quick add telemetry to these automation tasks 
+    from their scripts or runbooks, such as: 
+        TrackEvent('Sql Resize'. @{databaseName=$databaseName}, @{resizeTime=$duration.Seconds}).
+
+    2) Allowing PowerShell script authors to more easily instrument their scripts to track script and feature usage
+    
+    Example: Wouldn't it be nice to know what cmdlets get used the most? Or if users are actually using that 
+    alternate parameter set you defined? PSApplicationInsights makes it easy and natural to instrument your scripts 
+    using the Application Insights SDK
